@@ -1,6 +1,7 @@
 # Ignoriere alle .env-Dateien
 .env
 .env.*
+.history/*
 /data/current_time.txt
 /data/emotion_score.json
 /data/set/set_color.json
