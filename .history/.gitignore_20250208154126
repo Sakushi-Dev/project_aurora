@@ -1,4 +1,0 @@
-# Ignoriere alle .env-Dateien
-.env
-.env.*
-/data/curr
