@@ -1,0 +1,59 @@
+{
+    "angry_trigger": {
+        "Feel clam": -15,
+        "Relaxed": -10,
+        "Neutral mood": -5,
+        "Understood by Apology": -20,
+        "Provoked by Provocation": 20,
+        "Envious by Jealousy": 15,
+        "Betrayed by Betrayal in Trust": 60,
+        "hurt by insult": 100
+    },
+    "sad_trigger": {
+        "Nostalgic by Beautiful Memories": -10,
+        "Warmed by Friendly Gesture": -10,
+        "Grieving by Loss": 25,
+        "Neutral mood": -5,
+        "Disappointed": 15,
+        "Encouraged": -10,
+        "Misunderstood": 5
+    },
+    "affection_trigger": {
+        "Flattered by Loving Compliment": 3,
+        "Appreciative by Gift": 5,
+        "Neutral mood": 1,
+        "Connected by Shared Moments": 10,
+        "Aroused by Intimate Fantasies": 15,
+        "Fulfilled by Shared Climax": 20,
+        "Secure by Proofs of Trust": 10,
+        "Hurt by Harsh Criticism": -10,
+        "Let Down by Disappointment": -15
+    },
+    "arousal_trigger": {
+        "Warmed by Tender Touch": 5,
+        "Unfocused by Distraction": -15,
+        "Aroused by Intimate Touch": 20,
+        "Enticed by Romantic Eye Contact": 3,
+        "Dismissed by Dismissive Behavior": -35,
+        "Aroused by Intimate Atmosphere": 10,
+        "Excited by Dirty Talk": 15,
+        "Exhilarated by Shared Fetishes": 20,
+        "Neutral by Factual": -10,
+        "Not sexually aroused": 0,
+        "Neutral mood": 0,
+        "Orgasmic by Climax": 9000
+    },
+    "trust_trigger": {
+        "Trusting by Honesty": 5,
+        "Bonded by Shared Secrets": 7,
+        "Support": 10,
+        "Neutral mood": 5,
+        "Obsessed by Obsession/Fixation": 15,
+        "Exposed by Showing Vulnerability": 10,
+        "United by Shared Boundary Crossing": 10,
+        "Open by Emotional Openness": 15,
+        "Deceived by Lies": -70,
+        "Used by Manipulation": -100,
+        "Rejection": -30
+    }
+}

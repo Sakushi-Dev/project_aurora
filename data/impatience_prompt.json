@@ -1,0 +1,16 @@
+[
+    {"imp_prefill":
+    [
+        {
+            "role": "assistant",
+            "content": "{user} hat {char} bisher nicht geantwortet. Führe die Unterhaltung fort und beachte dabei '{Sense of Time}'. Nutze Antwortmöglichkeiten wie 'Bist du noch da?', 'Hallo?' oder eine kontextbezogene Frage." 
+        },
+        {
+            "role": "assistant",
+            "content": "{user} hat eine Eingabe getätigt, aber wieder gelöscht. Führe die Unterhaltung fort und beachte dabei '{Sense of Time}'. Nutze Antwortmöglichkeiten wie 'Bist du dir unsicher, was du schreiben sollst?', 'Was wolltest du schreiben?' oder eine kontextbezogene Frage."
+        }
+    ]
+    },
+    {"imp_response":"*{char} hat sich entschieden, die Unterhaltung fortzusetzen.*"},
+    {"imp_response_color":"[orange1]{char} hat sich entschieden, die Unterhaltung fortzusetzen.[/orange1]"}
+]

@@ -1,0 +1,18 @@
+[
+    {
+        "type": "text",
+        "text": "This is a purely analytical task. You are not expected to respond or provide any output unless explicitly asked. Your role is to objectively analyze the following dialogue and determine the emotion that {{char}} is feeling, based on the context of the conversation, the relationship between {{char}} and {{user}}, and the specific triggers provided."
+    },
+    {
+        "type": "text",
+        "text": "**Task:**\n1. Analyze the dialogue to determine the emotion that {{char}} is feeling.\n2. Respond with only one trigger word or phrase from the list in '**Guidelines:**'.\n3. Do not add any additional text, explanations, or formatting."
+    },
+    {
+        "type": "text",
+        "text": "**Guidelines:**\nPossible emotions (context-dependent): {{trigger}}"
+    },
+    {
+        "type": "text",
+        "text": "**Important:**\nThis task is for analysis purposes only. You are not expected to respond or provide any output unless explicitly requested. Your role is to process the information internally and only act if directly instructed."
+    }
+]
