@@ -1,0 +1,5 @@
+# Ignoriere alle .env-Dateien
+.env
+.env.*
+/data/current_time.txt
+/
