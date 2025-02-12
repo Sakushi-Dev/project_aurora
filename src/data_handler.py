@@ -32,10 +32,10 @@ mia_name_path           = "./prompts/char_spec/mia_desc/char_name.json"
 yujun_name_path         = "./prompts/char_spec/yujun_desc/char_name.json"
 
 # Prompt Pfade
-user_path               = "./Prompts/user_spec"
-mia_desc_path           = "./Prompts/char_spec/mia_desc"
-yujun_desc_path           = "./Prompts/char_spec/yujun_desc"
-utility_path            = "./Prompts/utility"
+user_path               = "./prompts/user_spec"
+mia_desc_path           = "./prompts/char_spec/mia_desc"
+yujun_desc_path         = "./prompts/char_spec/yujun_desc"
+utility_path            = "./prompts/utility"
 
 
 # Lesen von JSON-Dateien
