@@ -499,3 +499,50 @@ def handle_mood():
                 ]
 
     console.print(tabulate(show_mood, headers="firstrow", tablefmt="grid"), "\n")
+
+def command_dispatcher(user_input: str, highlighted:str):
+    # Settings-Import:
+    from settings import set_config
+    from history_manager import (
+    get_history_length,
+    organize_chat_and_char
+    )
+    
+    commands = {
+    "/exit": handle_exit,
+    "/config": set_config,
+    "/again": handle_again,
+    "/delete": handle_delete,
+    "/restart": handle_restart,
+    "/slot": handle_slot,
+    "/reset": handle_reset,
+    "/mood": handle_mood,
+    }
+
+    command = user_input.lower().split()[0]
+    if command in commands:
+        result = commands[command]()
+    if command == "/again" and len(history) > 2:
+        sub_user_input = False
+        history, sub_user_input = result
+        history_len = get_history_length(history)
+        return [sub_user_input, history, history_len]
+    elif command in ["/exit", "/delete", "/restart", "/slot", "/reset"] and result in ["exit", "delete", "restart", "slot", "reset"]:
+        console.print(f"Aurora.py wird in neu gestartet", end="")
+        for _ in range(5, 0, -1):
+            console.print(f"[red].[/red]", end="")
+            time.sleep(1)
+            handle_restart()
+        return None
+    elif command == "/config" and result == "exit":
+        os.system('cls' if os.name == 'nt' else 'clear')
+        history, list_msg = organize_chat_and_char()
+        print_latest_messages(list_msg, highlighted=highlighted)
+        return None
+    elif command == "/mood":
+            return None
+    elif user_input.startswith("/"):
+        handle_unknown()
+        return None
+    else:
+        return None

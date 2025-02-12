@@ -11,9 +11,6 @@ from rich.console import Console
 # Score-Processing-Import:
 from score_processing import score_processing, feelings_over_time
 
-# Settings-Import:
-from settings import set_config
-
 # History-Manager-Import:
 from history_manager import (
     get_history_length,
@@ -22,8 +19,7 @@ from history_manager import (
 
 from data_handler import (
     save_dialog,
-    load_set,
-    load_current_emo_score
+    load_set
 )
 
 # Time-Manager-Import:
@@ -40,17 +36,7 @@ from cost_manager import (
     save_costs
 )
 
-# Command-Handler-Import:
-from commands import (
-    handle_exit,
-    handle_again,
-    handle_delete,
-    handle_restart,
-    handle_unknown,
-    handle_slot,
-    handle_reset,
-    handle_mood
-)
+from commands import command_dispatcher
 
 # Chat-Response-Import:
 from response_manager import stream_chat_response, print_ki_response
@@ -112,109 +98,13 @@ def main_chat_loop(
         user_input, assistant_imp = asyncio.run(get_user_input(imp))
         print()
 
-
-        # Befehls-Handler als Funktionen definieren
-        if user_input.lower() == "/exit":
-            if handle_exit() == "exit":
-                break
-        elif user_input.lower() == "/config":
-            # Einstellungen ändern
-            # (Farbe, Impatience, Frequenz, Max-Tokens, Time-Sense)
-            back = set_config()
-            if back == "exit":
-                os.system('cls' if os.name == 'nt' else 'clear')
-                history, list_msg = organize_chat_and_char()
-                print_latest_messages(list_msg, highlighted=highlighted)
-                continue
-            
-        elif user_input.lower() == "/again":
-
-            if len(history) > 2:
-                # Wird nur ausgeführt, wenn User bereits Nachrichten gesendet hat
-                sub_user_input = False
-                history, sub_user_input = handle_again(highlighted)
-                history_len             = get_history_length(history)
-
-                # überschreibe Global-Variable
-                sub_user_input  = sub_user_input
-                history         = history
-                history_len     = history_len
-
-                # Weiter im regulären Ablauf
-                pass
-            else:
-                console.print("[red]Du hast noch keine Nachrichten gesendet.[/red]\n")
-                continue
-
-        elif user_input.lower() == "/delete":
-            result = handle_delete()
-            if result == "delete":
-                # contdown bis zum Neustart
-                console.print("Aurora.py wird in neu gestartet", end="")
-                for _ in range(5, 0, -1):
-                    console.print(f"[red].[/red]", end="")
-                    time.sleep(1)
-                if handle_restart() == "restart":
-                    break
-            if result == "cancel":
-                continue
+        result = command_dispatcher(user_input, highlighted)
         
+        if result:
+            sub_user_input = result[0]
+            history = result[1]
+            history_len = result[2]
 
-        elif user_input.lower() == "/restart":
-            console.print(f"Aurora.py wird in neu gestartet", end="")
-            for _ in range(5, 0, -1):
-                console.print(f"[red].[/red]", end="")
-                time.sleep(1)
-            if handle_restart() == "restart":
-                break
-
-        elif user_input.lower() == "/slot":
-            result = handle_slot()
-            if result == "slot":
-                # Slot wechseln
-                console.print(f"Aurora.py wird in neu gestartet", end="")
-                for _ in range(5, 0, -1):
-                    console.print(f"[red].[/red]", end="")
-                    time.sleep(1)
-                if handle_restart() == "restart":
-                    break
-            else:
-                continue
-
-        elif user_input.lower() == "/reset":
-            # Reset Aurora.py
-            result = handle_reset()
-            if result == "reset":
-                console.print(f"Aurora.py wird in neu gestartet", end="")
-                for _ in range(5, 0, -1):
-                    console.print(f"[red].[/red]", end="")
-                    time.sleep(1)
-                handle_restart()
-                break
-            else:
-                continue
-
-#=======================================================================================
-#====================================Test-Code==========================================
-
-        elif user_input.lower() == "/mood":
-            # Mood-Handler
-            handle_mood()
-            continue
-            
-
-#========================================================================================
-#========================================================================================
-
-        elif user_input.startswith("/"):
-            handle_unknown()
-            continue #
-        else:
-            sub_user_input = False
-
-
-
-        # Normale Nachricht
         # ----------------------------------
         
         # User-Nachricht in den Verlauf (in-memory)
@@ -228,7 +118,6 @@ def main_chat_loop(
 
         if debug:
             print(f"Full-History:\n\n{history}\n\n=====================================\n\n")
-        
         
         # Anfrage an Claude (stream)
         
