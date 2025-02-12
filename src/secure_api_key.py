@@ -33,9 +33,9 @@ def is_valid_anthropic_key():
     import requests
 
     console.print(
-        f"{"-"*30}\n"
+        f"{'-'*30}\n"
         "Nur API-Keys von Anthropic sind erlaubt!\n"
-        f"{"-"*30}\n"
+        f"{'-'*30}\n"
         )
     console.print(
         "[orange1]Info:[/orange1] Es wird ein Test-Request an die Anthropic API gesendet.\n"
