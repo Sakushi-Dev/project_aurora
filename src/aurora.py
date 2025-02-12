@@ -4,12 +4,11 @@ from preload import first_of_all
 def main():
 
     from chat_loop import main_chat_loop
-    from anthropic_api import load_api_key, init_anthropic_client
+    from anthropic_api import init_anthropic_client
 
     
     # 1) API-Key laden + Client initialisieren
-    api_key = load_api_key()
-    client = init_anthropic_client(api_key)
+    client = init_anthropic_client()
 
     # 2) Modell auswählen
     modell_list = {
@@ -18,10 +17,6 @@ def main():
         3: "claude-3-haiku-20240307"        # Modell für bugfixes
     }
     model = modell_list[2]
-
-    
-
-    #Info: Abfragen erfolgen mit claude-3-5-haiku-20241022. Kosten pro Abfrage: ~0.00176$ (1.76$ pro 1000 Abfragen)
     
     # 3) Sets laden
 

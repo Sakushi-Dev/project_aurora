@@ -7,8 +7,15 @@ from rich.console import Console
 from prompt_toolkit import prompt
 from prompt_toolkit.styles import Style
 
-from secure_api_key import get_api, save_api_key
-from data_handler import save_set, load_user_char_name
+from secure_api_key import (
+    check_api_key_folder,
+    is_valid_anthropic_key,
+    save_api_key
+)
+from data_handler import (
+    save_set,
+    load_user_char_name
+)
 
 def first_of_all():
     
@@ -34,21 +41,23 @@ def first_of_all():
 
     if user_name == None:
 
-        print("Willkommen bei Project Aurora!\n")
-        if not os.path.exists("./API/api_key.env"):
-            while True:
-                console.print("Gib deinen API-Key ein um fortzufahren")
-                api_key = get_api()
-                if api_key:
-                    save_api_key(api_key)
-                    time.sleep(2)
-                    break
-                else:
-                    continue
-        else:
-            console.print("API-Key wurde gefunden!\n")
-            time.sleep(2)
-            pass
+        console.print("[green]Willkommen bei Project Aurora![green]\n")
+        if check_api_key_folder() == False:
+                while True:
+                    api_key = is_valid_anthropic_key()
+                    if api_key:
+                        save_api_key(api_key)
+                        time.sleep(2)
+                        break
+                    else:
+                        console.print("[red]Ungültiger API-Key![/red]\n")
+                    
+        elif check_api_key_folder() == True:
+            console.print("API-Key wurde gefunden!\n", end="")
+            for i in range(3):
+                time.sleep(0.5)
+                console.print(".", end="")
+        
         os.system('cls' if os.name == 'nt' else 'clear')
         while True:
             console.print("Wähle einen Namen für dich aus:\n")

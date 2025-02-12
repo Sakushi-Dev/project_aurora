@@ -1,9 +1,48 @@
+import os
+import base64
 
-def get_api():
+from rich.console import Console
+from prompt_toolkit.styles import Style
+
+console = Console()
+
+custom_style = Style.from_dict({
+        '': 'fg:#87FF87',
+    })
+
+
+# API-Key Path
+api_folder = "./API"
+api_file_name = "api_key.env"
+API_KEY_PATH = f"{api_folder}/{api_file_name}"
+
+ENV_VARIABLE_NAME = "ANTHROPIC_API_KEY"
+
+#===============================================================================
+
+def check_api_key_folder():
+    
+    if not os.path.exists(API_KEY_PATH):
+        return False
+    else:
+        return True
+
+#===============================================================================
+
+def is_valid_anthropic_key():
     import requests
 
-    print("Nur API-Keys von Anthropic sind erlaubt!")
-    api_key = input("Gebe deinen API-Key ein: ")
+    console.print(
+        f"{"-"*30}\n"
+        "Nur API-Keys von Anthropic sind erlaubt!\n"
+        f"{"-"*30}\n"
+        )
+    console.print(
+        "[orange1]Info:[/orange1] Es wird ein Test-Request an die Anthropic API gesendet.\n"
+        "Bei diesem Test-Request fallen keine relevanten Kosten an. (0.0000015$)\n\n"
+        f"{'-'*120}\nDein API-Key wird verschlüsselt und lokal gespeichert.\n{'-'*120}\n"
+        )
+    api_key = console.input("[green]Gebe deinen API-Key ein: [/green]")
 
     # Anthropic API URL für einen einfachen Test-Request
     url = "https://api.anthropic.com/v1/messages"
@@ -26,21 +65,51 @@ def get_api():
         response = requests.post(url, headers=headers, json=data)
         
         if response.status_code == 200:
-            print("Der API-Schlüssel ist gültig!")
+            console.print("[green]Der API-Schlüssel ist gültig![/green]")
             return api_key
         elif response.status_code == 401:
-            print("Fehler: Ungültiger API-Schlüssel")
+            console.print("[red]Fehler:[/red] Ungültiger API-Schlüssel")
             return None
         else:
-            print(f"Fehler {response.status_code}: {response.text}")
+            console.print(f"[orange1]Fehler {response.status_code}: {response.text}[/orange1]")
             return None
             
     except requests.exceptions.RequestException as e:
-        print(f"Verbindungsfehler: {e}")
+        console.print(f"[orange1]Verbindungsfehler: {e}[/orange1]")
         return None
     
+#===============================================================================
+    
 def save_api_key(api_key):
-    api_key_path = "./API/api_key.env"
-    with open(api_key_path, "w") as file:
-        file.write(f"ANTHROPIC_API_KEY={api_key}")
-    print("API-Key wurde gespeichert!")
+    
+    encoded_key = base64.b64encode(api_key.encode()).decode()
+    os.makedirs(os.path.dirname(API_KEY_PATH), exist_ok=True)
+
+    with open(API_KEY_PATH, "w") as file:
+        file.write(f"{ENV_VARIABLE_NAME}={encoded_key}")
+
+#===============================================================================
+
+def load_api_key():
+    from dotenv import load_dotenv
+
+    if not os.path.exists(API_KEY_PATH):
+        console.print("[red]API-Schlüssel nicht gefunden![/red]")
+        return None
+    
+    load_dotenv(API_KEY_PATH)
+    encoded_key = os.getenv(ENV_VARIABLE_NAME)
+
+    if not encoded_key:
+        console.print("[red]API-Schlüssel nicht gefunden![/red]")
+        return None
+    
+    try:
+        api_key = base64.b64decode(encoded_key.encode()).decode()
+        os.environ[ENV_VARIABLE_NAME] = api_key
+
+        return api_key
+    except Exception as e:
+        console.print(f"[red]Fehler beim Laden des API-Schlüssels: {e}[/red]")
+        return None
+    
