@@ -48,7 +48,8 @@ from commands import (
     handle_restart,
     handle_unknown,
     handle_slot,
-    handle_reset
+    handle_reset,
+    handle_mood
 )
 
 # Chat-Response-Import:
@@ -197,27 +198,8 @@ def main_chat_loop(
 #====================================Test-Code==========================================
 
         elif user_input.lower() == "/mood":
-
-            from tabulate import tabulate
-
-             # Read emotion_score.json
-            
-            score = load_current_emo_score()
-
-            angry_value = score["Angry_Level"]
-            sad_value = score["Sad_Level"]
-            affection_value = score["Affection_Level"]
-            arousal_value = score["Arousal_Level"]
-            trust_value = score["Trust_Level"]
-
-            show_mood = [["Emotionen", "Score"],
-                ["Wut", f"{angry_value}"],
-                ["Trauer", f"{sad_value}"],
-                ["Zuneigung", f"{affection_value}"],
-                ["Erregung", f"{arousal_value}"],
-                ["Vertrauen", f"{trust_value}"]
-            ]
-            console.print(tabulate(show_mood, headers="firstrow", tablefmt="grid"), "\n")
+            # Mood-Handler
+            handle_mood()
             continue
             
 

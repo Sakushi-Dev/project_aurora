@@ -477,3 +477,25 @@ def handle_reset():
 
 def handle_unknown():
     console.print("[red]Befehl nicht erkannt. Gib /help ein, um verfügbare Befehle zu sehen.[/red]")
+
+def handle_mood():
+    from tabulate import tabulate
+    from data_handler import load_current_emo_score
+
+    score = load_current_emo_score()
+
+    angry_value = score["Angry_level"]
+    sad_value = score["Sad_level"]
+    affection_value = score["Affection_level"]
+    arousal_value = score["Arousal_level"]
+    trust_value = score["trust_level"]
+
+    show_mood = [["Emotionen", "Score"],
+                ["Wut", f"{angry_value}"],
+                ["Trauer", f"{sad_value}"],
+                ["Zuneigung", f"{affection_value}"],
+                ["Erregung", f"{arousal_value}"],
+                ["Vertrauen", f"{trust_value}"]
+                ]
+
+    console.print(tabulate(show_mood, headers="firstrow", tablefmt="grid"), "\n")
