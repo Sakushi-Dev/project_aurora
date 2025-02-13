@@ -59,16 +59,11 @@ def set_config():
     os.system('cls' if os.name == 'nt' else 'clear')
 
     if choice == 1:
-        console.print(
-            "Farben die du verwenden kannst:\n\n"
-            f"1.) [{color_template[1]}]Für diese farbe gebe 1 ein[/{color_template[1]}]\n\n"
-            f"2.) [{color_template[2]}]Für diese farbe gebe 2 ein[/{color_template[2]}]\n\n"
-            f"3.) [{color_template[3]}]Für diese farbe gebe 3 ein[/{color_template[3]}]\n\n"
-            f"4.) [{color_template[4]}]Für diese farbe gebe 4 ein[/{color_template[4]}]\n\n"
-            f"5.) [{color_template[5]}]Für diese farbe gebe 5 ein[/{color_template[5]}]\n\n"
-            f"6.) [{color_template[6]}]Für diese farbe gebe 6 ein[/{color_template[6]}]\n\n"
-            f"7.) [{color_template[7]}]Für diese farbe gebe 7 ein[/{color_template[7]}]\n\n"
+        colors = "\n\n".join(
+            f"{i}.) [{color_template[i]}]Für diese farbe gebe {i} ein[/{color_template[i]}]"
+            for i in range(1, 8)
         )
+        console.print(f"Farben die du verwenden kannst:\n\n{colors}\n")
         while True:
             choice = int(console.input("Wähle eine Farbe aus: "))
             if choice in range(1, 8):

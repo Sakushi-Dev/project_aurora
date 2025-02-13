@@ -2,14 +2,7 @@ import tiktoken
 
 def count_tokens(system_prompt, history, assistant_prompt):
     """
-    Berechnet die Gesamtanzahl der Tokens in einer Liste von system_prompts und einer Liste von Nachrichten (history).
-
-    Args:
-        system_prompt (list): Eine Liste von Dictionaries mit "type" und "text"-Schlüsseln für Systemprompts.
-        history (list): Eine Liste von Dictionaries, die Nachrichten mit "role" und "content" enthalten.
-
-    Returns:
-        int: Die Gesamtanzahl der Tokens.
+    Berechnet die Anzahl der Tokens in den system_prompts, history und assistant_prompts.
     """
 
     tokenizer = tiktoken.get_encoding("cl100k_base")
@@ -35,9 +28,6 @@ def count_tokens(system_prompt, history, assistant_prompt):
 def output_tokens(ki_output):
     """
     Gibt die Anzahl der Tokens in einer KI-Antwort aus.
-
-    Args:
-        ki_output (str): Die Antwort der KI.
     """
 
     tokenizer = tiktoken.get_encoding("cl100k_base")

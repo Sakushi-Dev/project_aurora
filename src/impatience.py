@@ -115,7 +115,12 @@ async def get_user_input(wait):
                 if i < num_lines - 1:
                     sys.stdout.write("\033[F")  # Gehe eine Zeile nach oben
             sys.stdout.flush()
-            highlighted_text = re.sub(r"\*\s*(.*?)\*", r"[orange1]\1[/orange1]", user_input, flags=re.DOTALL)
+            highlighted_text = re.sub(
+                r"\*\s*(.*?)\*",
+                r"[orange1]\1[/orange1]",
+                user_input,
+                flags=re.DOTALL
+                )
             # Zeige den Text in einem Rahmen an
             console.print(
                 Panel(
