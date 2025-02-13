@@ -52,7 +52,7 @@ def first_of_all():
                         time.sleep(2)
                         break
                     else:
-                    console.print("[red]Ungültiger API-Key![/red]\n")
+                        console.print("[red]Ungültiger API-Key![/red]\n")
                 
                 api_check = check_api_key_file()
                 if api_check:

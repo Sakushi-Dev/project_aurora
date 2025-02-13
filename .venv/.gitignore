@@ -2,5 +2,8 @@
 .env.*
 .venv
 .venv/*
-.history
-.pyc
+history/*
+__pycache__/
+data/
+*.log
+*.pyc
