@@ -98,7 +98,9 @@ def main_chat_loop(
         user_input, assistant_imp = asyncio.run(get_user_input(imp))
         print()
 
-        result = command_dispatcher(user_input, highlighted)
+        result = command_dispatcher(user_input, highlighted, history_len)
+
+        sub_user_input = None
         
         if result:
             sub_user_input = result[0]
@@ -207,9 +209,8 @@ def main_chat_loop(
         save_dialog([format_user_input, ki_msg])
         save_costs(input_cost, output_cost)
 
-        # Regelt emotion_score nach jdedem User-Input
-        if os.path.exists("./data/emotion_score.json"):
-            feelings_over_time()
+        
+        feelings_over_time()
 
         frequency_of_query = frequency *2
 
@@ -219,25 +220,4 @@ def main_chat_loop(
             # Starte den Thread für die Score-Verarbeitung (ausführen ohne zu warten)
             threading.Thread(target=score_processing, args=(frequency_of_query, slot)).start()
 
-            # Warten um gleichzeitigen Zugriff auf die Datei zu vermeiden
-            time.sleep(0.1)
-
-            # Kosten der abfrage werden in ./src/history/costs.py gespeichert
-            if not os.path.exists("./src/history"):
-                os.makedirs("./src/history")
-
-            costs_path = "./src/history/costs.py"
-            score_cost = input_cost + 0.00176
-
-            costs = (
-            f"total_input_cost = {score_cost}\n"
-            f"total_output_cost = {output_cost}"
-        )
-
-            with open(costs_path, "w", encoding="utf-8") as f:
-                f.write(costs)
-
-            
-
-        
         # ----------------------------------

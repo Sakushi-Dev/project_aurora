@@ -3,7 +3,7 @@ import os
 import json
 
 # Import the functions from the anthropic_api.py file
-from anthropic_api import init_anthropic_client, load_api_key
+from anthropic_api import API_KEY, init_anthropic_client
 from prompts_processing import user_name as user, char_name as char
 from data_handler import load_history
 
@@ -16,9 +16,9 @@ if debug:
 
 def detect_emotion(dialog_len:int, text, sub_text = None):
 
-    global debug
+    global debug, API_KEY
 
-    client = init_anthropic_client(load_api_key())
+    client = init_anthropic_client(API_KEY)
 
     #read mood_tracking.json
     if os.path.exists("./src/Prompts/emotion/mood_tracking.json"):

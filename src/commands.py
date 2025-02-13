@@ -500,7 +500,7 @@ def handle_mood():
 
     console.print(tabulate(show_mood, headers="firstrow", tablefmt="grid"), "\n")
 
-def command_dispatcher(user_input: str, highlighted:str):
+def command_dispatcher(user_input: str, highlighted:str, history_len:int):
     # Settings-Import:
     from settings import set_config
     from history_manager import (
@@ -521,12 +521,14 @@ def command_dispatcher(user_input: str, highlighted:str):
 
     command = user_input.lower().split()[0]
     if command in commands:
-        result = commands[command]()
-    if command == "/again" and len(history) > 2:
-        sub_user_input = False
-        history, sub_user_input = result
-        history_len = get_history_length(history)
-        return [sub_user_input, history, history_len]
+        if command == "/again"and history_len > 2:
+            sub_user_input = True
+            history, sub_user_input = commands[command](highlighted)
+            history_len = get_history_length(history)
+            return [sub_user_input, history, history_len]
+        else:
+            result = commands[command]()
+    
     elif command in ["/exit", "/delete", "/restart", "/slot", "/reset"] and result in ["exit", "delete", "restart", "slot", "reset"]:
         console.print(f"Aurora.py wird in neu gestartet", end="")
         for _ in range(5, 0, -1):

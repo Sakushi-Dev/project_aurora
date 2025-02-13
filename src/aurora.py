@@ -4,11 +4,11 @@ from preload import first_of_all
 def main():
 
     from chat_loop import main_chat_loop
-    from anthropic_api import init_anthropic_client
+    from anthropic_api import init_anthropic_client, API_KEY
 
     
     # 1) API-Key laden + Client initialisieren
-    client = init_anthropic_client()
+    client = init_anthropic_client(API_KEY)
 
     # 2) Modell auswählen
     modell_list = {
@@ -16,7 +16,7 @@ def main():
         2: "claude-3-5-haiku-20241022",     # Modell für bugfixes
         3: "claude-3-haiku-20240307"        # Modell für bugfixes
     }
-    model = modell_list[2]
+    model = modell_list[1]
     
     # 3) Sets laden
 
