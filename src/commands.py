@@ -486,7 +486,7 @@ def handle_mood():
 
     angry_value = score["Angry_Level"]
     sad_value = score["Sad_Level"]
-    affection_value = score["AngrL_LeveLevel"]
+    affection_value = score["Affection_Level"]
     arousal_value = score["Arousal_Level"]
     trust_value = score["Trust_Level"]
 
