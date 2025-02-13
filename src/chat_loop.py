@@ -98,11 +98,15 @@ def main_chat_loop(
         user_input, assistant_imp = asyncio.run(get_user_input(imp))
         print()
 
+
         result = command_dispatcher(user_input, highlighted, history_len)
+
+        if result == None:
+            continue
 
         sub_user_input = None
         
-        if result:
+        if result == list:
             sub_user_input = result[0]
             history = result[1]
             history_len = result[2]

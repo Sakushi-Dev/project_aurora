@@ -484,11 +484,11 @@ def handle_mood():
 
     score = load_current_emo_score()
 
-    angry_value = score["Angry_level"]
-    sad_value = score["Sad_level"]
-    affection_value = score["Affection_level"]
-    arousal_value = score["Arousal_level"]
-    trust_value = score["trust_level"]
+    angry_value = score["Angry_Level"]
+    sad_value = score["Sad_Level"]
+    affection_value = score["AngrL_LeveLevel"]
+    arousal_value = score["Arousal_Level"]
+    trust_value = score["Trust_Level"]
 
     show_mood = [["Emotionen", "Score"],
                 ["Wut", f"{angry_value}"],
@@ -547,4 +547,4 @@ def command_dispatcher(user_input: str, highlighted:str, history_len:int):
         handle_unknown()
         return None
     else:
-        return None
+        return True
