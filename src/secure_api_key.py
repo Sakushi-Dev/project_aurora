@@ -20,16 +20,6 @@ ENV_VARIABLE_NAME = "ANTHROPIC_API_KEY"
 
 #===============================================================================
 
-def check_api_key_folder():
-    
-    if not os.path.exists(api_folder):
-        os.makedirs(api_folder)
-        return False
-    else:
-        return True
-
-#===============================================================================
-
 def check_api_key_file():
     
     if not os.path.exists(API_KEY_PATH):
@@ -40,6 +30,8 @@ def check_api_key_file():
         
         if api_key and api_key != "": 
             return True
+        
+#===============================================================================        
 
 def is_valid_anthropic_key():
     import requests

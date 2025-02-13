@@ -8,7 +8,6 @@ from prompt_toolkit import prompt
 from prompt_toolkit.styles import Style
 
 from secure_api_key import (
-    check_api_key_folder,
     check_api_key_file,
     is_valid_anthropic_key,
     save_api_key
@@ -43,28 +42,28 @@ def first_of_all():
     if user_name == None:
 
         console.print("[green]Willkommen bei Project Aurora![/green]\n")
-        if check_api_key_folder() == False:
-            if check_api_key_file() == False:
-                while True:
-                    api_key = is_valid_anthropic_key()
-                    if api_key:
-                        save_api_key(api_key)
-                        time.sleep(2)
-                        break
-                    else:
-                        console.print("[red]Ungültiger API-Key![/red]\n")
-                
-                api_check = check_api_key_file()
-                if api_check:
-                    console.print("API-Key wurde erfolgreich gespeichert!\n", end="")
-                for i in range(3):
-                    time.sleep(0.5)
-                    console.print(".", end="")
-            else:
-                console.print("[green]API-Key wurde gefunden![/green]\n", end="")
-                for i in range(3):
-                    time.sleep(0.5)
-                    console.print(".", end="")
+        
+        if check_api_key_file() == False:
+            while True:
+                api_key = is_valid_anthropic_key()
+                if api_key:
+                    save_api_key(api_key)
+                    time.sleep(2)
+                    break
+                else:
+                    console.print("[red]Ungültiger API-Key![/red]\n")
+            
+            api_check = check_api_key_file()
+            if api_check:
+                console.print("API-Key wurde erfolgreich gespeichert!\n", end="")
+            for i in range(3):
+                time.sleep(0.5)
+                console.print(".", end="")
+        else:
+            console.print("[green]API-Key wurde gefunden![/green]\n", end="")
+            for i in range(3):
+                time.sleep(0.5)
+                console.print(".", end="")
         
         os.system('cls' if os.name == 'nt' else 'clear')
         while True:
