@@ -40,14 +40,19 @@ from commands import command_dispatcher
 from response_manager import stream_chat_response, print_ki_response
 import threading
 
+# =================================================================================================
+# Debug-Modus
+
 debug = False
 
 if debug:
-    print(f"DebugMode: chat_loop.py\n\n=====================================\n\n")
+    print(
+        f"DebugMode: chat_loop.py"
+        f"\n\n{'='*30}\n\n"
+    )
 
-# ======================
-#   Globale Variablen
-# ======================
+# =================================================================================================
+# Globaler Scope
 
 # Rich-Console-Objekt:
 console = Console(width=120)
@@ -55,11 +60,9 @@ console = Console(width=120)
 # history-Liste initialisieren
 history = []
 
-# =================================================================================================
 
-# ======================
-#   Haupt-Chatfunktion
-# ======================
+# =================================================================================================
+#   Haupt-Chat-Loop
 
 def main_chat_loop(
             client,
@@ -79,6 +82,7 @@ def main_chat_loop(
     wartet auf User-Eingaben und ruft das jeweilige Handling auf.
     """
     history_len = 0
+    format_user_input = None
 
     history, list_msg = organize_chat_and_char()
     history_len = get_history_length(list_msg)
@@ -111,20 +115,20 @@ def main_chat_loop(
 
         # ----------------------------------
         
-        # User-Nachricht in den Verlauf (in-memory)
+        # User-Eingabe formatieren
         if sub_user_input:
             format_user_input = {"role": "user", "content": sub_user_input, "history": True}
         else:
             format_user_input = {"role": "user", "content": user_input, "history": True}
-            # Initialisiere die History (Wird bei jedem Durchlauf neu geladen)
-        history.append(format_user_input)
+        
+        # User-Nachricht in den Verlauf (in-memory)
+        history.append(format_user_input) 
 
 
         if debug:
-            print(f"Full-History:\n\n{history}\n\n=====================================\n\n")
+            print(f"Full-History:\n\n{history}\n\n{'='*30}\n\n")
         
         # Anfrage an Claude (stream)
-        
         current_tokens = stream_chat_response(
             client,
             model,
@@ -139,18 +143,19 @@ def main_chat_loop(
         else:
             freq = "🔴"
             imp_status = False
-
-        # +1 für die User-Nachricht
-        history_len += 1
         
-
+        # Analyse anzeige formatieren
         input_from_user = (
             f"[black]{'─'*120}[/black]\n"
-            f"[black]Msg: {history_len} | Input/T: {current_tokens} ~ Max/T: {max_tokens}\n"
+            f"[black]Msg: {history_len} | "
+            f"Input/T: {current_tokens} ~ Max/T: {max_tokens}\n"
             f"[black]{'─'*120}[/black]\n"
         )
+
+        # User-Analyse
         console.print(input_from_user)
 
+        # KI-Antwort
         response_tokens, ki_response = print_ki_response(char, highlighted)
 
         # Kosten berechnen
@@ -163,19 +168,23 @@ def main_chat_loop(
         # Gesamtkosten
         costs = input_cost + output_cost
 
-        # +1 für die KI-Nachricht
-        history_len += 1
-
+        # Analyse anzeige formatieren
         output_from_ki = (
             f"[black]{'─'*120}[/black]\n"
-            f"[black]Msg: {history_len} | Output/T: {response_tokens} | Total Cost: ${costs:.3f} | [/black]{freq} [black]Impatience Status[/black]\n"
+            f"[black]Msg: {history_len + 1} | "
+            f"formatOutput/T: {response_tokens} | "
+            f"Total Cost: ${costs:.3f} | "
+            f"[/black]{freq} [black]Impatience Status[/black]\n"
             f"[black]{'─'*120}[/black]\n"
         )
+
+        # KI-Analyse
         console.print(output_from_ki)
 
-    
+        # +1 für die KI-Nachricht
+        history_len += 2
 
-        # Antwort in den Verlauf (in-memory)
+        # Zusammensetzen der der nachricht und der analyse
         ki_msg = {
             "role": "assistant",
             "content": ki_response,
@@ -188,6 +197,7 @@ def main_chat_loop(
             }
         
         if sub_user_input:
+            # User-Eingabe wird auf den Sub-Input gesetzt fals '/again' benutzt wird
             user_input = sub_user_input
             
         format_user_input = {
@@ -200,6 +210,7 @@ def main_chat_loop(
                 },
                 "history": True
             }
+        
         history.append(ki_msg)
 
         # Save last current time as User-Input
@@ -207,14 +218,13 @@ def main_chat_loop(
             if assistant_imp == None:
                 save_current_time()
 
-        # Verlauf auch in Datei ablegen
+        # Verlauf in Datei ablegen
         save_dialog([format_user_input, ki_msg])
         save_costs(input_cost, output_cost)
 
-        
         feelings_over_time()
 
-        frequency_of_query = frequency *2
+        frequency_of_query = frequency *2 # x2 da Ki response auch als Nachricht zählt
 
         # Triggered after 4 user messages
         if (history_len - 1) % frequency_of_query == 0:

@@ -20,6 +20,7 @@ emo_score_path          = "./data/mood/emotion_score.json"
 emo_trigger_path        = "./data/emotion_trigger.json"
 score_trigger_path      = "./data/mood/score_trigger.json"
 imp_prompt_path         = "./data/impatience_prompt.json"
+mood_sys_p              = "./data/mood_sys_p.json"
 
 # Dialog Slots
 slot_path               = "./data/history"
@@ -323,7 +324,10 @@ def load_history(slot:int=None) -> list:
     '''
     data = load_slot(slot)
 
-    history = data[2]
+    if data:
+        history = data[2]
+    else:
+        return None, None
 
     list_msg = []
     

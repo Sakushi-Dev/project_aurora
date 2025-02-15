@@ -1,11 +1,7 @@
-
-import os
-import json
-
 # Import the functions from the anthropic_api.py file
 from anthropic_api import API_KEY, init_anthropic_client
 from prompts_processing import user_name as user, char_name as char
-from data_handler import load_history
+from data_handler import load_history, read_json, emo_trigger_path, mood_sys_p
 
 
 debug = False
@@ -20,41 +16,33 @@ def detect_emotion(dialog_len:int, text, sub_text = None):
 
     client = init_anthropic_client(API_KEY)
 
-    #read mood_tracking.json
-    if os.path.exists("./src/Prompts/emotion/mood_tracking.json"):
-        with open("./src/Prompts/emotion/mood_tracking.json", "r", encoding="utf-8") as f:
-            mood_system_prompt = json.load(f)
-    else:
-        print("mood_tracking.json not found")
+    # Mood system prompt
+    mood_system_prompt = read_json(mood_sys_p)
 
     #read emotion_trigger.json
-    if os.path.exists("./data/emotion_trigger.json"):
-        with open("./data/emotion_trigger.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
+    data = read_json(emo_trigger_path)
 
-        # Liste zum Speichern aller Kategorien
-        triggers_in_cat = []
-        
-        # Trigger in Category aufteilen und in Liste speichern
-        for category, trigger_list in data.items():
-                triggers_in_cat.append({category: list(trigger_list.keys())})
+    # Liste zum Speichern aller Kategorien
+    triggers_in_cat = []
+    
+    # Trigger in Category aufteilen und in Liste speichern
+    for category, trigger_list in data.items():
+            triggers_in_cat.append({category: list(trigger_list.keys())})
 
-        if debug:
-            print(triggers_in_cat, "\n\n=====================================\n\n")    
-        
-        triggers_map = {}
+    if debug:
+        print(triggers_in_cat, f"\n\n{'='*30}\n\n")    
+    
+    triggers_map = {}
 
-        for cat_dict in triggers_in_cat:
-            for category, trigger_list in cat_dict.items():
-                triggers_map[category] = "".join(f"\n- {emotion}" for emotion in trigger_list)
+    for cat_dict in triggers_in_cat:
+        for category, trigger_list in cat_dict.items():
+            triggers_map[category] = "".join(f"\n- {emotion}" for emotion in trigger_list)
 
-        angry_trigger = triggers_map.get("angry_trigger", "")
-        sad_trigger = triggers_map.get("sad_trigger", "")
-        affection_trigger = triggers_map.get("affection_trigger", "")
-        arousal_trigger = triggers_map.get("arousal_trigger", "")
-        trust_trigger = triggers_map.get("trust_trigger", "")
-    else:
-        print("emotion_trigger.json not found")
+    angry_trigger = triggers_map.get("angry_trigger", "")
+    sad_trigger = triggers_map.get("sad_trigger", "")
+    affection_trigger = triggers_map.get("affection_trigger", "")
+    arousal_trigger = triggers_map.get("arousal_trigger", "")
+    trust_trigger = triggers_map.get("trust_trigger", "")
 
     if debug:
         print(f"Angry: {angry_trigger}\nSad: {sad_trigger}\nAffection: {affection_trigger}\nArousal: {arousal_trigger}\nTrust: {trust_trigger}\n\n=====================================\n\n")
@@ -72,7 +60,7 @@ def detect_emotion(dialog_len:int, text, sub_text = None):
         prompt_list.append(temp_list)
 
     if debug:
-        print(f"Prompt List:\n\n{prompt_list}\n\n=====================================\n\n")
+        print(f"Prompt List:\n\n{prompt_list}\n\n{'='*30}\n\n")
 
     requests_data = {
         "angry_prompts": prompt_list[0],
@@ -80,11 +68,12 @@ def detect_emotion(dialog_len:int, text, sub_text = None):
         "affection_prompts": prompt_list[2],
         "arousal_prompts": prompt_list[3],
         "trust_prompts": prompt_list[4]
-        }
+    }
+
     
     if dialog_len % 2 == 0:
         dialog = "Dialog:\n"
-        for i in range(0, dialog_len, 2):
+        for i in range(len(text)-1):
             dialog += f"{user}: {text[i]}\n{char}: {text[i+1]}\n"
     else:
         raise ValueError("dialog_len must be an even number corresponding to pairs of messages")
@@ -94,7 +83,6 @@ def detect_emotion(dialog_len:int, text, sub_text = None):
     if debug:
 
         for key, value in requests_data.items():
-
             print(f"{key}: {value}\n\n")
         
 
@@ -115,15 +103,10 @@ def detect_emotion(dialog_len:int, text, sub_text = None):
         "content": dialog
         },
     )
-
-
-
     
     if debug:
-        print(f"Dialog:\n{messages}\n\n=====================================\n\n")
+        print(f"Dialog:\n{messages}\n\n{'='*30}\n\n")
         
-
-
     response_list = []
     for key, prompt in requests_data.items():
         response_list.append({key: (client.messages.create(
@@ -138,7 +121,7 @@ def detect_emotion(dialog_len:int, text, sub_text = None):
     )
         
     if debug:
-        print(f"Raw:\n\n{response_list}\n\n=====================================\n\n")
+        print(f"Raw:\n\n{response_list}\n\n{'='*30}\n\n")
 
     # Extract the response from the response_list
     mood = {}
@@ -147,7 +130,7 @@ def detect_emotion(dialog_len:int, text, sub_text = None):
             mood[key] = [text_block.text for text_block in value[0].content]
 
     if debug:
-        print(f"Extracted:\n\n{mood}\n\n=====================================\n\n")
+        print(f"Extracted:\n\n{mood}\n\n{'='*30}\n\n")
 
     return mood
 
@@ -159,7 +142,11 @@ def load_history_replay(freq:int=4, slot:int=None):
     Load 'freq' messages from the history
     """
     _, list_msg = load_history(slot)
-    content_list = []
+
+    if list_msg:
+        content_list = []
+    else:
+        return None
     for msg in list_msg:
         content_list.append(msg[1])
 
@@ -174,9 +161,8 @@ def emotion_tracker(freq:int=4, slot:int=None):
     """
     Track the emotions of the last 4 messages
     """
-    if os.path.exists("./data/emotion_trigger.json"):
-        with open("./data/emotion_trigger.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
+    
+    data = read_json(emo_trigger_path)
     # Liste zum Speichern aller Kategorien
     all_triggers = []
     

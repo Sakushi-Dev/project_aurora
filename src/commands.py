@@ -304,6 +304,7 @@ def handle_delete():
                         return "delete"
     else:
         return "cancel"
+    
 
 
 def handle_restart():
