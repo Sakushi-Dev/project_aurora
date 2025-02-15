@@ -43,7 +43,7 @@ import threading
 # =================================================================================================
 # Debug-Modus
 
-debug = False
+debug = True
 
 if debug:
     print(
@@ -95,23 +95,24 @@ def main_chat_loop(
     while True:
         
         # User-Eingabe
-        # impatience Funktion Aktiviert (char antwortet automatisch)
-        # Dies ist eine Endlosschleife, die dauerhaft Kosten verursacht
         user_input, assistant_imp = asyncio.run(get_user_input(imp))
         print()
 
-
         result = command_dispatcher(user_input, highlighted, history_len)
+
+        sub_user_input = None
 
         if result == None:
             continue
+        if result:
+            # Wenn der User '/again' eingibt, wird die letzte Nachricht wiederholt
+            if isinstance(result, list):
+                sub_user_input = result[0]
+                history = result[1]
+                history_len = result[2]
 
-        sub_user_input = None
-        
-        if result == list:
-            sub_user_input = result[0]
-            history = result[1]
-            history_len = result[2]
+                if debug:
+                    print(f"Result: {sub_user_input}\n\n{'='*30}\n\n")
 
         # ----------------------------------
         

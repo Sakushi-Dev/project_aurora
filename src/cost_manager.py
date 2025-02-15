@@ -27,6 +27,10 @@ def calculate_cost(model_name: str, current_tokens: int, response_tokens: int) -
         input_cost = (current_tokens / 1_000_000) * 3.00
         output_cost = (response_tokens / 1_000_000) * 15.00
 
+    elif model_name == "claude-3-haiku-20240307":
+        input_cost = (current_tokens / 1_000_000) * 0.25
+        output_cost = (response_tokens / 1_000_000) * 1.25
+
     # Weitere Modelle bei Bedarf hier ergänzen
 
     total_input_cost += input_cost

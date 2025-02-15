@@ -514,7 +514,6 @@ def command_dispatcher(user_input: str, highlighted:str, history_len:int):
     "/config": set_config,
     "/again": handle_again,
     "/delete": handle_delete,
-    "/restart": handle_restart,
     "/slot": handle_slot,
     "/reset": handle_reset,
     "/mood": handle_mood,
@@ -523,29 +522,28 @@ def command_dispatcher(user_input: str, highlighted:str, history_len:int):
     command = user_input.lower().split()[0]
     if command in commands:
         if command == "/again"and history_len > 2:
-            sub_user_input = True
+            sub_user_input = None
             history, sub_user_input = commands[command](highlighted)
             history_len = get_history_length(history)
             return [sub_user_input, history, history_len]
         else:
             result = commands[command]()
     
-    elif command in ["/exit", "/delete", "/restart", "/slot", "/reset"] and result in ["exit", "delete", "restart", "slot", "reset"]:
+    if command in ["/exit", "/delete", "/slot", "/reset"] and result in ["exit", "delete", "slot", "reset"] or command == "/restart":
         console.print(f"Aurora.py wird in neu gestartet", end="")
         for _ in range(5, 0, -1):
             console.print(f"[red].[/red]", end="")
             time.sleep(1)
-            handle_restart()
-        return None
+        handle_restart()
     elif command == "/config" and result == "exit":
         os.system('cls' if os.name == 'nt' else 'clear')
         history, list_msg = organize_chat_and_char()
         print_latest_messages(list_msg, highlighted=highlighted)
-        return None
+        return None # Falls config beendet wird, soll der Chat-Loop von vorne starten
     elif command == "/mood":
-            return None
+        return None # Chat-Loop startet von vorne
     elif user_input.startswith("/"):
         handle_unknown()
-        return None
+        return None # Chat-Loop startet von vorne
     else:
-        return True
+        return True # Damit der Chat-Loop weiter läuft

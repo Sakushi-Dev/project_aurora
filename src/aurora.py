@@ -16,7 +16,7 @@ def main():
         2: "claude-3-5-haiku-20241022",     # Modell für bugfixes
         3: "claude-3-haiku-20240307"        # Modell für bugfixes
     }
-    model = modell_list[1]
+    model = modell_list[3]
     
     # 3) Sets laden
 
