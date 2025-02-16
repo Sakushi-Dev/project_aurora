@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import time
 
 from rich.console import Console
@@ -179,6 +180,7 @@ def handle_slot():
 
 
 def handle_delete():
+    # Löscht im aktiven slot den aktuellen Chatverlauf
     global slot_path
     delete = console.input("[red]Sind Sie sicher, dass Sie den Chatverlauf löschen möchten? (Y/N): [/red]")
     if delete.lower() == "y":
@@ -317,12 +319,36 @@ def handle_restart():
     return "restart"
 
 def handle_reset():
-    global slot_path
+    from init_data import spit_path
+    from data_handler import (
+        set_path,
+        slot_path,
+        emo_score_path,
+        cost_path,
+        last_msg_time_path,
+        user_path
+    )
+
+    # Formatiere zu relativen Order-Pfaden um alle Dateien innerhalb des Ordners zu löschen
+    costs_p, _ = spit_path(cost_path)
+    last_p, _ = spit_path(last_msg_time_path)
+
+    # Nur diese Datei wird zum Löschen benötigt
+    emo_p = emo_score_path
+
+    # Relativer Pfad zu den Set-Dateien
+    set_p = set_path
+
+    # Relativer Pfad zu den User-Dateien
+    user_p = user_path
+
+    # Relativer Pfad zu den Slot-Dateien
+    slot_p = slot_path
 
     os.system('cls' if os.name == 'nt' else 'clear')
     
     console.print(
-        "[red]Achtung! Willst du wirklich Aurora.py zurücksetzen?[/red]\n"
+        "[red]Achtung! Willst du wirklich [orange1]Aurora[/orange1] zurücksetzen?[/red]\n"
         "[orange1]Info:[/orange1] Alle Dialoge und Einstellungen werden gelöscht.\n"
         "API-Key bleibt erhalten, kann aber auch auf Wunsch gelöscht werden.\n"
         )
@@ -330,130 +356,58 @@ def handle_reset():
 
     reset = console.input("[red]Willst du einen Reset durchführen? (Y/N): [/red]")
     if reset.lower() == "y":
+
+        # Sicherheitsabfrage
         reset = console.input("[red]Bist du dir sicher? (Y/N): [/red]")
         if reset.lower() == "y":
+
             # Screen leeren
             os.system('cls' if os.name == 'nt' else 'clear')
 
-            # Slot-Content Löschen
 
-            route_map = (
-                "slot_0.json",
-                "slot_1.json",
-                "slot_2.json",
-                "slot_3.json",
-                "slot_4.json"
-            )
-            for route in route_map:
-                path = slot_path + f"/{route}"
-                with open(path, "w") as file:
-                    file.write("")
-            
-            console.print("[orange]Lösche alle Dialoge[/orange]", end="")
-            
-            for i in range(1, 4):
-                time.sleep(0.3)
-                console.print("[red].[/red]", end="")
-            
-            console.print("\n[green]Alle Dialoge gelöscht.[/green]")
-
-            #==================================================================================================
-
-            # Kosten-Datei löschen
-            for i in range(1, 6):
-                save_set(slot=True, data=i)
-                time.sleep(0.1)
-                save_slot_cost(0.0, 0.0)
-
-            console.print("[orange]Lösche alle Kosten-Dateien[/orange]", end="")
-
-            for i in range(1, 4):
-                time.sleep(0.3)
-                console.print("[red].[/red]", end="")
-
-            console.print("\n[green]Alle Kosten-Dateien gelöscht.[/green]")
-
-            #==================================================================================================
-
-            # Emotion-Datei löschen
-
-            score = {
-                "Angry_Level": 0,
-                "Sad_Level": 0,
-                "Affection_Level": 0,
-                "Arousal_Level": 0,
-                "Trust_Level": 0
+            route_map = {
+                "Kosten der Dialoge": costs_p, 
+                "Zeiten für 'Impatience'": last_p,
+                "Emotions-Score Daten": emo_p,
+                "Settings": set_p,
+                "User-Data": user_p,
+                "Chat-Verläufe": slot_p
             }
-
-            for i in range(1, 6):
-                save_set(slot=True, data=i)
-                time.sleep(0.1)
-                save_current_emo_score(score)
             
-            console.print("[orange]Lösche alle Emotion-Dateien[/orange]", end="")
+            # Löschen der Dateien
+            for key, value in route_map.items():
+                try:
 
-            for i in range(1, 4):
-                time.sleep(0.3)
-                console.print("[red].[/red]", end="")
+                    if os.path.isdir(value):
+                        for root, dirs, files in os.walk(value, topdown=False):
+                            for name in files:
+                                os.remove(os.path.join(root, name))
+                            for name in dirs:
+                                os.rmdir(os.path.join(root, name))
+                        os.rmdir(value)
+                    elif os.path.isfile(value):
+                        os.remove(value)
 
-            console.print("\n[green]Alle Emotion-Dateien gelöscht.[/green]")
+                    console.print(f"\n[orange1]Lösche der {key} wird durchgeführt[/orange1]", end="")
+                    for i in range(0, 3):
+                        console.print(f"[red].[/red]", end="")
+                        time.sleep(0.7)
+                    console.print(f"\n[green]{key} gelöscht.[/green]")
+                except FileNotFoundError:
+                    console.print(f"\n[red]{key} nicht gefunden.[/red]")
 
-            #==================================================================================================
+            # Löschen von '__pycache__'
+            try:
+                os.system("rm -r ./src/__pycache__")
+                console.print("\n[green]__pycache__ gelöscht.[/green]")
+            except FileNotFoundError:
+                console.print("\n[red]__pycache__ nicht gefunden.[/red]")
+                pass
 
-            # Zeit-Datei löschen
-
-            for i in range(1, 6):
-                save_set(slot=True, data=i)
-                time.sleep(0.1)
-                save_msg_time("")
             
-            console.print("[orange]Lösche alle Zeit-Dateien[/orange]", end="")
-
-            for i in range(1, 4):
-                time.sleep(0.3)
-                console.print("[red].[/red]", end="")
-
-            console.print("\n[green]Alle Zeit-Dateien gelöscht.[/green]")
-
-            #==================================================================================================
-
-            # User-Name-Datei löschen
-
-            with open(user_name_path, "w") as file:
-                file.write("")
-
-            console.print("[orange]Lösche User-Name-Datei[/orange]", end="")
+            console.print("[orange]Löschvorgang abgeschlossen.[/orange]")
             
-            for i in range(1, 4):
-                time.sleep(0.3)
-                console.print("[red].[/red]", end="")
-
-            console.print("\n[green]User-Name-Datei gelöscht.[/green]")
-
-            #==================================================================================================
-
-            # Einstellungen-Datei auf Standard setzen
-
-            settings = {
-                "char": "Mia",
-                "slot": 1,
-                "max_t": 4096,
-                "freq": 2,
-                "imp": "off",
-                "time_sense": False,
-                "color": ""
-            }
-
-            for key, value in settings.items():
-                save_set(**{key:True}, data=value)
-
-            console.print("[orange]Setze Einstellungen zurück[/orange]", end="")
-
-            for i in range(1, 4):
-                time.sleep(0.3)
-                console.print("[red].[/red]", end="")
-
-            console.print("\n[green]Einstellungen zurückgesetzt.[/green]")
+            
 
             #==================================================================================================
 
@@ -461,18 +415,32 @@ def handle_reset():
 
             api_key = console.input("[red]Willst du den API-Key löschen? (Y/N): [/red]")
             if api_key.lower() == "y":
-                api_path = "./API/api_key.env"
                 # API-Key löschen file
-                os.remove(api_path)
+                os.remove("./API/api_key.env")
+                os.rmdir("./API")
 
                 console.print("[orange]API-Key gelöscht.[/orange]")
-                return "reset"
 
             else:
                 console.print("[green]API-Key bleibt erhalten.[/green]")
-                return "reset"
+                
+            
+            os.system('cls' if os.name == 'nt' else 'clear')
+
+            while True:
+                choice = console.input(
+                    "[green]Gebe [orange1]1[/orange1] ein, um Aurora neu zu starten"
+                    "\nWenn du beenden möchtest, gebe [orange1]2[/orange1] ein: [/green]"
+                    )
+                if choice == "1":
+                    return "reset"
+                elif choice == "2":
+                    sys.exit()
+                else:
+                    console.print("[red]Ungültige Eingabe![/red]")
+                    continue
         else:
-            return "reset"
+            return "cancel"
     else:
         return "cancel"
 

@@ -1,12 +1,12 @@
-import os
-import json
-
 from prompts_processing import char_name as char, user_name as user
 
+from data_handler import (
+    read_json,
+    imp_prompt_path
+)
+
 # Lese die Datei 'impatience_prompt.json' aus dem Ordner 'data' ein
-if os.path.exists('data/impatience_prompt.json'):
-    with open('data/impatience_prompt.json', 'r', encoding = 'utf-8') as f:
-        data = json.load(f)
+data = read_json(imp_prompt_path)
 
 # Speichere die Werte aus dem Dictionary in Variablen
 prefill = data[0]['imp_prefill']

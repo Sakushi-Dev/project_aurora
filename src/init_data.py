@@ -7,7 +7,7 @@ from data_handler import (
     last_msg_time_path,
     emo_score_path,
     set_path,
-    user_spec_path
+    user_name_path
 )
 
 def spit_path(path):
@@ -29,7 +29,7 @@ def init_costs():
     for i in range(0, 5):
         costs.update({
             f"slot_{i}": {
-                "total_input_costs": 0.0,
+                "total_input_cost": 0.0,
                 "total_output_cost": 0.0
             }
         })
@@ -81,7 +81,7 @@ def init_set():
         "set_imp": {"set_imp": "off"},
         "set_max_t": {"max_token": 4096},
         "set_slot": {"set_slot": 1},
-        "set_time_sense": {"set_time_sense": False}
+        "set_time_sense": {"time_sense": False}
     }
 
     os.makedirs(set_path, exist_ok=True)
@@ -90,7 +90,7 @@ def init_set():
         write_json(set_path + f"/{key}.json", route[key])
 
 def init_user_spec():
-    dir_path, full_path = spit_path(user_spec_path)
+    dir_path, full_path = spit_path(user_name_path)
     os.makedirs(dir_path, exist_ok=True)
     write_json(full_path)
 

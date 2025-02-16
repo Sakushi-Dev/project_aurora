@@ -39,12 +39,12 @@ def first_of_all():
         7: "color(255)"     # weiß
     }
 
-    # Erstelle alle benötigten Dateien
-    init_data()
-
     user_name = load_user_char_name(user=True)
 
     if user_name == None:
+
+        # Erstelle alle benötigten Dateien
+        init_data()
 
         console.print("[green]Willkommen bei Project Aurora![/green]\n")
         
