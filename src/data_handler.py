@@ -66,16 +66,19 @@ def read_json(path:str, debug:bool=True) -> any:
     return None
             
 # Schreiben von JSON-Dateien
-def write_json(path:str, data) -> bool:
+def write_json(path:str, data=None) -> bool:
     try:
         path = Path(path)
 
         # Sicherstellen, dass das Verzeichnis existiert
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(path, "w", encoding="utf-8") as file:
-            json.dump(data, file, indent=4, ensure_ascii=False)
-
+        if data:
+            with open(path, "w", encoding="utf-8") as file:
+                json.dump(data, file, indent=4, ensure_ascii=False)
+        else:
+            with open(path, "w", encoding="utf-8") as file:
+                file.write("")
         return True
     
     except FileNotFoundError:

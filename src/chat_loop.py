@@ -43,7 +43,7 @@ import threading
 # =================================================================================================
 # Debug-Modus
 
-debug = True
+debug = False
 
 if debug:
     print(
