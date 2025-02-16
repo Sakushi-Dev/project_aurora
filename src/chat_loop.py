@@ -144,13 +144,18 @@ def main_chat_loop(
         else:
             freq = "🔴"
             imp_status = False
+
+        color = "color(240)"
+        num_color = "color(006)"
         
         # Analyse anzeige formatieren
         input_from_user = (
-            f"[black]{'─'*120}[/black]\n"
-            f"[black]Msg: {history_len} | "
-            f"Input/T: {current_tokens} ~ Max/T: {max_tokens}\n"
-            f"[black]{'─'*120}[/black]\n"
+            f"[{color}]{'─'*120}[/{color}]\n"
+            f"[{color}]Msg: [{num_color}]{history_len}[/{num_color}] | "
+            f"Slot: [{num_color}]{slot}[/{num_color}] | "
+            f"Input/T: [{num_color}]{current_tokens}[/{num_color}] ~ "
+            f"Max/T: [{num_color}]{max_tokens}[/{num_color}]\n"
+            f"[{color}]{'─'*120}[/{color}]\n"
         )
 
         # User-Analyse
@@ -169,21 +174,24 @@ def main_chat_loop(
         # Gesamtkosten
         costs = input_cost + output_cost
 
+        # +1 für die User-Nachricht
+        history_len += 1
+
         # Analyse anzeige formatieren
         output_from_ki = (
-            f"[black]{'─'*120}[/black]\n"
-            f"[black]Msg: {history_len + 1} | "
-            f"formatOutput/T: {response_tokens} | "
-            f"Total Cost: ${costs:.3f} | "
-            f"[/black]{freq} [black]Impatience Status[/black]\n"
-            f"[black]{'─'*120}[/black]\n"
+            f"[{color}]{'─'*120}[/{color}]\n"
+            f"[{color}]Msg: [{num_color}]{history_len + 1}[/{num_color}] | "
+            f"Output/T: [{num_color}]{response_tokens}[/{num_color}] | "
+            f"Total Cost: [{num_color}]${costs:.3f}[/{num_color}] | "
+            f"[/{color}]{freq} [{color}]Impatience Status[/{color}]\n"
+            f"[{color}]{'─'*120}[/{color}]\n"
         )
 
         # KI-Analyse
         console.print(output_from_ki)
 
         # +1 für die KI-Nachricht
-        history_len += 2
+        history_len += 1
 
         # Zusammensetzen der der nachricht und der analyse
         ki_msg = {

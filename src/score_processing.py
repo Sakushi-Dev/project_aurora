@@ -1,8 +1,11 @@
-import os
-import json
 from emotion_tracker import emotion_tracker
 
-from data_handler import load_current_emo_score, save_current_emo_score
+from data_handler import (
+    load_current_emo_score,
+    save_current_emo_score,
+    emo_trigger_path,
+    read_json
+)
 
 debug = False
 
@@ -51,9 +54,7 @@ def score_processing(freq:int, slot:int=None):
     angry, sad, affection, arousal, trust = emotion_tracker(freq, slot)
 
     # Read emotion_trigger.json
-    if os.path.exists("./data/emotion_trigger.json"):
-        with open("./data/emotion_trigger.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
+    data = read_json(emo_trigger_path)
 
 
     angry_trigger = data["angry_trigger"]

@@ -25,7 +25,7 @@ def check_api_key_file():
     if not os.path.exists(API_KEY_PATH):
         return False
     else:
-        with open(API_KEY_PATH, "r") as file:
+        with open(API_KEY_PATH, "r", encoding="utf-8") as file:
             api_key = file.read()
         
         if api_key and api_key != "": 
@@ -89,7 +89,7 @@ def save_api_key(api_key):
     encoded_key = base64.b64encode(api_key.encode()).decode()
     os.makedirs(os.path.dirname(API_KEY_PATH), exist_ok=True)
 
-    with open(API_KEY_PATH, "w") as file:
+    with open(API_KEY_PATH, "w", encoding="utf-8") as file:
         file.write(f"{ENV_VARIABLE_NAME}={encoded_key}")
 
 #===============================================================================

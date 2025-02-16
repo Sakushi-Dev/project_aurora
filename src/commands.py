@@ -1,6 +1,5 @@
 import os
 import re
-import sys
 import time
 
 from rich.console import Console
@@ -404,11 +403,8 @@ def handle_reset():
                 console.print("\n[red]__pycache__ nicht gefunden.[/red]")
                 pass
 
-            
             console.print("[orange]Löschvorgang abgeschlossen.[/orange]")
             
-            
-
             #==================================================================================================
 
             # Fragen ob API-Key gelöscht werden soll
@@ -435,7 +431,7 @@ def handle_reset():
                 if choice == "1":
                     return "reset"
                 elif choice == "2":
-                    sys.exit()
+                    os._exit(0)
                 else:
                     console.print("[red]Ungültige Eingabe![/red]")
                     continue
