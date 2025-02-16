@@ -3,6 +3,7 @@ from pathlib import Path
 
 
 # Einstellungen
+set_path                = "./data/set"
 set_char_path           = "./data/set/set_char.json"
 set_color_path          = "./data/set/set_color.json"
 set_freq_path           = "./data/set/set_freq.json"
@@ -11,21 +12,19 @@ set_max_t_path          = "./data/set/set_max_t.json"
 set_time_sense_path     = "./data/set/set_time_sense.json"
 set_slot                = "./data/set/set_slot.json"
 
-# Letzte Zeit der Interaktion
-current_time_path       = "./data/current_time.txt"
-last_msg_time_path      = "./data/last_msg_time/time.json"
+
 
 # Daten zur emotionsbasierten Textgenerierung
 emo_score_path          = "./data/mood/emotion_score.json"
-emo_trigger_path        = "./data/emotion_trigger.json"
+emo_trigger_path        = "./data/mood/emotion_trigger.json"
 score_trigger_path      = "./data/mood/score_trigger.json"
-imp_prompt_path         = "./data/impatience_prompt.json"
-mood_sys_p              = "./data/mood_sys_p.json"
+imp_prompt_path         = "./data/mood/impatience_prompt.json"
+mood_sys_p              = "./data/mood/mood_sys_p.json"
 
 # Dialog Slots
 slot_path               = "./data/history"
 cost_path               = "./data/costs/slot_costs.json"
-
+last_msg_time_path      = "./data/last_msg_time/time.json"
 
 # Prompt Pfade für User-Namen und Char-Namen
 user_name_path          = "./prompts/user_spec/user_name.json"

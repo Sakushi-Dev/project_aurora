@@ -4,7 +4,10 @@ from data_handler import (
     write_json,
     cost_path,
     slot_path,
-    last_msg_time_path
+    last_msg_time_path,
+    emo_score_path,
+    set_path,
+    user_spec_path
 )
 
 def spit_path(path):
@@ -33,7 +36,6 @@ def init_costs():
     os.makedirs(dir_path, exist_ok=True)
     write_json(full_path, costs)
 
-init_costs()
 
 def init_history_slots():
     
@@ -54,4 +56,48 @@ def init_last_msg_time():
         })
     write_json(full_path, data)
 
-init_last_msg_time()
+def init_emo_scores():
+    dir_path, full_path = spit_path(emo_score_path)
+    os.makedirs(dir_path, exist_ok=True)
+    data = {}
+    for i in range(0, 5):
+        data.update({
+            f"slot_{i}": {
+                "Angry_Level": 0,
+                "Sad_Level": 0,
+                "Affection_Level": 0,
+                "Arousal_Level": 0,
+                "Trust_Level": 0
+            }
+        })
+    write_json(full_path, data)
+
+def init_set():
+    # Create set with standard values
+    route = {
+        "set_char": {"set_char": "Mia"},
+        "set_color": {"color_choice": ""},
+        "set_freq": {"set_freq": 2},
+        "set_imp": {"set_imp": "off"},
+        "set_max_t": {"max_token": 4096},
+        "set_slot": {"set_slot": 1},
+        "set_time_sense": {"set_time_sense": False}
+    }
+
+    os.makedirs(set_path, exist_ok=True)
+
+    for key in route:
+        write_json(set_path + f"/{key}.json", route[key])
+
+def init_user_spec():
+    dir_path, full_path = spit_path(user_spec_path)
+    os.makedirs(dir_path, exist_ok=True)
+    write_json(full_path)
+
+def init_data():
+    init_costs()
+    init_history_slots()
+    init_last_msg_time()
+    init_emo_scores()
+    init_set()
+    init_user_spec()

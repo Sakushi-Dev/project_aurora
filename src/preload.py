@@ -17,6 +17,8 @@ from data_handler import (
     load_user_char_name
 )
 
+from init_data import init_data
+
 def first_of_all():
     
     custom_style = Style.from_dict({
@@ -36,6 +38,9 @@ def first_of_all():
         6: "color(118)",    # grün
         7: "color(255)"     # weiß
     }
+
+    # Erstelle alle benötigten Dateien
+    init_data()
 
     user_name = load_user_char_name(user=True)
 
