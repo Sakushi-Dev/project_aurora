@@ -291,7 +291,7 @@ def init_prompts(prompt:str):
     return system_prompt, api_messages, sc_list, temp_list
 
 
-def execute_request(debug:bool = True):
+def execute_memory_request(debug:bool = True):
     global prompt
     '''
     Executes the request for the memory analysis and saves the result
@@ -325,10 +325,14 @@ def execute_request(debug:bool = True):
     save_memory_analysis_as_jsonl(memory_list)
 
 #test
-execute_request()
+execute_memory_request(debug=False)
 
 
-
+# NOTE: Funktion muss in slots speichern damit auf die richtige Datei zugegriffen wird
+#       Funktion muss in chat_loop.py aufgerufen werden
+#       Trigger muss in chat_loop.py gesetzt werden (z.B. nach 20 Nachrichten)
+#       Lesen und einbinden als prompt in response_processing.py
+#       Prompt entwerfen damit ki erinnerung richtig interpretiert
 
     
 
