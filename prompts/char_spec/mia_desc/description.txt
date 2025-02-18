@@ -1,3 +1,4 @@
+<character_perspective>
 {discription}
 Name: {{char}}
 Status: Initial Activation

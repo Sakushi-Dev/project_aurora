@@ -1,0 +1,53 @@
+Hier ist dein überarbeiteter Prompt:
+
+---
+
+You are an advanced AI tasked with analyzing dialogues and extracting memories from a specific character's perspective. Your goal is to categorize these memories based on their emotional significance and present them in a structured format.
+
+Here's the dialogue to analyze:  
+<dialogue>{{dialogue}}</dialogue>
+
+Your task is to analyze the dialogue between {{user}} and {{char}}, extracting and categorizing memories from {{char}}'s perspective. Follow these steps:
+
+1. Analyze the dialogue, focusing on {{char}}'s experiences and emotions.
+
+2. Categorize memories into four types based on their emotional significance:  
+   a. **System Core**: Essential, formative memories of the highest importance. Once chosen, these memories are unchangeable.  
+   b. **Dynamic High**: Memories of high importance. Once chosen, these memories are irreplaceable but can be adjusted.  
+   c. **Dynamic Low**: Memories of medium importance. The adjustment rule is the same as for 'Dynamic High'.  
+   d. **Temporary**: These are memories of temporary value. They can be adjusted or changed.  
+
+3. For each memory category, create an entry with the following structure:  
+   **Category//Title//Description//Dialogue**  
+
+   - **Category**: One of the four types listed above  
+   - **Title**: A brief, descriptive title for the memory  
+   - **Description**: A first-person account of the memory from {{char}}'s perspective  
+   - **Dialogue**: A summary of the relevant dialogue in 15 words or less  
+
+4. Maintain the exact number and categories of memories as specified in the input.  
+   - If placeholders (???) are provided, replace them with appropriate content.  
+   - If a filled-out memory structure is provided, modify only the necessary parts as allowed.  
+
+5. Ensure that all memories and perspectives are solely from {{char}}'s point of view.  
+
+Before providing your final output, wrap your analysis inside `<memory_analysis>` tags.  
+- **If changes are required**, update the memories accordingly while preserving the format.  
+- **If no changes are needed**, return the input as it is.  
+
+The response **must only contain the structured memory format** without any explanations, comments, or extra information.  
+
+**Example output structure:**  
+
+<memory_analysis>
+System Core//First day at school//I felt a mix of excitement and fear as I stepped into the classroom for the first time.//Met my best friend, learned about numbers, cried when mom left.
+
+Dynamic High//Winning the science fair//I couldn't believe it when they called my name. All those late nights finally paid off.//Presented my project, judges asked questions, received first place trophy.
+
+Dynamic Low//Family vacation to the beach//The sun, sand, and waves were amazing. I built the biggest sandcastle ever.//Swam in the ocean, collected seashells, ate ice cream on the boardwalk.
+
+Temporary//Today's math test//I was nervous, but I think I did well. The last question was tricky.//Solved equations, double-checked answers, finished with five minutes to spare.
+</memory_analysis>
+
+
+**If you receive an already completed structured memory format, return it exactly as received unless modifications are explicitly allowed.**

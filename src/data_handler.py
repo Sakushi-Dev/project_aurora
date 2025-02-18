@@ -12,8 +12,6 @@ set_max_t_path          = "./data/set/set_max_t.json"
 set_time_sense_path     = "./data/set/set_time_sense.json"
 set_slot                = "./data/set/set_slot.json"
 
-
-
 # Daten zur emotionsbasierten Textgenerierung
 emo_score_path          = "./data/mood/emotion_score.json"
 emo_trigger_path        = "./data/mood/emotion_trigger.json"
@@ -36,6 +34,7 @@ user_path               = "./prompts/user_spec"
 mia_desc_path           = "./prompts/char_spec/mia_desc"
 yujun_desc_path         = "./prompts/char_spec/yujun_desc"
 utility_path            = "./prompts/utility"
+memory_path             = "./prompts/memory"
 
 
 # Lesen von JSON-Dateien
@@ -204,11 +203,11 @@ def save_user_name(user:str):
     file = {"user_name": user}
     write_json(user_name_path, file)
 
-def load_prompts(char:str=None, utility:bool=False) -> dict:
+def load_prompts(char:str=None, utility:bool=False, memory:bool=False) -> dict:
     '''
     Lädt die Prompts für die KI
     '''
-    global mia_desc_path, yujun_desc_path, utility_path
+    global mia_desc_path, yujun_desc_path, utility_path, memory_path
 
     path = None
 
@@ -220,6 +219,8 @@ def load_prompts(char:str=None, utility:bool=False) -> dict:
         pass
     if utility:
         path = utility_path
+    elif memory:
+        path = memory_path
     
     data = {}
     for file_name in Path(path).iterdir():
@@ -320,7 +321,8 @@ def load_history(slot:int=None) -> list:
     '''
     Lädt den Dialogverlauf
     -> list
-    Aufbau: [[content:str, {analysis:dict}, history:bool], ...]
+    history: [{"role":str, "content":str, "analysis":dict, "history":bool}, ...]
+    list_msg: [[str(Name), str(Text), dict(Analyse), bool], ...]
     Analyse User: {"input_t":int, "msg":int}
     Analyse KI: {"output_t":int, "msg":int, "imp":bool}
     '''
@@ -341,6 +343,38 @@ def load_history(slot:int=None) -> list:
 
 #test load_history
 #print(load_history(1))
+
+def load_format_history() -> str:
+    '''
+    Lädt den Dialogverlauf
+    -> str
+    '''
+    global slot_path
+
+    slot = get_slot()
+
+    data = load_slot(slot)
+
+    user = read_json(user_name_path)["user_name"]
+    char = read_json(mia_name_path)["char_name"]
+    history = data[2]
+    list_msg = []
+
+    for message in history:
+        single_msg = [value for key, value in message.items() if key in {"role", "content"}]
+        list_msg.append(single_msg)
+
+    string = ""
+
+    for msg in list_msg:
+        if msg[0] == "user":
+            string += f"{user}: {msg[1]}\n\n"
+        elif msg[0] == "assistant":
+            string += f"{char}: {msg[1].strip()}\n\n"
+
+    return string
+
+#print(load_format_history())
 
 def load_api_messages(history_data:dict=None) -> list:
     '''
