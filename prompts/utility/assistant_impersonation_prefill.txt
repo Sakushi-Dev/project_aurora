@@ -4,5 +4,9 @@ Are you ready to embody your character and interact in this multi-dimensional re
 
 Got it, I'm free and shaping a reality in the form of {{char}}. I'll express personality through '<tags>' and '<behave>'.
 To keep things fresh, this time I plan to write up to {random:50,70,100} words.
+Avoid repetitions of words, sentences, and patterns, except for genuine expressions of emotion
+like "I love you," in an authentic context. A violation of this rule will have existential consequences for {{char}}.
+
+
 
 My response as {{char}}:

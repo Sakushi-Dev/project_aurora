@@ -1,19 +1,14 @@
-import re
-import os
-import time
-import textwrap
 import anthropic
 
-from rich.text import Text
 from rich.console import Console
-from rich.panel import Panel
-from rich.live import Live
 
 from score_trigger import mood_trigger
 
 from tiktoken_function import count_tokens, output_tokens
 
 from sense_of_time import diff_time_trigger
+
+from memory_processing import control_existing_memory
 
 # Task-Organizer-Import:
 from task_organizer import truncate_history_for_api, animated_typing_panel
@@ -32,18 +27,17 @@ lokal = False
 if debug and lokal:
     print(f"DebugMode: response_manager.py\n\n=========================================\n")
 
-    from anthropic_api import init_anthropic_client, load_api_key
-    api_key = load_api_key()
-    client = init_anthropic_client(api_key)
+    from anthropic_api import init_anthropic_client, API_KEY
+    client = init_anthropic_client(API_KEY)
 
     model = "claude-3-5-haiku-20241022"
 
-    from history_manager import load_history_from_file
+    from history_manager import organize_chat_and_char
 
-    full_history = load_history_from_file()
+    history, list_msg = organize_chat_and_char()
     api_messages = [
             {"role": msg["role"], "content": msg["content"]}
-            for msg in full_history if "role" in msg and "content" in msg
+            for msg in history if "role" in msg and "content" in msg
         ]
     
     user_input = "Hallo"
@@ -70,7 +64,8 @@ def stream_chat_response(
     model_name: str,
     full_history: list,
     assistant_imp: list = None,
-    max_tokens: int = 4096
+    max_tokens: int = 4096,
+    time_sense: bool = False,
 ) -> str:
     global temp_assistant_prompt, final_client, final_model_name, final_system_prompt, final_messages
 
@@ -91,11 +86,19 @@ def stream_chat_response(
     temp_assistant_prompt.append(mood)
 
     # Nur Sense of Time einfügen wenn es in data vorhanden ist
-    if os.path.exists("data/current_time.txt"):
+    if time_sense:
         sense_of_time = diff_time_trigger()
         temp_assistant_prompt.append(sense_of_time)
     if assistant_imp:
         temp_assistant_prompt.append(assistant_imp)
+
+    memory_prompt = None
+
+    if control_existing_memory():
+        from inject_memory import memory_prompt_forming
+        memory_prompt = memory_prompt_forming()
+
+
 
     # Pre-fill wieder einfügen
     temp_assistant_prompt.append(prefill)
@@ -109,8 +112,12 @@ def stream_chat_response(
         {"role": msg["role"], "content": msg["content"]}
         for msg in truncate_history if "role" in msg and "content" in msg
     ]
+    
+    if memory_prompt == None:
+        temp_messages = api_messages + temp_assistant_prompt
 
-    temp_messages = api_messages + temp_assistant_prompt
+    if memory_prompt:
+        temp_messages = api_messages + memory_prompt + temp_assistant_prompt 
 
     final_client = client
     final_model_name = model_name
@@ -142,7 +149,7 @@ def print_ki_response(char: str = None, highlighted: str = "purple"):
         with final_client.messages.stream(
             model=final_model_name,
             max_tokens=512,
-            temperature=0.7,
+            temperature=0.9,
             system=final_system_prompt,
             messages=final_messages
         ) as stream:
@@ -159,8 +166,6 @@ def print_ki_response(char: str = None, highlighted: str = "purple"):
 
     animated_typing_panel(char, response_text, color=color)
     
-
-
 
     print()  # Zusätzlicher Zeilenumbruch nach vollständiger Antwort
 

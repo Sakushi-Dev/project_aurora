@@ -79,7 +79,7 @@ def init_set():
         "set_color": {"color_choice": ""},
         "set_freq": {"set_freq": 2},
         "set_imp": {"set_imp": "off"},
-        "set_max_t": {"max_token": 4096},
+        "set_max_t": {"max_token": 6144},
         "set_slot": {"set_slot": 1},
         "set_time_sense": {"time_sense": False}
     }

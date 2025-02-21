@@ -1,6 +1,6 @@
 import tiktoken
 
-def count_tokens(system_prompt, history, assistant_prompt):
+def count_tokens(system_prompt, history, assistant_prompt = None):
     """
     Berechnet die Anzahl der Tokens in den system_prompts, history und assistant_prompts.
     """
@@ -8,10 +8,12 @@ def count_tokens(system_prompt, history, assistant_prompt):
     tokenizer = tiktoken.get_encoding("cl100k_base")
     total_tokens = 0
 
-    # Tokens in den assistant_prompts
-    for prompt in assistant_prompt:
-        if prompt.get("content"):  # Sicherstellen, dass "content" ein String ist
-            total_tokens += len(tokenizer.encode(prompt["content"].strip()))
+    # Um auch nur 2 werte zu erlauben
+    if assistant_prompt != None:
+        # Tokens in den assistant_prompts
+        for prompt in assistant_prompt:
+            if prompt.get("content"):  # Sicherstellen, dass "content" ein String ist
+                total_tokens += len(tokenizer.encode(prompt["content"].strip()))
 
     # Tokens in den system_prompts
     for prompt in system_prompt:

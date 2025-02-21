@@ -21,6 +21,7 @@ mood_sys_p              = "./data/mood/mood_sys_p.json"
 
 # Dialog Slots
 slot_path               = "./data/history"
+char_memory_path        = "./data/memory"
 cost_path               = "./data/costs/slot_costs.json"
 last_msg_time_path      = "./data/last_msg_time/time.json"
 
@@ -62,6 +63,17 @@ def read_json(path:str, debug:bool=True) -> any:
             print(f"Error beim Lesen der Datei {path}: {e}")
 
     return None
+
+def read_jsonl(file_path):
+    '''
+    Reads a jsonl file and returns the data as a list
+    '''
+    data = []
+
+    with open(file_path, "r", encoding="utf-8") as file:
+        for line in file:
+            data.append(json.loads(line.strip()))
+    return data
             
 # Schreiben von JSON-Dateien
 def write_json(path:str, data=None) -> bool:
@@ -344,7 +356,7 @@ def load_history(slot:int=None) -> list:
 #test load_history
 #print(load_history(1))
 
-def load_format_history() -> str:
+def load_format_history(value:int=None) -> str:
     '''
     Lädt den Dialogverlauf
     -> str
@@ -364,6 +376,10 @@ def load_format_history() -> str:
         single_msg = [value for key, value in message.items() if key in {"role", "content"}]
         list_msg.append(single_msg)
 
+    if value != None:
+        # Begrenzung der Nachrichten, lädt nur die letzten value Nachrichten
+        list_msg = list_msg[-value:]
+        
     string = ""
 
     for msg in list_msg:
@@ -459,7 +475,12 @@ def get_last_msg_time() -> str:
 
     time = time[f"slot_{slot-1}"]
 
-    return time["last_msg_time"]
+    time = time["last_msg_time"]
+
+    if time == "":
+        return None
+
+    return time
 
 def save_msg_time(time:str):
     '''

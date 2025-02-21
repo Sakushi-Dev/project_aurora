@@ -1,31 +1,27 @@
 
 import re
 import json
+from rich.console import Console
 from datetime import datetime
 from collections import Counter
-from data_handler import load_prompts, load_format_history, load_set, read_json, user_name_path
+from data_handler import load_prompts, load_format_history, load_set, read_json, user_name_path, read_jsonl, get_slot
 
+console = Console()
 prompt = load_prompts(memory=True)
 prompt = prompt['memory_prompt']
-
-def read_jsonl(file_path):
-    '''
-    Reads a jsonl file and returns the data as a list
-    '''
-    data = []
-
-    with open(file_path, "r", encoding="utf-8") as file:
-        for line in file:
-            data.append(json.loads(line.strip()))
-    return data
+PATH = "data/memory/memory_analysis_slot_"
+data_format = ".jsonl"
 
 def control_existing_memory(debug:bool = True):
+
+    global PATH, data_format
     '''
     Checks if the memory file exists
     '''
     import os
+    slot = get_slot()
 
-    file_path = "data/memory/memory_analysis.jsonl"
+    file_path = PATH + str(slot-1) + data_format
 
     try:
         if os.path.exists(file_path):
@@ -36,7 +32,7 @@ def control_existing_memory(debug:bool = True):
             print(f"Error: Datei {file_path} existiert nicht.")
         return False
 
-def merge_history_in_prompt(prompt):
+def merge_history_in_prompt(prompt, m_interval:int=50) -> str:
     global user_name_path
     '''
     Merges the history into the prompt
@@ -47,7 +43,7 @@ def merge_history_in_prompt(prompt):
     user = read_json(user_name_path)
     user = user['user_name']
 
-    dialog = load_format_history()
+    dialog = load_format_history(value=m_interval)
     
     # Replace the placeholders in the prompt with the actual values
     prompt = prompt.replace('{{user}}', user)
@@ -98,6 +94,9 @@ def number_of_categorys(data) -> tuple:
     )
 
 def create_quiry(first:bool = False, subsequent:bool = False) -> str:
+
+    global PATH, data_format
+
     '''
     Creates a quiry for the memory analysis
 
@@ -132,7 +131,11 @@ def create_quiry(first:bool = False, subsequent:bool = False) -> str:
             temporary*5
         )
     elif subsequent:
-        data = read_jsonl("data/memory/memory_analysis.jsonl")
+        slot = get_slot()
+        
+        path = PATH + str(slot-1) + data_format
+
+        data = read_jsonl(path)
         timestamp = find_oldest_temporary(data)
         tuple_value = number_of_categorys(data)
         sc_value, dh_value, dl_value, temp_value = tuple_value
@@ -141,20 +144,36 @@ def create_quiry(first:bool = False, subsequent:bool = False) -> str:
         temp_list = []
         
         for entry in data:
+            # Get the category for the current entry
             category = entry['category']
-
-            if category == 'Dynamic High' or category == 'Dynamic Low':
-                quiry += f"{entry[c_map[0]]}//{entry[c_map[1]]}//{entry[c_map[2]]}//{entry[c_map[3]]}"
-                quiry += "\n"
-            elif category == 'Temporary' and entry['timestamp'] == timestamp and temp_value == 20:
-                quiry += f"{entry[c_map[0]]}//{entry[c_map[1]]}//{entry[c_map[2]]}//{entry[c_map[3]]}//{entry[c_map[4]]}"
-                quiry += "\n"
-            elif category == 'Temporary' and entry['timestamp'] != timestamp and temp_value == 20:
-                temp_list.append(f"{entry[c_map[0]]}//{entry[c_map[1]]}//{entry[c_map[2]]}//{entry[c_map[3]]}//{entry[c_map[4]]}")
-            elif category == 'Temporary' and temp_value < 20:
-                temp_list.append(f"{entry[c_map[0]]}//{entry[c_map[1]]}//{entry[c_map[2]]}//{entry[c_map[3]]}//{entry[c_map[4]]}")
+            
+            if category in ('Dynamic High', 'Dynamic Low'):
+                # For Dynamic High and Dynamic Low entries,
+                # join the first four fields (Category, Title, Description, Dialogue) with "//"
+                line = "//".join(entry[c] for c in c_map[:4])
+                # Append the formatted string to the query
+                quiry += f"{line}\n"
+                
+            elif category == 'Temporary':
+                # For Temporary entries, include all five fields (with timestamp)
+                line = "//".join(entry[c] for c in c_map)
+                if temp_value >= 20:
+                    # If the temporary count is high, check the timestamp to decide where to add the line
+                    if entry['timestamp'] == timestamp:
+                        # If the timestamp matches, add directly to the query
+                        quiry += f"{line}\n"
+                    else:
+                        # Otherwise, store the line to temp_list for later use
+                        temp_list.append(line)
+                else:
+                    # If there are fewer than 20 temporary entries, directly store the line
+                    temp_list.append(line)
+                    
             elif category == 'System Core':
-                sc_list.append(f"{entry[c_map[0]]}//{entry[c_map[1]]}//{entry[c_map[2]]}//{entry[c_map[3]]}")
+                # For System Core entries, join the first four fields (omit timestamp)
+                line = "//".join(entry[c] for c in c_map[:4])
+                # Add the formatted line to sc_list for later processing
+                sc_list.append(line)
 
             
 
@@ -190,11 +209,15 @@ def set_prefill():
 def request_memory_analysis(system_prompt, messages):
 
     from anthropic_api import init_anthropic_client, API_KEY
+    from tiktoken_function import count_tokens, output_tokens
+    from cost_manager import calculate_cost, save_costs
 
     client = init_anthropic_client(API_KEY)
 
+    model_name = "claude-3-5-haiku-20241022"
+
     response = client.messages.create(
-        model="claude-3-5-haiku-20241022",
+        model=model_name,
         max_tokens=4000,
         temperature=0.7,
         system=system_prompt,
@@ -210,6 +233,13 @@ def request_memory_analysis(system_prompt, messages):
         memory_analysis_list = memory_analysis.split('\n')
 
         memory_analysis_list = [entry for entry in memory_analysis_list if entry.strip()]
+
+    input_token = count_tokens(system_prompt, messages)
+    output_token = output_tokens(ki_response)
+
+    total_input_cost, total_output_cost = calculate_cost(model_name, input_token, output_token)
+
+    save_costs(total_input_cost, total_output_cost)
 
     return memory_analysis_list
 
@@ -236,6 +266,8 @@ def save_memory_analysis_as_jsonl(memory_analysis_list):
 
     memory_list = add_time_for_temporary(memory_analysis_list)
 
+    slot = get_slot()
+
     for entry in memory_list:
         if entry.startswith('Temporary'): 
             entry = entry.split('//')
@@ -259,7 +291,7 @@ def save_memory_analysis_as_jsonl(memory_analysis_list):
 
     data = sorted(data, key=lambda x: category_order.get(x["category"], 4))
 
-    with open("data/memory/memory_analysis.jsonl", "w", encoding="utf-8") as file:
+    with open(f"data/memory/memory_analysis_slot_{slot-1}.jsonl", "w", encoding="utf-8") as file:
         for entry in data:
             file.write(json.dumps(entry) + "\n")
 
@@ -268,12 +300,12 @@ def save_memory_analysis_as_jsonl(memory_analysis_list):
 # Main Function
 # =================================================================================================
 
-def init_prompts(prompt:str):
+def init_prompts(prompt:str, m_interval:int=50):
     '''
     Initializes the prompts
     '''
 
-    s_prompt = merge_history_in_prompt(prompt)
+    s_prompt = merge_history_in_prompt(prompt, m_interval)
     p_prompt = set_prefill()
 
     file_existing = control_existing_memory()
@@ -291,48 +323,73 @@ def init_prompts(prompt:str):
     return system_prompt, api_messages, sc_list, temp_list
 
 
-def execute_memory_request(debug:bool = True):
-    global prompt
+def execute_memory_request(debug: bool = True, m_interval:int=50):
+    global prompt, PATH, data_format
     '''
     Executes the request for the memory analysis and saves the result
+    with a more organized debug output.
     '''
-    if debug:
-        print("Requesting Memory Analysis...", f"\n{'='*30}\n")
-        print(prompt, f"\n{'='*30}\n")
+    # NOTE: m_interval route: load_format_history (data_handler.py) -> merge_history_in_prompt -> init_prompts
 
-    system, messages, sc_list, temp_list = init_prompts(prompt)
-    if debug:
-        print(system, f"\n{'='*30}\n")
-        print(messages, f"\n{'='*30}\n")
+    slot = get_slot()
+
+    path = PATH + str(slot-1) + data_format
+
+    def debug_print(step: str, data=None):
+
+        if debug:
+            console.print(f"\n[green]--- {step} ---[/green]\n")
+            if data is not None:
+                #if data is a list, print each item in a new line
+                if isinstance(data, list):
+                    for item in data:
+                        console.print(item)
+                else:
+                    console.print(data)
+
+    debug_print("Step 1: Starting memory analysis request (Prompt)", prompt)
+
+    system, messages, sc_list, temp_list = init_prompts(prompt, m_interval)
+    debug_print("Step 2: Prompts initialized - System Prompt", system)
+    debug_print("Step 2: Prompts initialized - Messages", messages)
 
     response_list = request_memory_analysis(system, messages)
-    if debug:
-        print(response_list, f"\n{'='*30}\n")
+    debug_print("Step 3: Response list received", response_list)
 
     memory_list = add_time_for_temporary(response_list)
-    if debug:
-        print(memory_list, f"\n{'='*30}\n")
+    debug_print("Step 4: Memory list with timestamps", memory_list)
 
     if sc_list:
         memory_list.extend(sc_list)
-        if debug:
-            print(sc_list, f"\n{'='*30}\n")
+        debug_print("Step 5: Extended with System Core List", sc_list)
     if temp_list:
         memory_list.extend(temp_list)
-        if debug:
-            print(temp_list, f"\n{'='*30}\n")
+        debug_print("Step 6: Extended with Temporary List", temp_list)
 
     save_memory_analysis_as_jsonl(memory_list)
+    debug_print("Step 7: Memory analysis saved", memory_list)
+
+    if debug:
+        data_lies = read_jsonl(path)
+        if len(data_lies) > 45:
+            debug_print("Step 8: Control if the memory overloaded", "[red]Memory is overloaded[/red]")
+        else:
+            debug_print("Step 8: Control if the memory overloaded", "[green]Memory is not overloaded[/green]")
+    else:
+        data_lies = read_jsonl(path)
+        if len(data_lies) > 45:
+            console.print("[red]!Memory is overloaded!\nPlease contact the developer[/red]\n[orange1]Your character is storing more than he/she should[/orange1]")
+
 
 #test
-execute_memory_request(debug=False)
+#execute_memory_request(debug=True)
 
 
-# NOTE: Funktion muss in slots speichern damit auf die richtige Datei zugegriffen wird
-#       Funktion muss in chat_loop.py aufgerufen werden
-#       Trigger muss in chat_loop.py gesetzt werden (z.B. nach 20 Nachrichten)
-#       Lesen und einbinden als prompt in response_processing.py
-#       Prompt entwerfen damit ki erinnerung richtig interpretiert
+# NOTE: Function must save in slots to access the correct file
+#       Function must be called in chat_loop.py
+#       Trigger must be set in chat_loop.py (e.g., after 20 messages)
+#       Read and integrate as prompt in response_processing.py
+#       Design prompt so that AI correctly interprets memory
 
     
 

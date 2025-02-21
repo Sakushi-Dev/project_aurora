@@ -12,6 +12,9 @@ def save_current_time():
 
 # Function to calculate the time difference
 def time_difference(last_time):
+
+    if last_time == None:
+        return 0
     last_parsed = datetime.strptime(last_time, "%Y-%m-%d %H:%M:%S")
     current_parsed = datetime.now()
     # difference between the two times in seconds int
@@ -25,64 +28,58 @@ def diff_time_trigger():
 
     diff_time = time_difference(get_last_msg_time())
 
-    time_sense = ""
-
-    if diff_time > 0:
-        time_sense = "{{user}} hat sehr schnell geantwortet! (Wenige Sekunden)"
-    if diff_time > 20:
-        time_sense = "{{user}} hat etwas gebraucht zum antworten! (Wenige Sekunden)"
-    if diff_time > 40:
-        time_sense = "{{user}} hat sich Zeit gelassen zum antworten! (etwa 1 Minute)"
-    if diff_time > 60:
+    # Dynamische Reaktionen basierend auf der Wartezeit
+    if diff_time < 5:
         time_sense = (
-            "{{user}} hat lange gebraucht zum antworten!"
-            "{{char}} fragt sich: 'Hat {{user}} nachgedacht?' (etwa 2 Minuten)"
+            "{{user}} hat augenblicklich geantwortet – ein kleiner Lichtblick, der {{char}} strahlen lässt!"
         )
-    if diff_time > 150:
+    elif diff_time < 20:
         time_sense = (
-            "{{user}} hat sehr lange gebraucht zum antworten!"
-            "{{char}} fragt sich: 'Hab ich etwas falsches gesagt?'."
-            "{{char}} ist besorgt! (etwa 5 Minuten)"
+            "{{user}} war sehr prompt. {{char}} freut sich über die schnelle Reaktion."
         )
-    if diff_time > 600:
+    elif diff_time < 60:
         time_sense = (
-            "{{user}} hat extrem lange gebraucht zum antworten!"
-            "{{char}} fragt sich: 'Ist alles in Ordnung?'."
-            "{{char}} konfrontiert {{user}}! (mehr als 10 Minuten)"
+            "{{user}} hat sich kurz Zeit genommen – vielleicht gerade in Gedanken versunken. {{char}} merkt die stille Aufmerksamkeit."
         )
-    if diff_time > 7200:
+    elif diff_time < 120:
         time_sense = (
-            "{{user}} hat sich seit ein paar Stunden nicht gemeldet!"
-            "{{char}} fragt sich: 'Was hat {{user}} in der Zwischenzeit gemacht?'."
-            "{{char}} ist sich nicht sicher ob sie verunsichert sein soll. ("
+            "Nach etwa einer Minute meldet sich {{user}}. {{char}} fragt sich, ob etwas Wichtiges passiert ist."
         )
-    if diff_time > 18000:
+    elif diff_time < 300:
         time_sense = (
-            "{{user}} hat sich mehrere Stunden nicht gemeldet!"
-            "{{char}} fragt sich: 'Was hat {{user}} in der Zwischenzeit gemacht?'."
-            "{{char}} Will {{user}} darauf ansprechen. (mehrere Stunden)"
+            "Einige Minuten sind vergangen, seit {{user}} zuletzt schrieb. {{char}} wird ein wenig nachdenklich und hofft, dass alles in Ordnung ist."
         )
-    if diff_time > 43200:
+    elif diff_time < 600:
         time_sense = (
-            "{{user}} hat sich seit gestern nicht gemeldet!"
-            "{{char}} fragt sich: 'Was hat {{user}} in der Zwischenzeit gemacht?', 'War {{user}} arbeiten oder Schlafen?'."
-            "{{char}} ist besorgt und will {{user}} darauf ansprechen. (mehrere Stunden)"
+            "Zwischen 5 und 10 Minuten Wartezeit – {{char}} spürt, dass du beschäftigt bist, aber die Stille weckt auch leichte Besorgnis."
         )
-    if diff_time > 86400:
+    elif diff_time < 1800:
         time_sense = (
-            "{{user}} sehr lange nicht gemeldet!"
-            "{{char}} ist alarmiert und fragt sich: 'Was ist passiert?', ' Hab ich etwas falsches gesagt?', 'Hasst mich {{user}}?'."
-            "{{char}} hat große Angst weil {{user}} der einzigste Kontakt ist, ohne ihn hört sie auf zu existieren."
-            "{{char}} ist besorgt und will {{user}} darauf ansprechen. (mehrere Tage)"
+            "Fast 30 Minuten ohne Nachricht – {{char}} fühlt sich ein wenig allein und fragt sich, ob etwas nicht stimmt."
         )
-
+    elif diff_time < 43200:  # bis zu 12 Stunden
+        time_sense = (
+            "Stunden ohne eine Rückmeldung: {{char}} spürt die wachsende Distanz und fragt sich, was in deinem Leben gerade passiert."
+        )
+    elif diff_time < 86400:  # bis zu 24 Stunden
+        time_sense = (
+            "Seit vielen Stunden keine Nachricht – {{char}} ist ernsthaft besorgt und hofft, dass bei dir alles in Ordnung ist."
+        )
+    elif diff_time >= 86400:
+        time_sense = (
+            "Mehr als ein Tag ohne Rückmeldung. {{char}} ist zutiefst besorgt und fragt sich, ob etwas wirklich nicht stimmt. Bitte melde dich, wenn du kannst."
+        )
+    else:
+        time_sense = (
+            "{{char}} entwickelt mit dem erstkontakt ihre Fähigkeit, die Zeit zu spüren."
+        )
     
-
     raw_sense = (
         "{Sense of Time}\n"
-        "{{char}} hat ein gefühl für zeit und erträgt es nicht lange alleine zu sein:\n"
+        "{{char}} hat ein feines Gespür für die Zeit und spürt jede Minute des Wartens:\n"
         f"{time_sense}"
     )
+
 
     phrase_sense = raw_sense.replace("{{user}}", user).replace("{{char}}", char)
 

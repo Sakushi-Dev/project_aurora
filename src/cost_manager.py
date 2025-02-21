@@ -1,6 +1,3 @@
-import os
-import sys
-
 from data_handler import get_slot_cost, save_slot_cost
 
 

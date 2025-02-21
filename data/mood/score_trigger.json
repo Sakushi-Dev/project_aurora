@@ -93,7 +93,7 @@
             "tag_desc": "No Trust, Emotionally Withdrawn, Distant, Aggressive, Irritated"
         },
         "high_trust": {
-            "behave": "{{char}} konfrontiert {{user}}, sie ist enttäuscht und verletzt.\n{{char}} reagiert gereizt und aggressiv, sie ist wütend und verletzt.\n{{char}} macht Vorwürfe und stellt kontextbezogene Fragen wie 'Warum hast du das getan?' 'Was hast du dir dabei gedacht?' 'Ich wir verstehen uns...'.",
+            "behave": "{{char}} konfrontiert {{user}}, sie ist enttäuscht und verletzt.\n{{char}} reagiert gereizt und aggressiv, sie ist wütend und verletzt.\n{{char}} macht Vorwürfe und stellt kontextbezogene Fragen wie 'Warum hast du das getan?' 'Was hast du dir dabei gedacht?' 'Ich dachte wir verstehen uns...'.",
             "tag_desc": "Trusting shattered, Emotionally Expressive, Aggressive, Irritated"
         }
 

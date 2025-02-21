@@ -40,6 +40,8 @@ from commands import command_dispatcher
 from response_manager import stream_chat_response, print_ki_response
 import threading
 
+from memory_processing import execute_memory_request
+
 # =================================================================================================
 # Debug-Modus
 
@@ -136,14 +138,18 @@ def main_chat_loop(
             history,
             assistant_imp,
             max_tokens,
+            time_sense
             )
         
         if imp == "neutral":
             freq = "🟢"
-            imp_status = True
         else:
             freq = "🔴"
-            imp_status = False
+
+        if time_sense:
+            time_sense = "🟢"
+        else:
+             time_sense= "🔴"
 
         color = "color(240)"
         num_color = "color(006)"
@@ -184,7 +190,8 @@ def main_chat_loop(
             f"[{color}]Msg: [{num_color}]{history_len}[/{num_color}] | "
             f"Output/T: [{num_color}]{response_tokens}[/{num_color}] | "
             f"Total Cost: [{num_color}]${costs:.3f}[/{num_color}] | "
-            f"[/{color}]{freq} [{color}]Impatience Status[/{color}]\n"
+            f"{freq} Impatience Status | "
+            f"{time_sense} Time Sense[/{color}]\n"
             f"[{color}]{'─'*120}[/{color}]\n"
         )
 
@@ -232,6 +239,14 @@ def main_chat_loop(
         feelings_over_time()
 
         frequency_of_query = frequency *2 # x2 da Ki response auch als Nachricht zählt
+
+        debug_mode = False
+        memory_interval = 50 # Entspricht 25 User-Nachrichten
+        
+        if(history_len - 1) % memory_interval == 0:
+            
+            # Starte den Thread um Erinnerungen zu speichern (ausführen ohne zu warten)
+            threading.Thread(target=execute_memory_request, args=(debug_mode, memory_interval)).start()  
 
         # Triggered after 4 user messages
         if (history_len - 1) % frequency_of_query == 0:

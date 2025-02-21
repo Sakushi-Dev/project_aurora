@@ -29,7 +29,8 @@ from data_handler import (
     load_slot,
     save_current_emo_score,
     save_slot_cost,
-    save_msg_time
+    save_msg_time,
+    char_memory_path
 )
 
 custom_style = Style.from_dict({
@@ -187,15 +188,20 @@ def handle_delete():
         os.system('cls' if os.name == 'nt' else 'clear')
 
         slot= get_slot()
-        path = slot_path + f"/slot_{slot-1}.json"
+        dialog_path = slot_path + f"/slot_{slot-1}.json"
+        mem_path = char_memory_path + f"/memory_analysis_slot_{slot-1}.jsonl"
 
         console.print("[red]Löschvorgang darf nicht unterbrochen werden![/red]")
 
         # File-Backup löschen
-        with open(path, "w") as file:
+        with open(dialog_path, "w") as file:
             file.write("")
         print(f"Dialog in Slot {slot} gelöscht.")
         time.sleep(0.2)
+
+        # Memory- file löschen
+        os.remove(mem_path)
+        print(f"Memory in Slot {slot} gelöscht.")
 
         # costs.py löschen
         save_slot_cost(0.0, 0.0)
@@ -325,7 +331,8 @@ def handle_reset():
         emo_score_path,
         cost_path,
         last_msg_time_path,
-        user_path
+        user_path,
+        char_memory_path
     )
 
     # Formatiere zu relativen Order-Pfaden um alle Dateien innerhalb des Ordners zu löschen
@@ -343,6 +350,8 @@ def handle_reset():
 
     # Relativer Pfad zu den Slot-Dateien
     slot_p = slot_path
+
+    mem_p = char_memory_path
 
     os.system('cls' if os.name == 'nt' else 'clear')
     
@@ -370,7 +379,8 @@ def handle_reset():
                 "Emotions-Score Daten": emo_p,
                 "Settings": set_p,
                 "User-Data": user_p,
-                "Chat-Verläufe": slot_p
+                "Chat-Verläufe": slot_p,
+                "Erinnerungen": mem_p,
             }
             
             # Löschen der Dateien
@@ -398,9 +408,9 @@ def handle_reset():
             # Löschen von '__pycache__'
             try:
                 os.system("rm -r ./src/__pycache__")
-                console.print("\n[green]__pycache__ gelöscht.[/green]")
+                console.print("\n[green]Cache gelöscht.[/green]")
             except FileNotFoundError:
-                console.print("\n[red]__pycache__ nicht gefunden.[/red]")
+                console.print("\n[red]Cache nicht gefunden.[/red]")
                 pass
 
             console.print("[orange]Löschvorgang abgeschlossen.[/orange]")
