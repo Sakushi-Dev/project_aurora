@@ -5,9 +5,12 @@ from data_handler import get_last_msg_time, save_msg_time
 
 debug = False
 
-def save_current_time():
+def save_current_time(get: bool = False):
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    save_msg_time(current_time)
+    if get:
+        return current_time
+    else:
+        save_msg_time(current_time)
 
 
 # Function to calculate the time difference
@@ -74,9 +77,14 @@ def diff_time_trigger():
             "{{char}} entwickelt mit dem erstkontakt ihre Fähigkeit, die Zeit zu spüren."
         )
     
+    current_time = save_current_time(get=True)
+    last_time = get_last_msg_time()
+    
     raw_sense = (
         "{Sense of Time}\n"
-        "{{char}} hat ein feines Gespür für die Zeit und spürt jede Minute des Wartens:\n"
+        f"Die aktuelle Zeit ist: {current_time}\n"
+        f"Die letzte Nachricht von {user} war um: {last_time}\n"
+        f"{char} hat ein feines Gespür für die Zeit und spürt jede Minute des Wartens:\n"
         f"{time_sense}"
     )
 

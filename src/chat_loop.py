@@ -149,7 +149,7 @@ def main_chat_loop(
         if time_sense:
             time_sense = "🟢"
         else:
-             time_sense= "🔴"
+            time_sense= "🔴"
 
         color = "color(240)"
         num_color = "color(006)"
