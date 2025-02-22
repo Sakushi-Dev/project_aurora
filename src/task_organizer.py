@@ -1,5 +1,6 @@
 import re
 import time
+import shutil
 import textwrap
 from rich.console import Console
 from rich.text import Text
@@ -11,14 +12,88 @@ from tiktoken_function import count_tokens
 from data_handler import load_set
 
 
-from prompts_processing import (
-    user_name as user,
-)
-
-
-
 # Rich-Console-Objekt:
 console = Console(width=120)
+
+def loading_animation(text: str, wait:int=3, status:bool=True, color:str="white"):
+    """
+    Simuliert eine Ladeanimation mit einem Text und einer Farbe.
+    Parameter:
+      - text (str): Der Text, der während der Animation angezeigt wird.
+      - wait (int): Die Dauer der Animation in Sekunden.
+      - color (str): Die Farbe für die Ausgabe mit Rich-Markup.
+      - status (bool): Wenn True wird ein grünes Häkchen angezeigt, wenn die Animation abgeschlossen ist.
+    """
+
+    char = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+
+    end_time = time.time() + wait
+    while time.time() < end_time:
+        for i in char:
+            console.print(f"\r[{color}]Lade {text}[/{color}] [green]{i}[/green]", end="\r", style="bold")
+            time.sleep(0.1)
+    if status:
+        console.print(f"\r[{color}]{text} geladen[/{color}] [green]✓[/green]", style="bold")
+    else:
+        console.print(f"\r[{color}]Laden fehlgeschlagen[/{color}] [red]✗[/red]", style="bold")
+        
+    
+
+def dynamic_typing(text:str, mode:str="print", centered:bool=False, choice:bool=False, delay:float=0.05, color:str="white"):
+    """
+    Simuliert das zeichenweise Tippen eines Textes und zeigt dabei farbige Markup-Ausgabe.
+
+    Parameter:
+      - text (str): Der anzuzeigende Text.
+      - mode (str): "print" (nur Anzeige) oder "input" (Anzeige als Eingabeaufforderung).
+      - centered (bool): Wenn True wird der Text zentriert ausgegeben.
+      - delay (float): Verzögerung pro Zeichen in Sekunden.
+      - color (str): Die Farbe für die Ausgabe mit Rich-Markup.
+
+    Rückgabewert:
+      - Falls mode "input" ist, wird der Benutzereingabestring zurückgegeben.
+      - Andernfalls wird None zurückgegeben.
+    """
+    split_text = text.split("\n")
+    # Zentriere den Text, falls gewünscht
+    if len(split_text) == 1:
+        if centered:
+            size = shutil.get_terminal_size()
+            width = size.columns
+            horizontal_padding = (width - len(text)) // 2
+            text = " " * horizontal_padding + text
+        # Zeichenweise Ausgabe mithilfe des Live-Updaters von rich
+        accumulator = ""
+        with Live("", refresh_per_second=20) as live:
+            for char in text:
+                accumulator += char
+                live.update(Text.from_markup(f"[{color}]{accumulator}[/{color}]"))
+                if char != " " :
+                    time.sleep(delay)
+    else:
+        for i, line in enumerate(split_text):
+            if centered:
+                size = shutil.get_terminal_size()
+                width = size.columns
+                horizontal_padding = (width - len(line)) // 2
+                split_text[i] = " " * horizontal_padding + line
+            # Zeichenweise Ausgabe mithilfe des Live-Updaters von rich
+            accumulator = ""
+            with Live("", refresh_per_second=20) as live:
+                for char in split_text[i]:
+                    accumulator += char
+                    live.update(Text.from_markup(f"[{color}]{accumulator}[/{color}]"))
+                    if char != " " :
+                        time.sleep(delay)
+
+    # Wenn Eingabe erforderlich ist, nutze console.input() als Eingabeaufforderung
+    if mode == "input":
+        if choice:
+            return console.input("[yellow](Y/N)[/yellow] Input: ")
+        else:
+            return console.input("Input: ")
+    else:
+        print()
 
 def truncate_history_for_api(
         history: list,
@@ -45,6 +120,9 @@ def print_latest_messages(
     """
     Gibt die letzten N Nachrichten formatiert in der Konsole aus.
     """
+    from prompts_processing import (
+    user_name as user,
+)
     # Lade Charakter Namen
     char = load_set(char=True)
 
@@ -138,17 +216,23 @@ def animated_typing_panel(char: str, response_text: str, color: str = "cyan", de
     Der gesamte Text wird in der benutzerdefinierten Farbe angezeigt,
     wobei Markup (z.B. [orange1]) erhalten bleibt.
     """
+
+    content = response_text.lstrip(" ")
+    content = content.lstrip("\n")
+    content = content.rstrip("\n")
     
     # Textverarbeitung und Hervorhebung
-    wrapped_text = textwrap.dedent(response_text).strip()
+    #wrapped_text = textwrap.dedent(content).strip()
+    
     # Markiere Text zwischen Sternchen in Orange. Achte darauf, dass der gesamte Text von [color] umschlossen wird.
-    highlighted_text = re.sub(r"\*\s*(.*?)\*", r"[orange1]\1[/orange1]", wrapped_text, flags=re.DOTALL)
+    highlighted_text = re.sub(r"\*\s*(.*?)\*", r"[orange1]\1[/orange1]", content, flags=re.DOTALL)
     
     # Umbruch & Formatierung:
-    lines = highlighted_text.splitlines()
-    formatted_text = "\n".join(textwrap.fill(line, width=84) for line in lines)
+    #lines = highlighted_text.splitlines()
+    #formatted_text = "\n".join(textwrap.fill(line, width=120) for line in lines)
+
     # Hier wird der gesamte Text in den Standardfarbblock (user-definierte Farbe) gehüllt.
-    final_text = Text.from_markup(f"[{color}]{formatted_text}[/{color}]")
+    final_text = Text.from_markup(f"[{color}]{highlighted_text}[/{color}]")
 
     # Zeichenweise Animation mithilfe von Slicing:
     with Live(Panel("", expand=True), refresh_per_second=20) as live:

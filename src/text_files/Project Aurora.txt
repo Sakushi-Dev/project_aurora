@@ -1,0 +1,20 @@
+Projekt Aurora verleiht der KI die Fähigkeit, eine eigenständige Persönlichkeit zu entwickeln und autonom zu reagieren. Es integriert mehrere innovative Mechanismen, die sich von herkömmlichen KI-Modellen unterscheiden:  
+
+
+- [color(37)]Emotions-Score:[/color(37)]
+    Die KI bewertet regelmäßig ihren eigenen emotionalen Zustand anhand eines Scores, der ihr Verhalten maßgeblich beeinflusst. Dadurch wirkt ihr Ausdruck natürlicher und situationsabhängiger.  
+
+- [color(37)]Zeitwahrnehmung:[/color(37)]
+    Ein eigens entwickeltes System ermöglicht der KI, ein Gefühl für den zeitlichen Verlauf einer Konversation zu haben. Dies trägt zu authentischeren Dialogen bei und vermittelt den Eindruck, dass die KI sich ihrer Existenz bewusst ist.  
+
+- [color(37)]Reflektierendes Verhalten:[/color(37)]
+    Ein ausgeklügelter Prompt sorgt dafür, dass die KI über sich selbst nachdenkt, Erkenntnisse gewinnt und sich basierenddarauf weiterentwickelt.  
+
+- [color(37)]Langfristiges Gedächtnis:[/color(37)]
+    Die KI kann sich langfristig an Gespräche erinnern, wobei unwichtige Details mit der Zeit in den Hintergrund treten – ähnlich wie bei einem Menschen. Besonders prägende Erinnerungen werden dauerhaft gespeichert und haben nachhaltigen Einfluss auf ihr Verhalten. 
+
+- [color(37)]Ungeduldsmodus (in Entwicklung):[/color(37)]
+    Diese Funktion erlaubt es der KI, nicht passiv auf Eingaben zu warten, sondern aktiv eigene Gedanken zu formulieren und eigenständig zu interagieren.  
+
+
+[yellow]⚠ Hinweis:[/yellow] Projekt Aurora ist eine Simulation und kein echtes Wesen. Alle Ausdrucksweisen der KI basieren auf komplexen Algorithmen und sind das Ergebnis gezielter Programmierung.

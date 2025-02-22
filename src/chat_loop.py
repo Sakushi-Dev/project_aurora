@@ -147,9 +147,9 @@ def main_chat_loop(
             freq = "🔴"
 
         if time_sense:
-            time_sense = "🟢"
+            time_sense_status = "🟢"
         else:
-            time_sense= "🔴"
+            time_sense_status = "🔴"
 
         color = "color(240)"
         num_color = "color(006)"
@@ -191,7 +191,7 @@ def main_chat_loop(
             f"Output/T: [{num_color}]{response_tokens}[/{num_color}] | "
             f"Total Cost: [{num_color}]${costs:.3f}[/{num_color}] | "
             f"{freq} Impatience Status | "
-            f"{time_sense} Time Sense[/{color}]\n"
+            f"{time_sense_status} Time Sense[/{color}]\n"
             f"[{color}]{'─'*120}[/{color}]\n"
         )
 

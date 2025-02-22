@@ -27,6 +27,7 @@ last_msg_time_path      = "./data/last_msg_time/time.json"
 
 # Prompt Pfade für User-Namen und Char-Namen
 user_name_path          = "./prompts/user_spec/user_name.json"
+user_gender_path        = "./prompts/user_spec/user_gender.json"
 mia_name_path           = "./prompts/char_spec/mia_desc/char_name.json"
 yujun_name_path         = "./prompts/char_spec/yujun_desc/char_name.json"
 

@@ -1,4 +1,5 @@
 import os
+import sys
 import base64
 
 from rich.console import Console
@@ -37,14 +38,14 @@ def is_valid_anthropic_key():
     import requests
 
     console.print(
-        f"{'-'*30}\n"
-        "Nur API-Keys von Anthropic sind erlaubt!\n"
-        f"{'-'*30}\n"
+        f"{'-'*120}\n"
+        "Nur API-Keys von Anthropic sind erlaubt!\nLink: https://console.anthropic.com/ Hier kannst du einen API-Key erstellen.\n"
+        f"{'-'*120}\n"
         )
     console.print(
         "[orange1]Info:[/orange1] Es wird ein Test-Request an die Anthropic API gesendet.\n"
         "Bei diesem Test-Request fallen keine relevanten Kosten an. (0.0000015$)\n\n"
-        f"{'-'*120}\nDein API-Key wird verschlüsselt und lokal gespeichert.\n{'-'*120}\n"
+        f"{'-'*120}\nDein API-Key wird verschlüsselt und lokal als Umgebungsvariabl gespeichert.\n{'-'*120}\n"
         )
     api_key = console.input("[green]Gebe deinen API-Key ein: [/green]")
 
@@ -101,7 +102,7 @@ def load_api_key():
         console.print("[red]API-Schlüssel nicht gefunden![/red]")
         return None
     
-    load_dotenv(API_KEY_PATH)
+    load_dotenv(API_KEY_PATH, override=True)
     encoded_key = os.getenv(ENV_VARIABLE_NAME)
 
     if not encoded_key:
@@ -109,7 +110,7 @@ def load_api_key():
         return None
     
     try:
-        api_key = base64.b64decode(encoded_key.encode()).decode()
+        api_key = base64.b64decode(encoded_key).decode("utf-8")
         os.environ[ENV_VARIABLE_NAME] = api_key
 
         return api_key

@@ -1,4 +1,5 @@
 import os
+import sys
 import re
 import time
 
@@ -315,43 +316,26 @@ def handle_delete():
 
 
 def handle_restart():
-    os.system('cls' if os.name == 'nt' else 'clear')
-    
-    # Aurora.py neu starten
-    os.system('python "./src/aurora.py"')
-    # cost_manager.py neu starten
-    os.system('python ./src/cost_manager.py')
-    return "restart"
+    os.system('cls' if os.name == 'nt' else 'clear')  # Bildschirm leeren
+    python = sys.executable  # Pfad zum aktuellen Python-Interpreter
+    os.execl(python, python, *sys.argv)  # Ersetzt den aktuellen Prozess mit einem neuen
+
 
 def handle_reset():
     from init_data import spit_path
     from data_handler import (
-        set_path,
-        slot_path,
-        emo_score_path,
+        set_path as set_p,
+        slot_path as slot_p,
+        emo_score_path as emo_p,
         cost_path,
         last_msg_time_path,
-        user_path,
-        char_memory_path
+        user_path as user_p,
+        char_memory_path as mem_p,
     )
 
     # Formatiere zu relativen Order-Pfaden um alle Dateien innerhalb des Ordners zu löschen
     costs_p, _ = spit_path(cost_path)
     last_p, _ = spit_path(last_msg_time_path)
-
-    # Nur diese Datei wird zum Löschen benötigt
-    emo_p = emo_score_path
-
-    # Relativer Pfad zu den Set-Dateien
-    set_p = set_path
-
-    # Relativer Pfad zu den User-Dateien
-    user_p = user_path
-
-    # Relativer Pfad zu den Slot-Dateien
-    slot_p = slot_path
-
-    mem_p = char_memory_path
 
     os.system('cls' if os.name == 'nt' else 'clear')
     
