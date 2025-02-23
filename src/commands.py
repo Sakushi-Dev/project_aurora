@@ -331,9 +331,8 @@ def handle_delete():
 def handle_restart():
     os.system('cls' if os.name == 'nt' else 'clear')  # Bildschirm leeren
 
-    # Alle Python-Prozesse beenden (Achtung: Beendet ALLE Python-Instanzen!)
-    subprocess.run('taskkill /F /IM python.exe /T >nul 2>&1', shell=True)
-    time.sleep(1)  # Warte 1 Sekunde
+    #Aktuelles programm beenden auser aktuelle session
+    os.system("taskkill /f /im python.exe /t")
 
     # Skript neu starten (ohne Pfad-Ausgabe in PowerShell)
     os.system('python "./src/aurora.py"')
