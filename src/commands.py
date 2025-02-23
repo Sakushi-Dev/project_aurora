@@ -330,9 +330,15 @@ def handle_delete():
 
 def handle_restart():
     os.system('cls' if os.name == 'nt' else 'clear')  # Bildschirm leeren
-    command = f'python "{sys.argv[0]}" > $null 2>&1'
-    os.system(command)
-    sys.exit()  # Beendet den aktuellen Prozess
+    
+    # Alle Python-Prozesse beenden (Achtung: Beendet ALLE Python-Instanzen!)
+    subprocess.run('taskkill /F /IM python.exe /T >nul 2>&1', shell=True)
+    time.sleep(1)  # Warte 1 Sekunde
+
+    # Skript neu starten (ohne Pfad-Ausgabe in PowerShell)
+    subprocess.Popen(f'python "{sys.argv[0]}" >nul 2>&1', shell=True)
+    
+    sys._exit(0)  # Beendet den aktuellen Prozess
 
 
 def handle_reset():
