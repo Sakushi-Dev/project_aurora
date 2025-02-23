@@ -39,13 +39,21 @@ def is_valid_anthropic_key():
 
     console.print(
         f"{'-'*120}\n"
-        "Nur API-Keys von Anthropic sind erlaubt!\nLink: https://console.anthropic.com/ Hier kannst du einen API-Key erstellen.\n"
+        "Nur API-Keys von [color(37)]Anthropic[/color(37)] sind erlaubt!\n"
+        "Link: https://console.anthropic.com/ Hier kannst du einen API-Key erstellen.\n"
         f"{'-'*120}\n"
         )
     console.print(
         "[orange1]Info:[/orange1] Es wird ein Test-Request an die Anthropic API gesendet.\n"
         "Bei diesem Test-Request fallen keine relevanten Kosten an. (0.0000015$)\n\n"
-        f"{'-'*120}\nDein API-Key wird verschlüsselt und lokal als Umgebungsvariabl gespeichert.\n{'-'*120}\n"
+        f"{'-'*120}\n"
+        "Dein API-Key wird verschlüsselt und lokal als Umgebungsvariable gespeichert.\n"
+        "Beachte das der API-Key nichtmehr angezeigt wird, nachdem er eingegeben wurde.\n"
+        "Bewahre den API-Key sicher auf, da er nicht wiederhergestellt werden kann.\n"
+        f"{'-'*120}\n"
+        "[red]Wichtig:[/red] Gebe deinen API-Key oder eine Kopie des Programms nicht an Dritte weiter!\n"
+        "Jeder der deinen API-Key hat, kann damit auf deine Kosten Anfragen an die Anthropic API senden.\n"
+        f"{'-'*120}\n"
         )
     api_key = console.input("[green]Gebe deinen API-Key ein: [/green]")
 

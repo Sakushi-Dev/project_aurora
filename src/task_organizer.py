@@ -2,10 +2,14 @@ import re
 import time
 import shutil
 import textwrap
+
 from rich.console import Console
 from rich.text import Text
 from rich.panel import Panel
 from rich.live import Live
+
+from prompt_toolkit import prompt
+from prompt_toolkit.styles import Style
 
 from tiktoken_function import count_tokens
 
@@ -54,6 +58,15 @@ def dynamic_typing(text:str, mode:str="print", centered:bool=False, choice:bool=
       - Falls mode "input" ist, wird der Benutzereingabestring zurückgegeben.
       - Andernfalls wird None zurückgegeben.
     """
+
+    # Definiere den Stil für die Eingabe
+    cyan = Style.from_dict({
+    "": "fg:#00FFFF",  # Setzt die Eingabefarbe auf grün
+    })
+    orange = Style.from_dict({
+    "": "fg:orange",  # Setzt die Eingabefarbe auf orange
+    })
+
     split_text = text.split("\n")
     # Zentriere den Text, falls gewünscht
     if len(split_text) == 1:
@@ -89,9 +102,9 @@ def dynamic_typing(text:str, mode:str="print", centered:bool=False, choice:bool=
     # Wenn Eingabe erforderlich ist, nutze console.input() als Eingabeaufforderung
     if mode == "input":
         if choice:
-            return console.input("[yellow](Y/N)[/yellow] Input: ")
+            return prompt("Input (Y/N): ", style=orange)
         else:
-            return console.input("Input: ")
+            return prompt("Input: ", style=cyan)
     else:
         print()
 

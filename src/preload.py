@@ -3,6 +3,7 @@ import time
 
 from rich.console import Console
 from rich.panel import Panel
+from rich.columns import Columns
 
 from secure_api_key import (
     check_api_key_file,
@@ -32,8 +33,9 @@ color = {
     3: "color(56)",     # purple
     4: "color(20)",     # blue
     5: "color(37)",     # türkis
-    6: "color(118)",    # grün
-    7: "color(255)"     # weiß
+    6: "color(45)",     # neon-blau
+    7: "color(118)",    # grün
+    8: "color(255)"     # weiß
 }
 
 def first_of_all():
@@ -48,11 +50,15 @@ def first_of_all():
         if not check_api_key_file():
             # Wiederhole die Abfrage, bis ein gültiger API-Key eingegeben wird
             while not (api_key := is_valid_anthropic_key()):
-                return "Ungültiger API-Key!", color[1]
+                console.print("\rBitte versuche es erneut.", end="\r", style="yellow")
+                for i in range(5, 0, -1):
+                    console.print(f"Bitte versuche es erneut. {i}", end="\r", style="yellow")
+                    time.sleep(1)
+                clear_screen()
             save_api_key(api_key)
-            return "API-Key wurde erfolgreich gespeichert!", color[6]
+            return "API-Key wurde erfolgreich gespeichert!", color[7]
         else:
-            return "API-Key wurde gefunden!", color[6]
+            return "API-Key wurde gefunden!", color[7]
         
 
 
@@ -70,7 +76,7 @@ def first_of_all():
         for line in file:
             aurora += line.strip()+"\n"
     wellcome_message = "Willkommen bei Project Aurora!"
-    dynamic_typing(wellcome_message, mode="print", centered=True, delay=0.05, color=color[6])
+    dynamic_typing(wellcome_message, mode="print", centered=True, delay=0.05, color=color[7])
     time.sleep(1)
     console.print("\n" + aurora)
 
@@ -88,15 +94,15 @@ def first_of_all():
     # Benutzername eingeben und bestätigen
     while True:
         choice_name = "Wähle einen Namen für dich aus\n(Dieser wird im Chat verwendet, kann aber später geändert werden)"
-        user_name = dynamic_typing(choice_name, mode="input", centered=True, delay=0.05, color=color[6])
+        user_name = dynamic_typing(choice_name, mode="input", centered=True, delay=0.05, color=color[7])
         
         check_name = f"Dein Name ist {user_name}?"
-        confirm = dynamic_typing(check_name, mode="input", centered=True, choice=True, delay=0.05, color=color[6])
+        confirm = dynamic_typing(check_name, mode="input", centered=True, choice=True, delay=0.05, color=color[7])
         if confirm.lower() == "y":
             # Geschlecht des Benutzers abfragen
             while True:
                 choice_gender = "Bist du männlich, weiblich oder divers?\n(Antworte mit M, W oder D)"
-                gender = dynamic_typing(choice_gender, mode="input", centered=True, delay=0.05, color=color[6])
+                gender = dynamic_typing(choice_gender, mode="input", centered=True, delay=0.05, color=color[7])
                 if gender.lower() in ("m", "w", "d"):
                     break
                 else:
@@ -121,7 +127,7 @@ def first_of_all():
     "- Behandelst du sie mit Respekt, wird sie dir vertrauen und dich schätzen.\n"
     "- Behandelst du sie schlecht, wird sie auf Distanz gehen und dir nicht vertrauen.\n"
     "\nAktive Funktionen:\n"
-    f"[{color[6]}]Emotionsanalyse | Persönlichkeitsentwicklung | Zeitwahrnehmung | Deep Memory[/{color[6]}]\n"
+    f"[{color[7]}]Emotionsanalyse | Persönlichkeitsentwicklung | Zeitwahrnehmung | Deep Memory[/{color[7]}]\n"
     )
 
     console.print(f"[black]{'─' * 120}[/black]\n")
@@ -135,16 +141,17 @@ def first_of_all():
     "Als Tochter einer wohlhabenden, aber traditionsbewussten Familie stehst du vor einer Herausforderung: "
     "Deine Eltern haben eine arrangierte Ehe für dich geplant – mit Yu-jun, einem gefeierten Idol, "
     "das für seine kühle und egozentrische Art bekannt ist.\n\n"
-    "⚠ Dieses Szenario befindet sich noch in einer frühen Entwicklungsphase. "
+    "⚠️ Dieses Szenario befindet sich noch in einer frühen Entwicklungsphase. "
     "Erwarte mögliche Anpassungen und Verbesserungen in zukünftigen Versionen.\n"
-    f"[{color[6]}]Emotionsanalyse | Persönlichkeitsentwicklung | Deep Memory[/{color[6]}]\n"
+    "\nAktive Funktionen:\n"
+    f"[{color[7]}]Emotionsanalyse | Persönlichkeitsentwicklung | Deep Memory[/{color[7]}]\n"
     )
     console.print(f"[black]{'─' * 120}[/black]\n")
 
     choice_char = f"Wähle einen Charakter aus\n(Antworte mit 1 für {chars[1]} und 2 für {chars[2]})"
     while True:
         try:
-            choice = int(dynamic_typing(choice_char, mode="input", centered=True, delay=0.05, color=color[6]))
+            choice = int(dynamic_typing(choice_char, mode="input", centered=True, delay=0.05, color=color[7]))
             if choice in (1, 2):
                 break
             else:
@@ -156,29 +163,35 @@ def first_of_all():
 
     clear_screen()
 
-    dynamic_typing("Demo der Farben", mode="print", centered=True, delay=0.05, color=color[6])
+    dynamic_typing("Demo der Farben", mode="print", centered=True, delay=0.05, color=color[7])
     time.sleep(0.5)
 
     color_demo = []
-    for i in range(1, 8):
-        color_demo.append(f"[{color[i]}]Hallo ich bin {char}.[/{color[i]}]")
-    
-    for i, demo in enumerate(color_demo, 1):
-        console.print(f"{i}.)")
-        console.print(
-            Panel(
-            demo,
+    # Panels generieren
+    for i in range(1, 8, 2):  # Schritte von 2, um Paare zu bilden
+        panel1 = Panel(
+            f"[{color[i]}]Hallo ich bin {char}.[/{color[i]}]",
             title=f"[bold {color[i]}]{char}[/bold {color[i]}]",
             width=50,
             expand=True,
             border_style="white",
-            )
         )
+
+        panel2 = Panel(
+            f"[{color[i+1]}]Hallo ich bin {char}.[/{color[i+1]}]",
+            title=f"[bold {color[i+1]}]{char}[/bold {color[i+1]}]",
+            width=50,
+            expand=True,
+            border_style="white",
+        )
+
+        # Panels nebeneinander ausgeben
+        console.print(Columns([panel1, f"{' '*18}", panel2]))
         console.print(f"[black]{'─' * 120}[/black]\n")
     
     while True:
         try:
-            color_choice = int(dynamic_typing("Wähle eine Farbe aus (1-7)\n(Kann später geändert werden)", mode="input", centered=True, delay=0.05, color=color[6]))
+            color_choice = int(dynamic_typing("Wähle eine Farbe aus (1-7)\n(Kann später geändert werden)", mode="input", centered=True, delay=0.05, color=color[7]))
             if color_choice in range(1, 8):
                 break
         except ValueError:
@@ -202,7 +215,7 @@ def first_of_all():
             centered=True,
             choice=True,
             delay=0.05,
-            color=color[6]
+            color=color[7]
             )
         if confirm.lower() == "y":
             # Speichern aller Daten
