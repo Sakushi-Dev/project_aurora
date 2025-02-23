@@ -56,5 +56,8 @@ Bitte forke das Repository und erstelle einen Pull-Request.
 Dieses Projekt steht unter der MIT-Lizenz. Details findest du in der `LICENSE`.
 
 ##
-
+*Anmerkung:*
+*Dies ist mein erstes richtige Projekt.*
+*Ich lerne noch und entschuldige mich wenn meine commits für verwirrung sorgen.*
+    
 **Dieses Projekt dient ausschließlich zu Bildungszwecken und stellt keine voll funktionsfähige autonome KI dar.**
