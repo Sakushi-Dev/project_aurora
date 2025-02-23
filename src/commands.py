@@ -330,8 +330,8 @@ def handle_delete():
 
 def handle_restart():
     os.system('cls' if os.name == 'nt' else 'clear')  # Bildschirm leeren
-    python = sys.executable  # Pfad zum aktuellen Python-Interpreter
-    subprocess.Popen([python] + sys.argv)  # Startet einen neuen Prozess
+    command = f'python "{sys.argv[0]}" > $null 2>&1'
+    os.system(command)
     sys.exit()  # Beendet den aktuellen Prozess
 
 
