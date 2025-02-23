@@ -2,6 +2,8 @@ import os
 import sys
 import re
 import time
+import subprocess
+
 
 from rich.console import Console
 
@@ -329,7 +331,8 @@ def handle_delete():
 def handle_restart():
     os.system('cls' if os.name == 'nt' else 'clear')  # Bildschirm leeren
     python = sys.executable  # Pfad zum aktuellen Python-Interpreter
-    os.execl(python, python, *sys.argv)  # Ersetzt den aktuellen Prozess mit einem neuen
+    subprocess.Popen([python] + sys.argv)  # Startet einen neuen Prozess
+    sys.exit()  # Beendet den aktuellen Prozess
 
 
 def handle_reset():
