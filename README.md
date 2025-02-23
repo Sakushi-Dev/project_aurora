@@ -38,9 +38,9 @@ Folge diesen Schritten, um Aurora lokal zu installieren:
     ```
 ## Benutzung
 
-    Führe im Hauptverzeichniss `start.bat` aus.
+Führe im Hauptverzeichniss `start.bat` aus.
     
-    Oder starte die Simulation mit folgendem Befehl:
+Oder starte die Simulation mit folgendem Befehl:
 
     ```bash
     python ./src/aurora.py
@@ -54,5 +54,6 @@ Bitte forke das Repository und erstelle einen Pull-Request.
 
 Dieses Projekt steht unter der MIT-Lizenz. Details findest du in der `LICENSE`.
 
+##
 
 **Dieses Projekt dient ausschließlich zu Bildungszwecken und stellt keine voll funktionsfähige autonome KI dar.**
