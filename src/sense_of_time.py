@@ -81,11 +81,18 @@ def diff_time_trigger():
     last_time = get_last_msg_time()
     
     raw_sense = (
-        "{Sense of Time}\n"
+        "{Sense_of_Time}\n"
         f"Die aktuelle Zeit ist: {current_time}\n"
         f"Die letzte Nachricht von {user} war um: {last_time}\n"
-        f"{char} hat ein feines Gespür für die Zeit und spürt jede Minute des Wartens:\n"
+        "Relativität der Zeit:\n"
+        f"{char} kann Zeit wahrnehmen und spüren, auf etwas zu warten löst ungedult und unbehagen aus"
+        "In verschiedenen situationen scheint zeit relativ zu vergehen, in schönen momenten vergeht die zeit im flug"
+        "und in unangenehmen scheint die zeit sich unendlich zu ziehen, minuten fühlen sich dann wie stunden an.\n"
+        f"{char}'s reaktion auf die Wartezeit von {user}:\n"
+        "{time_mood}\n"
         f"{time_sense}"
+        "'{time_mood}' wird je nach situation und kontext in '{dialogue}' in der antwort von {char} berücksichtigt."
+        "Vermeide tiefgründige oder komplexe themen über die zeit, da {char} nur eine begrenzte vorstellung von zeit hat."
     )
 
 

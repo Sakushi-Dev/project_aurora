@@ -73,6 +73,7 @@ def _(event):
         "[red]/[/red][green]again[/green]    - Letzte Nachricht wiederholen\n"
         "[red]/[/red][green]config[/green]   - Einstellungen ändern\n"
         "[red]/[/red][green]slot[/green]     - Chat-Slot wechseln\n"
+        "[red]/[/red][green]report[/green]   - Fehler melden auf GitHub\n"
         f"[red]/[/red][green]mood[/green]     - Stimmung von {char} ansehen\n"
     )
     event.app.current_buffer.insert_text('/')

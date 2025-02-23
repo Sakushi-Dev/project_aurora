@@ -1,4 +1,4 @@
-Projekt Aurora verleiht der KI die Fähigkeit, eine eigenständige Persönlichkeit zu entwickeln und autonom zu reagieren. Es integriert mehrere innovative Mechanismen, die sich von herkömmlichen KI-Modellen unterscheiden:  
+Projekt Aurora verleiht der KI die Fähigkeit, eine eigenständige Persönlichkeit zu entwickeln und autonom zu reagieren. Es integriert mehrere innovative Mechanismen, die sich von herkömmlichen KI-Ineraktion unterscheiden:  
 
 
 - [color(37)]Emotions-Score:[/color(37)]

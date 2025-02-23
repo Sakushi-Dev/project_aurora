@@ -47,6 +47,15 @@ def handle_exit():
     console.print("Chat beendet. Tschüss!")
     return "exit"
 
+def handle_report():
+    import webbrowser
+    console.print("Willst du einen Fehler auf GitHub melden?")
+    report = console.input("(Y/N) Input: ")
+    if report.lower() == "y":
+        webbrowser.open("https://github.com/Sakushi-Dev/project_aurora/issues")
+    else:
+        return None
+
 def handle_again(highlighted):
 
     # lösche Letze zwei Einträge und gbe die letzte User-Nachricht zurück
@@ -200,9 +209,11 @@ def handle_delete():
         print(f"Dialog in Slot {slot} gelöscht.")
         time.sleep(0.2)
 
-        # Memory- file löschen
-        os.remove(mem_path)
-        print(f"Memory in Slot {slot} gelöscht.")
+        #Prüfen ob Memory-File vorhanden ist
+        if os.path.isfile(mem_path):
+            # Memory- file löschen
+            os.remove(mem_path)
+            print(f"Memory in Slot {slot} gelöscht.")
 
         # costs.py löschen
         save_slot_cost(0.0, 0.0)
@@ -474,6 +485,7 @@ def command_dispatcher(user_input: str, highlighted:str, history_len:int):
     "/delete": handle_delete,
     "/slot": handle_slot,
     "/reset": handle_reset,
+    "/report": handle_report,
     "/mood": handle_mood,
     }
 
@@ -498,7 +510,10 @@ def command_dispatcher(user_input: str, highlighted:str, history_len:int):
         history, list_msg = organize_chat_and_char()
         print_latest_messages(list_msg, highlighted=highlighted)
         return None # Falls config beendet wird, soll der Chat-Loop von vorne starten
-    elif command == "/mood":
+    elif command == "/mood" or command == "/report":
+        console.print("Mit [green]Enter[/green] fortfahren.")
+        input()
+        handle_restart()
         return None # Chat-Loop startet von vorne
     elif user_input.startswith("/"):
         handle_unknown()

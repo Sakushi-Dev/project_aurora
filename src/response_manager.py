@@ -108,10 +108,15 @@ def stream_chat_response(
     current_tokens = count_tokens(system_prompt, truncate_history, temp_assistant_prompt)
 
     # Andere werte die nicht "role" und "content" sind, werden nicht übergeben
+    api_dialogue_start = [{"role": "assistant", "content": "{dialogue}\n<dialogue>"}]
+    api_dialogue_end = [{"role": "assistant", "content": "</dialogue>"}]
+
     api_messages = [
         {"role": msg["role"], "content": msg["content"]}
         for msg in truncate_history if "role" in msg and "content" in msg
     ]
+
+    api_messages = api_dialogue_start + api_messages + api_dialogue_end
     
     if memory_prompt == None:
         temp_messages = api_messages + temp_assistant_prompt

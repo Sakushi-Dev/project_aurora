@@ -141,7 +141,7 @@ def first_of_all():
     "Als Tochter einer wohlhabenden, aber traditionsbewussten Familie stehst du vor einer Herausforderung: "
     "Deine Eltern haben eine arrangierte Ehe für dich geplant – mit Yu-jun, einem gefeierten Idol, "
     "das für seine kühle und egozentrische Art bekannt ist.\n\n"
-    "⚠️ Dieses Szenario befindet sich noch in einer frühen Entwicklungsphase. "
+    "⚠️  Dieses Szenario befindet sich noch in einer frühen Entwicklungsphase. "
     "Erwarte mögliche Anpassungen und Verbesserungen in zukünftigen Versionen.\n"
     "\nAktive Funktionen:\n"
     f"[{color[7]}]Emotionsanalyse | Persönlichkeitsentwicklung | Deep Memory[/{color[7]}]\n"
@@ -186,13 +186,13 @@ def first_of_all():
         )
 
         # Panels nebeneinander ausgeben
-        console.print(Columns([panel1, f"{' '*18}", panel2]))
+        console.print(Columns([f"{' '*2}{i}.) ", panel1, f"{' '*2}{i+1}.) ", panel2, f"{' '*6}"]))
         console.print(f"[black]{'─' * 120}[/black]\n")
     
     while True:
         try:
-            color_choice = int(dynamic_typing("Wähle eine Farbe aus (1-7)\n(Kann später geändert werden)", mode="input", centered=True, delay=0.05, color=color[7]))
-            if color_choice in range(1, 8):
+            color_choice = int(dynamic_typing("Wähle eine Farbe aus (1-8)\n(Kann später geändert werden)", mode="input", centered=True, delay=0.05, color=color[7]))
+            if color_choice in range(1, 9):
                 break
         except ValueError:
             continue
@@ -210,7 +210,7 @@ def first_of_all():
             "Dieser Befehl zeigt dir die aktuelle Stimmung deines Charakters in einem Score an.\n"
         )
         confirm = dynamic_typing(
-            "Bist du bereit für dein Abenteuer?",
+            "Bist du bereit?",
             mode="input",
             centered=True,
             choice=True,
@@ -248,7 +248,7 @@ def first_of_all():
                 continue
 
         
-
+# ======================================================================================================================
 #test
 if debug:
     first_of_all()

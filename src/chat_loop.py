@@ -97,9 +97,8 @@ def main_chat_loop(
     while True:
         
         # User-Eingabe
+        # NOTE: Funktioniert muss angepasst werden damit kein lehrer Thread entsteht der zu einem Deadlock führt
         user_input, assistant_imp = asyncio.run(get_user_input(imp))
-        if user_input=="":
-            continue
         
         print()
 
