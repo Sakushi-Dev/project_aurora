@@ -42,9 +42,10 @@ Führe im Hauptverzeichniss `start.bat` aus.
     
 Oder starte die Simulation mit folgendem Befehl:
 
-    ```bash
-    python ./src/aurora.py
-    ```
+```bash
+python ./src/aurora.py
+```
+    
 ## Mitwirken
 
 Beiträge zum Aurora Projekt sind willkommen!
