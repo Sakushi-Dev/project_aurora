@@ -97,12 +97,10 @@ def main_chat_loop(
     while True:
         
         # User-Eingabe
-        while True:
-            user_input, assistant_imp = asyncio.run(get_user_input(imp))
-            if user_input=="":
-                continue
-            else:
-                break
+        user_input, assistant_imp = asyncio.run(get_user_input(imp))
+        if user_input=="":
+            continue
+        
         print()
 
         result = command_dispatcher(user_input, highlighted, history_len)
