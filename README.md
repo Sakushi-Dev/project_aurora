@@ -2,15 +2,8 @@
 
 **Aurora** ist ein Projekt, das eine autonome KI-Persönlichkeit simuliert. Ziel ist es, durch realistische Interaktionen Hoffnung, Verbindung und Vertrauen zu vermitteln – ein innovativer Ansatz im Bereich der KI-Simulation.
 
-<<<<<<< HEAD
-|![Image1](https://freeimage.host/i/3HVoU22) | ![Image2](https://freeimage.host/i/3HVog7S) | ![Image3](https://freeimage.host/i/3HVo8rl)|
-=======
-|![3HVoU22.md.png](https://freeimage.host/i/3HVoU22) | ![3HVog7S.md.png](https://freeimage.host/i/3HVog7S) | ![3HVo8rl.md.png](https://freeimage.host/i/3HVo8rl)|
+|![Image1](https://freeimage.host/i/3HVoU22.th.png) | ![Image2](https://freeimage.host/i/3HVog7S.th.png) | ![Image3](https://freeimage.host/i/3HVo8rl.th.png)|
 
-
-
-
->>>>>>> 6adb879 (docs: update image links in README.md for improved accessibility)
 
 ## Inhaltsverzeichnis
 
