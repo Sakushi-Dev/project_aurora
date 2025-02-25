@@ -15,7 +15,8 @@ from data_handler import (
     read_json,
     write_json,
     user_name_path,
-    user_gender_path
+    user_gender_path,
+    user_language_path
 )
 
 from task_organizer import dynamic_typing, loading_animation
@@ -91,6 +92,8 @@ def first_of_all():
 
     clear_screen()
 
+    invalid_input = lambda: dynamic_typing("Invalid input!", mode="print", centered=True, delay=0.05, color=color[1])
+
     # Enter and confirm username
     while True:
         choice_name = "Choose a name for yourself\n(This will be used in the chat but can be changed later)"
@@ -99,17 +102,25 @@ def first_of_all():
         check_name = f"Your name is {user_name}?"
         confirm = dynamic_typing(check_name, mode="input", centered=True, choice=True, delay=0.05, color=color[7])
         if confirm.lower() == "y":
-            # Ask for the user's gender
-            while True:
-                choice_gender = "Are you male, female or diverse?\n(Answer with M, F or D)"
-                gender = dynamic_typing(choice_gender, mode="input", centered=True, delay=0.05, color=color[7])
-                if gender.lower() in ("m", "f", "d"):
-                    break
-                else:
-                    clear_screen()
-                    dynamic_typing("Invalid input!", mode="print", centered=True, delay=0.05, color=color[1])
             break
-        clear_screen()
+    # Ask for the user's gender
+    while True:
+        choice_gender = "Are you male, female or diverse?\n(Answer with M, F or D)"
+        gender = dynamic_typing(choice_gender, mode="input", centered=True, delay=0.05, color=color[7])
+        if gender.lower() in ("m", "f", "d"):
+            break
+        else:
+            invalid_input()
+    # Ask for the user's language           
+    while True:
+        language = "Choose your language for the chat\n(Answer with EN or DE)"
+        lang = dynamic_typing(language, mode="input", centered=True, delay=0.05, color=color[7])
+        if lang.lower() in ("en", "de"):
+            break
+        else:
+            invalid_input()
+            
+    clear_screen()
 
     clear_screen()
     time.sleep(0.5)
@@ -219,11 +230,16 @@ def first_of_all():
         if confirm.lower() == "y":
             # Save all data
             user_json = {"user_name": user_name}
+
             gender_map = {"m": "male", "f": "female", "d": "diverse"}
             gender_json = {"user_gender": gender_map[gender.lower()]}
 
+            language_map = {"en": "english", "de": "german"}
+            language_json = {"language": language_map[lang.lower()]}
+
             write_json(user_name_path, user_json)
             write_json(user_gender_path, gender_json)
+            write_json(user_language_path, language_json)
             save_set(color=True, data=color_choice)
 
             if char == "Mia":

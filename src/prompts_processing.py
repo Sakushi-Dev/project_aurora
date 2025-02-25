@@ -1,80 +1,86 @@
 from data_handler import (
     load_user_char_name,
     load_prompts,
-    load_set
+    load_set,
+    read_json,
+    user_gender_path,
+    user_language_path
 )
 
-char_choice = load_set(char=True)
+def read_settings():
+    settings = read_json(user_language_path)
+    language = settings["language"]
+    gender = read_json(user_gender_path)["user_gender"]
+    return language, gender
 
-user_name, char_name = load_user_char_name(user=True, char=char_choice.lower())
-
-yaml_data = load_prompts(char=char_choice.lower())
-yaml_data.update(load_prompts(utility=True))
-
-# 3) Platzhalter ersetzen
-for key, text in yaml_data.items():
-    yaml_data[key] = text.replace("{{user}}", user_name).replace("{{char}}", char_name)
-
-
-
-# 4) Prompts vorbereiten
-placeholder = {
-    "system_rule": yaml_data["system_rule"],
-    #eleminiere trailing whitespace
-}
-
-#================= First Message =================
-
-ordered_assistant_prompts_0 = {
-    "first_message": yaml_data["first_message"]
-}
-
-#================= Charakter =================
-
-ordered_system_prompts_0 = {
-    "description": yaml_data["description"],
-    "personality_summary": yaml_data["personality_summary"],
-    "specific_rules": yaml_data["specific_rules"],
-    "scenario": yaml_data["scenario"],
-    "examples_dialogue": yaml_data["examples_dialogue"]
-}
-
-#================= Pre-fill =================
-
-ordered_assistant_prompts_1 = {
-    "assistant_prefill": yaml_data["assistant_prefill"],
-    "assistant_impersonation_prefill": yaml_data["assistant_impersonation_prefill"],
-}
-
-#================= Jailbreak =================
-
-ordered_system_prompts_1 = {
-    "impersonation": yaml_data["impersonation"],
-    "system_rule": yaml_data["system_rule"],
+def prepare_data(language, gender, user_name, char_name):
+    # Load data from various prompts
+    data = load_prompts(char=char_name)
+    data.update(load_prompts(utility=True))
     
-}
-# ----------------------------------------
-# 5) verschiedene Prompt-Typen vorbereiten
-# ----------------------------------------
-system_char_prompt = [{"type": "text", "text": txt} for txt in ordered_system_prompts_0.values()]
-system_utility_prompt = [{"type": "text", "text": txt} for txt in ordered_system_prompts_1.values()]
+    # Replace placeholders in all text fields
+    for key, text in data.items():
+        replaced_text = text.replace("{{user}}", user_name).replace("{{char}}", char_name)
+        if key == "system_rule":
+            replaced_text = replaced_text.replace("{{language}}", language).replace("{{gender}}", gender)
+        data[key] = replaced_text
 
-first_message = [{"role": "assistant", "content": txt, "history": True} for txt in ordered_assistant_prompts_0.values()]
-assistant_prefill = [{"role": "assistant", "content": txt} for txt in ordered_assistant_prompts_1.values()]
+    # Language of first message
+    first_message = data.pop("first_message")
+    split_fm = first_message.split("//")
+    if language == "english":
+        data.update({"first_message": split_fm[0]})
+    else:
+        data.update({"first_message": split_fm[1]})
+
+    return data
+
+def build_prompts(data):
+    # Define different sections of prompts
+    assistant_prompts_first = {"first_message": data["first_message"]}
+    system_prompts_char = {
+        "description": data["description"],
+        "personality_summary": data["personality_summary"],
+        "specific_rules": data["specific_rules"],
+        "scenario": data["scenario"],
+        "examples_dialogue": data["examples_dialogue"]
+    }
+    assistant_prompts_prefill = {
+        "assistant_prefill": data["assistant_prefill"],
+        "assistant_impersonation_prefill": data["assistant_impersonation_prefill"]
+    }
+    system_prompts_utility = {
+        "impersonation": data["impersonation"],
+        "system_rule": data["system_rule"],
+    }
+    
+    # Prepare API request prompts
+    system_char_prompt = [{"type": "text", "text": txt} for txt in system_prompts_char.values()]
+    system_utility_prompt = [{"type": "text", "text": txt} for txt in system_prompts_utility.values()]
+    assistant_first_message = [{"role": "assistant", "content": txt, "history": True} for txt in assistant_prompts_first.values()]
+    assistant_prefill = [{"role": "assistant", "content": txt} for txt in assistant_prompts_prefill.values()]
+
+    system_prompt = system_utility_prompt + system_char_prompt
+    assistant_prompt = assistant_prefill  # first_message is handled separately
+
+    return assistant_first_message, system_prompt, assistant_prompt
+
+def get_prompts():
+    language, gender = read_settings()
+    # Load char setting and convert to lower case once
+    char_name = load_set(char=True)
+    # Load user and character names
+    user_name = load_user_char_name(user=True)
+    
+    data = prepare_data(language, gender, user_name, char_name)
+    first_message, system_prompt, assistant_prompt = build_prompts(data)
+    return first_message, system_prompt, assistant_prompt, user_name, char_name
 
 
-raw_system_prompts = [system_utility_prompt, system_char_prompt]
-raw_assistant_prompts = [assistant_prefill]
-
-first_message = [entry for entry in first_message]
-system_prompt = [entry for raw in raw_system_prompts for entry in raw]
-assistant_prompt = [entry for raw in raw_assistant_prompts for entry in raw]
-# -----------------------
-# 6) Testausgaben
-# -----------------------
-
-# entferne '#' vor print, um die Ausgabe zu sehen
-
-
-#print(system_prompt)
-#print(assistant_prompt)
+(
+    first_message,
+    system_prompt,
+    assistant_prompt,
+    user_name,
+    char_name
+) = get_prompts()

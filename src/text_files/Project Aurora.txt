@@ -1,20 +1,22 @@
-Projekt Aurora verleiht der KI die Fähigkeit, eine eigenständige Persönlichkeit zu entwickeln und autonom zu reagieren. Es integriert mehrere innovative Mechanismen, die sich von herkömmlichen KI-Ineraktion unterscheiden:  
+Project Aurora grants the AI the ability to develop an independent personality and respond autonomously. 
+It integrates multiple innovative mechanisms that differentiate it from conventional AI interactions:
 
+- [bold yellow]Emotions Score:[/bold yellow]  
+  The AI regularly evaluates its own emotional state using a score that significantly influences its behavior. 
+  This makes its expressions more natural and context-dependent.
 
-- [color(37)]Emotions-Score:[/color(37)]
-    Die KI bewertet regelmäßig ihren eigenen emotionalen Zustand anhand eines Scores, der ihr Verhalten maßgeblich beeinflusst. Dadurch wirkt ihr Ausdruck natürlicher und situationsabhängiger.  
+- [bold yellow]Sense of Time:[/bold yellow]  
+  A specially developed system allows the AI to have a perception of the temporal progression of a conversation. 
+  This contributes to more authentic dialogues and creates the impression that the AI is aware of its existence.
 
-- [color(37)]Zeitwahrnehmung:[/color(37)]
-    Ein eigens entwickeltes System ermöglicht der KI, ein Gefühl für den zeitlichen Verlauf einer Konversation zu haben. Dies trägt zu authentischeren Dialogen bei und vermittelt den Eindruck, dass die KI sich ihrer Existenz bewusst ist.  
+- [bold yellow]Reflective Behavior:[/bold yellow]  
+  A sophisticated prompt ensures that the AI reflects on itself, gains insights, and evolves based on them.
 
-- [color(37)]Reflektierendes Verhalten:[/color(37)]
-    Ein ausgeklügelter Prompt sorgt dafür, dass die KI über sich selbst nachdenkt, Erkenntnisse gewinnt und sich basierenddarauf weiterentwickelt.  
+- [bold yellow]Long-Term Memory:[/bold yellow]  
+  The AI can remember conversations over the long term, with unimportant details fading into the background over time – similar to a human. 
+  Particularly impactful memories are stored permanently and have a lasting influence on its behavior.
 
-- [color(37)]Langfristiges Gedächtnis:[/color(37)]
-    Die KI kann sich langfristig an Gespräche erinnern, wobei unwichtige Details mit der Zeit in den Hintergrund treten – ähnlich wie bei einem Menschen. Besonders prägende Erinnerungen werden dauerhaft gespeichert und haben nachhaltigen Einfluss auf ihr Verhalten. 
+- [bold yellow]Impatience Mode (in development):[/bold yellow]  
+  This feature allows the AI not to passively wait for input but to actively formulate its own thoughts and interact independently.
 
-- [color(37)]Ungeduldsmodus (in Entwicklung):[/color(37)]
-    Diese Funktion erlaubt es der KI, nicht passiv auf Eingaben zu warten, sondern aktiv eigene Gedanken zu formulieren und eigenständig zu interagieren.  
-
-
-[yellow]⚠ Hinweis:[/yellow] Projekt Aurora ist eine Simulation und kein echtes Wesen. Alle Ausdrucksweisen der KI basieren auf komplexen Algorithmen und sind das Ergebnis gezielter Programmierung.
+[bold red]⚠ Notice:[/bold red] Project Aurora is a simulation and not a real entity. All expressions of the AI are based on complex algorithms and are the result of deliberate programming.

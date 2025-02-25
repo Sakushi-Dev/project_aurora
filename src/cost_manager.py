@@ -4,36 +4,54 @@ from data_handler import get_slot_cost, save_slot_cost
 
 def save_costs(c_input: float, c_output: float):
     """
-    Speichert die Kosten in der Datei `history/costs.py`.
+    Saves the costs of the current conversation.
+    Parameters:
+        c_input: float
+            The cost of the input.
+        c_output: float
+            The cost of the output.
     """
     save_slot_cost(c_input, c_output)
 
 
-def calculate_cost(model_name: str, current_tokens: int, response_tokens: int) -> float:
+def calculate_cost(
+        model_name: str,
+        current_tokens: int,
+        response_tokens: int
+) -> float:
     """
-    Berechnet die Kosten basierend auf dem Modell.
-    Aktualisiert die globalen Variablen total_input_cost und total_output_cost.
+    Calculates the cost of the current conversation.
+    Parameters:
+        model_name: str
+            The name of the model.
+        current_tokens: int
+            The number of tokens used in the current conversation.
+        response_tokens: int
+            The number of tokens used in the response.
     """
-    total_input_cost, total_output_cost = get_slot_cost()
+    (
+        current_input_cost,
+        current_output_cost
+    ) = get_slot_cost()
 
-    if model_name == "claude-3-5-haiku-20241022":
-        input_cost = (current_tokens / 1_000_000) * 0.80
-        output_cost = (response_tokens / 1_000_000) * 4.00
+    mtok = 1000**2
 
-    elif model_name == "claude-3-5-sonnet-20241022":
-        input_cost = (current_tokens / 1_000_000) * 3.00
-        output_cost = (response_tokens / 1_000_000) * 15.00
+    costs_dict = {
+        "claude-3-7-sonnet-20250219": (3.00, 15.00),
+        "claude-3-5-sonnet-20241022": (3.00, 15.00),
+        "claude-3-5-haiku-20241022": (0.80, 4.00),
+        "claude-3-haiku-20240307": (0.25, 1.25)
+    }
 
-    elif model_name == "claude-3-haiku-20240307":
-        input_cost = (current_tokens / 1_000_000) * 0.25
-        output_cost = (response_tokens / 1_000_000) * 1.25
+    for key, value in costs_dict.items():
+        if model_name == key:
+            input_cost = (current_tokens / mtok) * value[0]
+            output_cost = (response_tokens / mtok) * value[1]
 
-    # Weitere Modelle bei Bedarf hier ergänzen
-
-    total_input_cost += input_cost
-    total_output_cost += output_cost
+    update_input_cost = current_input_cost + input_cost
+    update_output_cost = current_output_cost + output_cost
 
     
 
-    return total_input_cost, total_output_cost
+    return update_input_cost, update_output_cost
 
