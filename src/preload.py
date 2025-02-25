@@ -28,149 +28,148 @@ console = Console(width=120)
 
 # Highlight-Farbe
 color = {
-    1: "color(124)",    # rot
+    1: "color(124)",    # red
     2: "color(200)",    # pink
     3: "color(56)",     # purple
     4: "color(20)",     # blue
-    5: "color(37)",     # türkis
-    6: "color(45)",     # neon-blau
-    7: "color(118)",    # grün
-    8: "color(255)"     # weiß
+    5: "color(37)",     # turquoise
+    6: "color(45)",     # neon blue
+    7: "color(118)",    # green
+    8: "color(255)"     # white
 }
 
 def first_of_all():
     '''
-    Funktion zur Initialisierung des Programms.
-    Hier werden alle notwendigen Schritte durchgeführt, um das Programm zu starten.
+    Function to initialize the program.
+    Here all necessary steps are taken to start the program.
     '''
     def clear_screen():
         os.system('cls' if os.name == 'nt' else 'clear')
 
     def init_api_key(color: dict):
         if not check_api_key_file():
-            # Wiederhole die Abfrage, bis ein gültiger API-Key eingegeben wird
+            # Repeat the query until a valid API key is entered
             while not (api_key := is_valid_anthropic_key()):
-                console.print("\rBitte versuche es erneut.", end="\r", style="yellow")
+                console.print("\rPlease try again.", end="\r", style="yellow")
                 for i in range(5, 0, -1):
-                    console.print(f"Bitte versuche es erneut. {i}", end="\r", style="yellow")
+                    console.print(f"Please try again. {i}", end="\r", style="yellow")
                     time.sleep(1)
                 clear_screen()
             save_api_key(api_key)
-            return "API-Key wurde erfolgreich gespeichert!", color[7]
+            return "API key was successfully saved!", color[7]
         else:
-            return "API-Key wurde gefunden!", color[7]
+            return "API key was found!", color[7]
         
 
 
-    # Wenn die Datei existiert und ein Benutzername gesetzt wurde, wird die Initialisierung übersprungen
+    # If the file exists and a username is set, initialization is skipped
     if os.path.exists(user_name_path):
         data = read_json(user_name_path, debug=False)
         if data != None:
             if not debug:
                 return True
 
-    # Initialisierung starten
+    # Start initialization
     init_data()
     aurora = ""
     with open("./src/text_files/Project Aurora.txt", "r", encoding="utf-8") as file:
         for line in file:
             aurora += line.strip()+"\n"
-    wellcome_message = "Willkommen bei Project Aurora!"
+    wellcome_message = "Welcome to Project Aurora!"
     dynamic_typing(wellcome_message, mode="print", centered=True, delay=0.05, color=color[7])
     time.sleep(1)
     console.print("\n" + aurora)
 
-    console.input("\n[yellow]Drücke Enter, um fortzufahren...[/yellow]")
+    console.input("\n[yellow]Press Enter to continue...[/yellow]")
 
     clear_screen()
 
-    # API-Key initialisieren
+    # Initialize API key
     message, status_color = init_api_key(color)
-    loading_animation("API-Key", wait=3, status=True, color=status_color)
+    loading_animation("API key", wait=3, status=True, color=status_color)
     time.sleep(3)
 
     clear_screen()
 
-    # Benutzername eingeben und bestätigen
+    # Enter and confirm username
     while True:
-        choice_name = "Wähle einen Namen für dich aus\n(Dieser wird im Chat verwendet, kann aber später geändert werden)"
+        choice_name = "Choose a name for yourself\n(This will be used in the chat but can be changed later)"
         user_name = dynamic_typing(choice_name, mode="input", centered=True, delay=0.05, color=color[7])
         
-        check_name = f"Dein Name ist {user_name}?"
+        check_name = f"Your name is {user_name}?"
         confirm = dynamic_typing(check_name, mode="input", centered=True, choice=True, delay=0.05, color=color[7])
         if confirm.lower() == "y":
-            # Geschlecht des Benutzers abfragen
+            # Ask for the user's gender
             while True:
-                choice_gender = "Bist du männlich, weiblich oder divers?\n(Antworte mit M, W oder D)"
+                choice_gender = "Are you male, female or diverse?\n(Answer with M, F or D)"
                 gender = dynamic_typing(choice_gender, mode="input", centered=True, delay=0.05, color=color[7])
-                if gender.lower() in ("m", "w", "d"):
+                if gender.lower() in ("m", "f", "d"):
                     break
                 else:
                     clear_screen()
-                    dynamic_typing("Ungültige Eingabe!", mode="print", centered=True, delay=0.05, color=color[1])
+                    dynamic_typing("Invalid input!", mode="print", centered=True, delay=0.05, color=color[1])
             break
         clear_screen()
 
     clear_screen()
     time.sleep(0.5)
-    print(f"Wähle einen Charakter aus, mit dem du interagieren möchtest.\n\n")
+    print(f"Choose a character you want to interact with.\n\n")
     chars = {1: "Mia", 2: "Yu-jun"}
 
     console.print(
     f"[{color[5]}]Name: {chars[1]}\n"
-    f"Scenario: Autonome Simulation[/{color[5]}]\n"
+    f"Scenario: Autonomous Simulation[/{color[5]}]\n"
     f"{'-'*40}\n"
-    "Beschreibung:\n\n"
-    f"{chars[1]} ist eine hochentwickelte KI und der Kern des Projekts Aurora. "
-    "Sie wurde entwickelt, um autonomes Verhalten zu simulieren und in natürlicher Weise mit dir zu interagieren.\n\n"
-    "Dein Umgang mit ihr beeinflusst ihr Verhalten:\n"
-    "- Behandelst du sie mit Respekt, wird sie dir vertrauen und dich schätzen.\n"
-    "- Behandelst du sie schlecht, wird sie auf Distanz gehen und dir nicht vertrauen.\n"
-    "\nAktive Funktionen:\n"
-    f"[{color[7]}]Emotionsanalyse | Persönlichkeitsentwicklung | Zeitwahrnehmung | Deep Memory[/{color[7]}]\n"
+    "Description:\n\n"
+    f"{chars[1]} is a highly advanced AI and the core of Project Aurora. "
+    "It was developed to simulate autonomous behavior and interact with you in a natural way.\n\n"
+    "Your interaction with it influences its behavior:\n"
+    "- If you treat it with respect, it will trust and appreciate you.\n"
+    "- If you treat it badly, it will distance itself and not trust you.\n"
+    "\nActive functions:\n"
+    f"[{color[7]}]Emotion Analysis | Personality Development | Sense of Time | Deep Memory[/{color[7]}]\n"
     )
 
     console.print(f"[black]{'─' * 120}[/black]\n")
 
     console.print(
     f"[{color[5]}]Name: {chars[2]}\n"
-    f"Scenario: Roleplay (Frühe Entwicklungsphase)[/{color[5]}]\n"
+    f"Scenario: Roleplay (Early Development Phase)[/{color[5]}]\n"
     f"{'-'*40}\n"
-    "Beschreibung:\n\n"
-    "Du befindest dich in Südkorea, in der pulsierenden Metropole Seoul. "
-    "Als Tochter einer wohlhabenden, aber traditionsbewussten Familie stehst du vor einer Herausforderung: "
-    "Deine Eltern haben eine arrangierte Ehe für dich geplant – mit Yu-jun, einem gefeierten Idol, "
-    "das für seine kühle und egozentrische Art bekannt ist.\n\n"
-    "⚠️  Dieses Szenario befindet sich noch in einer frühen Entwicklungsphase. "
-    "Erwarte mögliche Anpassungen und Verbesserungen in zukünftigen Versionen.\n"
-    "\nAktive Funktionen:\n"
-    f"[{color[7]}]Emotionsanalyse | Persönlichkeitsentwicklung | Deep Memory[/{color[7]}]\n"
+    "Description:\n\n"
+    "You are in South Korea, in the bustling metropolis of Seoul. "
+    "As the daughter of a wealthy but traditional family, you face a challenge: "
+    "Your parents have arranged a marriage for you – with Yu-jun, a celebrated idol known for his cool and egocentric nature.\n\n"
+    "⚠️  This scenario is still in an early development phase. "
+    "Expect possible adjustments and improvements in future versions.\n"
+    "\nActive functions:\n"
+    f"[{color[7]}]Emotion Analysis | Personality Development | Deep Memory[/{color[7]}]\n"
     )
     console.print(f"[black]{'─' * 120}[/black]\n")
 
-    choice_char = f"Wähle einen Charakter aus\n(Antworte mit 1 für {chars[1]} und 2 für {chars[2]})"
+    choice_char = f"Choose a character\n(Answer with 1 for {chars[1]} and 2 for {chars[2]})"
     while True:
         try:
             choice = int(dynamic_typing(choice_char, mode="input", centered=True, delay=0.05, color=color[7]))
             if choice in (1, 2):
                 break
             else:
-                print("Ungültige Eingabe!\n")
+                print("Invalid input!\n")
         except ValueError:
-            print("Bitte eine Zahl eingeben!\n")
+            print("Please enter a number!\n")
     char = chars[choice]
     save_set(char=True, data=char)
 
     clear_screen()
 
-    dynamic_typing("Demo der Farben", mode="print", centered=True, delay=0.05, color=color[7])
+    dynamic_typing("Color Demo", mode="print", centered=True, delay=0.05, color=color[7])
     time.sleep(0.5)
 
     color_demo = []
-    # Panels generieren
-    for i in range(1, 8, 2):  # Schritte von 2, um Paare zu bilden
+    # Generate panels
+    for i in range(1, 8, 2):  # Steps of 2 to form pairs
         panel1 = Panel(
-            f"[{color[i]}]Hallo ich bin {char}.[/{color[i]}]",
+            f"[{color[i]}]Hello, I am {char}.[/{color[i]}]",
             title=f"[bold {color[i]}]{char}[/bold {color[i]}]",
             width=50,
             expand=True,
@@ -178,20 +177,20 @@ def first_of_all():
         )
 
         panel2 = Panel(
-            f"[{color[i+1]}]Hallo ich bin {char}.[/{color[i+1]}]",
+            f"[{color[i+1]}]Hello, I am {char}.[/{color[i+1]}]",
             title=f"[bold {color[i+1]}]{char}[/bold {color[i+1]}]",
             width=50,
             expand=True,
             border_style="white",
         )
 
-        # Panels nebeneinander ausgeben
+        # Display panels side by side
         console.print(Columns([f"{' '*2}{i}.) ", panel1, f"{' '*2}{i+1}.) ", panel2, f"{' '*6}"]))
         console.print(f"[black]{'─' * 120}[/black]\n")
     
     while True:
         try:
-            color_choice = int(dynamic_typing("Wähle eine Farbe aus (1-8)\n(Kann später geändert werden)", mode="input", centered=True, delay=0.05, color=color[7]))
+            color_choice = int(dynamic_typing("Choose a color (1-8)\n(Can be changed later)", mode="input", centered=True, delay=0.05, color=color[7]))
             if color_choice in range(1, 9):
                 break
         except ValueError:
@@ -202,15 +201,15 @@ def first_of_all():
 
     while True:
         console.print(
-            "Fast geschafft!\n\n"
-            f"[{color[5]}]Hinweis zu Command-Mode:[/{color[5]}]\n"
-            "Um in den Command-Mode zu wechseln, füge ein [red]/[/red] vor deinen Befehl ein.\n"
-            "Nach eingabe des slash werden dir alle verfügbaren Befehle angezeigt.\n\n"
-            f"[{color[5]}]Beispiel:[/{color[5]}] [red]/[/red][green]mood[/green]\n"
-            "Dieser Befehl zeigt dir die aktuelle Stimmung deines Charakters in einem Score an.\n"
+            "Almost done!\n\n"
+            f"[{color[5]}]Note on Command Mode:[/{color[5]}]\n"
+            "To switch to Command Mode, add a [red]/[/red] before your command.\n"
+            "After entering the slash, all available commands will be displayed.\n\n"
+            f"[{color[5]}]Example:[/{color[5]}] [red]/[/red][green]mood[/green]\n"
+            "This command shows you the current mood of your character in a score.\n"
         )
         confirm = dynamic_typing(
-            "Bist du bereit?",
+            "Are you ready?",
             mode="input",
             centered=True,
             choice=True,
@@ -218,9 +217,9 @@ def first_of_all():
             color=color[7]
             )
         if confirm.lower() == "y":
-            # Speichern aller Daten
+            # Save all data
             user_json = {"user_name": user_name}
-            gender_map = {"m": "männlich", "w": "weiblich", "d": "divers"}
+            gender_map = {"m": "male", "f": "female", "d": "diverse"}
             gender_json = {"user_gender": gender_map[gender.lower()]}
 
             write_json(user_name_path, user_json)
@@ -234,7 +233,7 @@ def first_of_all():
             return True
         else:
             confirm = dynamic_typing(
-            "Willst du wirklich abbrechen?",
+            "Do you really want to cancel?",
             mode="input",
             centered=True,
             choice=True,
