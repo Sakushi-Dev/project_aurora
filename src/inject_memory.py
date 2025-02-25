@@ -1,7 +1,7 @@
 
 from data_handler import read_jsonl, load_set, get_slot
 
-PATH = "data/memory/memory_analysis_slot"
+PATH = "data/memory/memory_analysis_slot_"
 data_format = ".jsonl"
 
 def read_memory(path):
@@ -44,7 +44,7 @@ def memory_prompt_forming() -> dict:
     Form the memory prompt.
     '''
     slot = get_slot()
-    path = PATH + str(slot) + data_format
+    path = PATH + str(slot-1) + data_format
     memory_str = filtering_jsonl(read_memory(path))
 
     char = load_set(char=True)

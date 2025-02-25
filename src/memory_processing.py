@@ -1,4 +1,4 @@
-
+import os
 import re
 import json
 from rich.console import Console
@@ -291,6 +291,8 @@ def save_memory_analysis_as_jsonl(memory_analysis_list):
 
     data = sorted(data, key=lambda x: category_order.get(x["category"], 4))
 
+    if not os.path.exists(f"data/memory"):
+        os.makedirs(f"data/memory")
     with open(f"data/memory/memory_analysis_slot_{slot-1}.jsonl", "w", encoding="utf-8") as file:
         for entry in data:
             file.write(json.dumps(entry) + "\n")

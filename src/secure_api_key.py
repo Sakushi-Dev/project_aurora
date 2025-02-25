@@ -39,22 +39,23 @@ def is_valid_anthropic_key():
 
     console.print(
         f"{'-'*120}\n"
-        "Nur API-Keys von [color(37)]Anthropic[/color(37)] sind erlaubt!\n"
-        "Link: https://console.anthropic.com/ Hier kannst du einen API-Key erstellen.\n"
+        "Only API keys from [color(37)]Anthropic[/color(37)] are allowed!\n"
+        "Link: https://console.anthropic.com/ You can create an API key here.\n"
         f"{'-'*120}\n"
-        )
+    )
+
     console.print(
-        "[orange1]Info:[/orange1] Es wird ein Test-Request an die Anthropic API gesendet.\n"
-        "Bei diesem Test-Request fallen keine relevanten Kosten an. (0.0000015$)\n\n"
+        "[orange1]Info:[/orange1] A test request will be sent to the Anthropic API.\n"
+        "This test request incurs no significant costs. (0.0000015$)\n\n"
         f"{'-'*120}\n"
-        "Dein API-Key wird verschlüsselt und lokal als Umgebungsvariable gespeichert.\n"
-        "Beachte das der API-Key nichtmehr angezeigt wird, nachdem er eingegeben wurde.\n"
-        "Bewahre den API-Key sicher auf, da er nicht wiederhergestellt werden kann.\n"
+        "Your API key will be encrypted and stored locally as an environment variable.\n"
+        "Note that the API key will not be displayed again after being entered.\n"
+        "Keep your API key secure, as it cannot be recovered.\n"
         f"{'-'*120}\n"
-        "[red]Wichtig:[/red] Gebe deinen API-Key oder eine Kopie des Programms nicht an Dritte weiter!\n"
-        "Jeder der deinen API-Key hat, kann damit auf deine Kosten Anfragen an die Anthropic API senden.\n"
+        "[red]Important:[/red] Do not share your API key or a copy of this program with third parties!\n"
+        "Anyone with your API key can make requests to the Anthropic API at your expense.\n"
         f"{'-'*120}\n"
-        )
+    )
     api_key = console.input("[green]Gebe deinen API-Key ein: [/green]")
 
     # Anthropic API URL für einen einfachen Test-Request

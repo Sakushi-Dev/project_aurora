@@ -68,16 +68,16 @@ def _(event):
 @kb.add('/')
 def _(event):
     console.print(
-        "\nBefehle:\n\n"
-        "[red]/[/red][green]exit[/green]     - Chat beenden\n"
-        "[red]/[/red][green]delete[/green]   - Chatverlauf löschen\n"
-        "[red]/[/red][green]reset[/green]    - Aurora.py zurücksetzen\n"
-        "[red]/[/red][green]restart[/green]  - Aurora.py neu starten\n"
-        "[red]/[/red][green]again[/green]    - Letzte Nachricht wiederholen\n"
-        "[red]/[/red][green]config[/green]   - Einstellungen ändern\n"
-        "[red]/[/red][green]slot[/green]     - Chat-Slot wechseln\n"
-        "[red]/[/red][green]report[/green]   - Fehler melden auf GitHub\n"
-        f"[red]/[/red][green]mood[/green]     - Stimmung von {char} ansehen\n"
+        "\nCommands:\n\n"
+        "[red]/[/red][green]exit[/green]     - End chat\n"
+        "[red]/[/red][green]delete[/green]   - Clear chat history\n"
+        "[red]/[/red][green]reset[/green]    - Reset Aurora.py\n"
+        "[red]/[/red][green]restart[/green]  - Restart Aurora.py\n"
+        "[red]/[/red][green]again[/green]    - Repeat the last message\n"
+        "[red]/[/red][green]config[/green]   - Change settings\n"
+        "[red]/[/red][green]slot[/green]     - Switch chat slot\n"
+        "[red]/[/red][green]report[/green]   - Report an issue on GitHub\n"
+        f"[red]/[/red][green]mood[/green]     - View {char}'s mood\n"
     )
     event.app.current_buffer.insert_text('/')
 

@@ -77,7 +77,7 @@ def init_set():
     route = {
         "set_char": {"set_char": "Mia"},
         "set_color": {"color_choice": ""},
-        "set_freq": {"set_freq": 2},
+        "set_freq": {"set_freq": 4},
         "set_imp": {"set_imp": "off"},
         "set_max_t": {"max_token": 6144},
         "set_slot": {"set_slot": 1},

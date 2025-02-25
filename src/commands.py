@@ -452,7 +452,7 @@ def handle_unknown():
     console.print("[red]Befehl nicht erkannt. Gib /help ein, um verfügbare Befehle zu sehen.[/red]")
 
 def handle_mood():
-    from tabulate import tabulate
+    from rich.table import Table
     from data_handler import load_current_emo_score
 
     score = load_current_emo_score()
@@ -463,15 +463,35 @@ def handle_mood():
     arousal_value = score["Arousal_Level"]
     trust_value = score["Trust_Level"]
 
-    show_mood = [["Emotionen", "Score"],
-                ["Wut", f"{angry_value}"],
-                ["Trauer", f"{sad_value}"],
-                ["Zuneigung", f"{affection_value}"],
-                ["Erregung", f"{arousal_value}"],
-                ["Vertrauen", f"{trust_value}"]
-                ]
+    lvl_color = {
+        "Angry_Level": {"green": 0, "yellow": 20, "red": 60},
+        "Sad_Level": {"green": 0, "yellow": 20, "red": 60},
+        "Affection_Level": {"pink": 800, "green": 600, "orange1": 400, "red": 10},
+        "Arousal_Level": {"pink": 100, "green": 70, "orange1": 40, "red": 5},
+        "Trust_Level": {"pink": 800, "green": 600, "orange1": 400, "red": 10},
+    }
 
-    console.print(tabulate(show_mood, headers="firstrow", tablefmt="grid"), "\n")
+    
+    angry_color = "green" if angry_value < lvl_color["Angry_Level"]["yellow"] else "yellow" if angry_value < lvl_color["Angry_Level"]["red"] else "red"
+    sad_color = "green" if sad_value < lvl_color["Sad_Level"]["yellow"] else "yellow" if sad_value < lvl_color["Sad_Level"]["red"] else "red"
+    affection_color = "pink" if affection_value > lvl_color["Affection_Level"]["green"] else "green" if affection_value > lvl_color["Affection_Level"]["orange1"] else "orange1" if affection_value > lvl_color["Affection_Level"]["red"] else "red"
+    arousal_color = "pink" if arousal_value > lvl_color["Arousal_Level"]["green"] else "green" if arousal_value > lvl_color["Arousal_Level"]["orange1"] else "orange1" if arousal_value > lvl_color["Arousal_Level"]["red"] else "red"
+    trust_color = "pink" if trust_value > lvl_color["Trust_Level"]["green"] else "green" if trust_value > lvl_color["Trust_Level"]["orange1"] else "orange1" if trust_value > lvl_color["Trust_Level"]["red"] else "red"
+    
+    # Erstelle eine Rich-Tabelle
+    table = Table(title="Emotions Score")
+
+    # Spalten definieren
+    table.add_column("Emotions", justify="center", style="bold")
+    table.add_column("Score", justify="right")
+
+    table.add_row(f"[{angry_color}]Anger[/{angry_color}]", str(angry_value))
+    table.add_row(f"[{sad_color}]Sadness[/{sad_color}]", str(sad_value))
+    table.add_row(f"[{affection_color}]Affection[/{affection_color}]", str(affection_value))
+    table.add_row(f"[{arousal_color}]Arousal[/{arousal_color}]", str(arousal_value))
+    table.add_row(f"[{trust_color}]Trust[/{trust_color}]", str(trust_value))
+
+    console.print(table)
 
 def command_dispatcher(user_input: str, highlighted:str, history_len:int):
     # Settings-Import:
