@@ -142,40 +142,102 @@ def stream_chat_response(
     
     return current_tokens
 
+
+
+thinkin = True
+
+def think():
+    import time
+    global thinkin
+
+    char = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+    while True:
+        for i in char:
+            console.print(f"\r[color(45)]{i}[/color(45)]", end="\r")
+            time.sleep(0.1)
+            if thinkin == False:
+                break
+        if thinkin == False:
+            break
+
 def print_ki_response(char: str = None, highlighted: str = "purple"):
-    global final_client, final_model_name, final_system_prompt, final_messages
+    import threading
+    import time
+    
+    global final_client, final_model_name, final_system_prompt, final_messages, thinkin
 
     # Highlighted-Text
     color = highlighted
     
     response_text = ""
 
-    try:
-        with final_client.messages.stream(
-            model=final_model_name,
-            max_tokens=512,
-            temperature=0.9,
-            system=final_system_prompt,
-            messages=final_messages
-        ) as stream:
-            chunks = list(stream.text_stream)
-
-            # Mood wieder entfernen
-            temp_assistant_prompt.pop(-2) 
-
-            # Alle Chunks zusammenfügen:
-            response_text = "".join(chunks)
-
-    except Exception as e:
-        console.print(f"[red]Fehler bei der Anfrage: {e}[/red]")
-
-    animated_typing_panel(char, response_text, color=color)
+    api_request = True
+    while_round = 0
+    thinkin = True
     
 
-    print()  # Zusätzlicher Zeilenumbruch nach vollständiger Antwort
+    while api_request:
+                
+        threading.Thread(target=think, daemon=True).start()
 
-    response_token = output_tokens(response_text)
-    return response_token, response_text
+        try:
+            with final_client.messages.stream(
+                model=final_model_name,
+                max_tokens=512,
+                temperature=0.9,
+                system=final_system_prompt,
+                messages=final_messages
+            ) as stream:
+                chunks = list(stream.text_stream)
+
+                # Mood wieder entfernen
+                temp_assistant_prompt.pop(-2) 
+
+                # Alle Chunks zusammenfügen:
+                response_text = "".join(chunks)
+
+        except Exception as e:
+            console.print(f"[red]Fehler bei der Anfrage: {e}[/red]")
+
+        def split_response(response_text):
+            def extract_sections(text, section_one, section_two):
+                import re
+                pattern_one = fr"<{section_one}>(.*?)</{section_one}>"
+                pattern_two = fr"<{section_two}>(.*?)</{section_two}>"
+                match_one = re.search(pattern_one, text, re.DOTALL)
+                match_two = re.search(pattern_two, text, re.DOTALL)
+                text_one = match_one.group(1).strip() if match_one else ""
+                text_two = match_two.group(1).strip() if match_two else ""
+                return text_one, text_two
+            (
+            character_analysis,
+            response
+            ) = extract_sections(
+                response_text, "character_analysis", "response"
+                )
+            return character_analysis, response
+        
+        
+
+        character_analysis, response = split_response(response_text)
+
+        if response == "":
+            while_round += 1
+            if while_round == 3:
+                console.print("[red]Keine Antwort erhalten.[/red]")
+                break
+            continue
+        else:
+            thinkin = False
+            time.sleep(0.5)
+
+        animated_typing_panel(char, response, color=color)
+        
+
+        print()  # Zusätzlicher Zeilenumbruch nach vollständiger Antwort
+
+        response_token = output_tokens(response_text)
+        return response_token, response
 
 
 if debug and lokal:

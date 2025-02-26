@@ -51,6 +51,8 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.bindings.named_commands import accept_line
 
+from commands import get_commands, handle_back
+
 #====================================== Setze Global Variables ====================================
 
 console = Console()
@@ -65,21 +67,10 @@ def _(event):
 def _(event):
     accept_line(event)
 
-@kb.add('/')
-def _(event):
-    console.print(
-        "\nCommands:\n\n"
-        "[red]/[/red][green]exit[/green]     - End chat\n"
-        "[red]/[/red][green]delete[/green]   - Clear chat history\n"
-        "[red]/[/red][green]reset[/green]    - Reset Aurora.py\n"
-        "[red]/[/red][green]restart[/green]  - Restart Aurora.py\n"
-        "[red]/[/red][green]again[/green]    - Repeat the last message\n"
-        "[red]/[/red][green]config[/green]   - Change settings\n"
-        "[red]/[/red][green]slot[/green]     - Switch chat slot\n"
-        "[red]/[/red][green]report[/green]   - Report an issue on GitHub\n"
-        f"[red]/[/red][green]mood[/green]     - View {char}'s mood\n"
-    )
-    event.app.current_buffer.insert_text('/')
+#@kb.add('/')
+#def _(event):
+#    console.print(get_commands())
+#    event.app.current_buffer.insert_text('/')
 
 session = PromptSession(key_bindings=kb)
 
@@ -182,8 +173,6 @@ async def get_user_input(wait):
     return user_input, assistant
 
 
-# Speichert den aktuellen Buffer in der Variable buffer
-# in einer Schleife bis result True ist
 async def get_buffer():
     global buffer, result
 
@@ -194,9 +183,10 @@ async def get_buffer():
         buffer = session.app.current_buffer.text
         lines = buffer.split('\n')
         new_buffer = []
-        
+
         for line in lines:
             while len(line) > 100:
+
                 last_space = line.rfind(' ', 0, 100)
                 if last_space != -1:
                     new_buffer.append(line[:last_space+1])
@@ -215,13 +205,17 @@ async def get_buffer():
         if result == True:
             break
 
-# Wartet eine bestimmte Zeit bis der User eine Eingabe macht
-# Wenn der User nichts eingibt, wird result True
-# Wenn der User etwas eingibt, wird funktion beendet
+
 async def break_input(wait):
     global buffer, result, was_typed
 
+    from prompt_toolkit.application.current import get_app
+
+    app = get_app()
+    app.current_buffer.reset()  # Löscht den Inhalt des Input-Buffers
+
     elapsed_time = 0
+    break_async = False
 
     if wait == "neutral":
         # Wartezeit zwischen 1,5 und 3 Minuten
@@ -232,6 +226,22 @@ async def break_input(wait):
 
     while True:
         await asyncio.sleep(0.1)
+
+        if buffer.startswith("/"):
+            console.print(get_commands())
+            session.app.current_buffer.reset()
+            session.app.current_buffer.insert_text('/')
+            console.print("[red]/[/red]", end="")
+            break_async = True
+
+        while break_async:
+            await asyncio.sleep(0.5)
+            if buffer == "":
+                handle_back()
+                break_async = False
+                console.print("\n[green]Input:[/green]")
+                break
+
         elapsed_time += 0.1
         if buffer != "":
             was_typed = True
