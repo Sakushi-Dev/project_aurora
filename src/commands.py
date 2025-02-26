@@ -43,11 +43,12 @@ custom_style = Style.from_dict({
 # Rich-Console-Objekt:
 console = Console(width=120)
 
+from cmd_operations import (
+    cmd_exit,
+)
 
+handle_exit = cmd_exit.execute_exit
 
-def handle_exit():
-    console.print("Chat beendet. Tschüss!")
-    return "exit"
 
 def handle_report():
     import webbrowser
@@ -522,13 +523,16 @@ def command_dispatcher(user_input: str, highlighted:str, history_len:int):
         else:
             result = commands[command]()
     
-    if command in ["/exit", "/delete", "/slot", "/reset"] and result in ["exit", "delete", "slot", "reset"] or command == "/restart":
+    if command in ["/delete", "/slot", "/reset"] and result in ["delete", "slot", "reset"] or command == "/restart":
         console.print(f"Aurora.py wird in neu gestartet", end="")
         for _ in range(5, 0, -1):
             console.print(f"[red].[/red]", end="")
             time.sleep(1)
         handle_restart()
-    elif command == "/config" and result == "exit":
+    elif command == "/exit":
+        time.sleep(3)
+        os._exit(0) # Beendet das Programm
+    elif command == "/config":
         os.system('cls' if os.name == 'nt' else 'clear')
         history, list_msg = organize_chat_and_char()
         print_latest_messages(list_msg, highlighted=highlighted)
