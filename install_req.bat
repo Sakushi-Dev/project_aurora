@@ -3,7 +3,7 @@ chcp 65001 >nul
 echo Starte Installation der Pakete aus requirements.txt ...
 pip freeze > installed.txt
 
-for /f "tokens=*" %%i in (requirements.txt) do (
+for /f "tokens=*" %%i in (src/bin/requirements.txt) do (
     findstr /c:"%%i" installed.txt >nul
     if errorlevel 1 (
         echo Installing %%i ...
