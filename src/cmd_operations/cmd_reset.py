@@ -1,24 +1,21 @@
 import os
 import time
 
-from globals import console
+from globals import console, get_path, get_file
 
 
 def execute_reset():
-    from init_data import spit_path
-    from data_handler import (
-        set_path as set_p,
-        slot_path as slot_p,
-        emo_score_path as emo_p,
-        cost_path,
-        last_msg_time_path,
-        user_path as user_p,
-        char_memory_path as mem_p,
-    )
-
-    # Formatiere zu relativen Order-Pfaden um alle Dateien innerhalb des Ordners zu löschen
-    costs_p, _ = spit_path(cost_path)
-    last_p, _ = spit_path(last_msg_time_path)
+    
+    # Get all paths for reset
+    set_p   = get_path("set")
+    slot_p  = get_path("hist")
+    user_p  = get_path("user_spec")
+    mem_p   = get_path("mem")
+    costs_p = get_path("cost")
+    last_p  = get_path("l_msg")
+    cache   = get_path("cache_l")
+    # Get all files for reset
+    emo_f   = get_file("emo_score")
 
     os.system('cls' if os.name == 'nt' else 'clear')
     
@@ -43,7 +40,7 @@ def execute_reset():
             route_map = {
                 "Kosten der Dialoge": costs_p, 
                 "Zeiten für 'Impatience'": last_p,
-                "Emotions-Score Daten": emo_p,
+                "Emotions-Score Daten": emo_f,
                 "Settings": set_p,
                 "User-Data": user_p,
                 "Chat-Verläufe": slot_p,
@@ -74,8 +71,9 @@ def execute_reset():
 
             # Löschen von '__pycache__'
             try:
-                os.system("rm -r ./src/__pycache__")
-                os.system("rm -r ./src/cmd_operations/__pycache__")
+                for path in cache:
+                    os.system(f"rm -r {path}")
+                
                 console.print("\n[green]Cache gelöscht.[/green]")
             except FileNotFoundError:
                 console.print("\n[red]Cache nicht gefunden.[/red]")
@@ -117,3 +115,4 @@ def execute_reset():
             return "cancel"
     else:
         return "cancel"
+    

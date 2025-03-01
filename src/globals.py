@@ -16,7 +16,7 @@ class PathManager:
         return PathManager(self.base_dir / name).path()
 
     def __getitem__(self, name):
-        return self.__getattr__(name)
+        return (self.base_dir / name)
     
     
 
@@ -39,6 +39,11 @@ USER_SPEC_DIR   = manage_prompts.user_spec
 CHAR_SPEC_DIR   = manage_prompts.char_spec
 MIA_SPEC_DIR    = manage_char_spec.mia_desc
 YUJUN_SPEC_DIR  = manage_char_spec.yujun_desc
+
+CACHE_L_DIR     = [
+    PathManager(Path("./src"))["__pycache__"],
+    PathManager(Path("./src/cmd_operations"))["__pycache__"]
+    ]
 
 # Set paths
 char_file          = SET_DIR/"set_char.json"
@@ -82,6 +87,11 @@ FILE = {
 	for key, value in locals().items()
 	if key.endswith("_file")
 }
+
+def get_path(path:str):
+    return FOLDER[path]
+def get_file(file:str):
+    return FILE[file]
 
 # NOTE: Significant attributes of the Path object
 '''
