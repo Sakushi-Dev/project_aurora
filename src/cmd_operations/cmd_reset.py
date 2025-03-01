@@ -75,6 +75,7 @@ def execute_reset():
             # Löschen von '__pycache__'
             try:
                 os.system("rm -r ./src/__pycache__")
+                os.system("rm -r ./src/cmd_operations/__pycache__")
                 console.print("\n[green]Cache gelöscht.[/green]")
             except FileNotFoundError:
                 console.print("\n[red]Cache nicht gefunden.[/red]")
