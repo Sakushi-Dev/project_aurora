@@ -75,8 +75,6 @@ mia_name_file      = CHAR_SPEC_DIR/"char_name.json"
 yujun_name_file    = CHAR_SPEC_DIR/"char_name.json"
 
 
-
-
 FOLDER = {
 	key.replace("_DIR", "").lower(): value
 	for key, value in locals().items()
