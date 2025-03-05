@@ -180,24 +180,40 @@ def print_ki_response(char: str = None, highlighted: str = "purple"):
                 
         threading.Thread(target=think, daemon=True).start()
 
-        try:
-            with final_client.messages.stream(
-                model=final_model_name,
-                max_tokens=512,
-                temperature=0.9,
-                system=final_system_prompt,
-                messages=final_messages
-            ) as stream:
-                chunks = list(stream.text_stream)
+        max_retries=2
+        retries=0
 
-                # Mood wieder entfernen
-                temp_assistant_prompt.pop(-2) 
+        while retries < max_retries:
+            retries += 1
+            try:
+                with final_client.messages.stream(
+                    model=final_model_name,
+                    max_tokens=512,
+                    temperature=0.9,
+                    system=final_system_prompt,
+                    messages=final_messages
+                ) as stream:
+                    chunks = list(stream.text_stream)
 
-                # Alle Chunks zusammenfügen:
-                response_text = "".join(chunks)
+                    # Mood wieder entfernen
+                    temp_assistant_prompt.pop(-2) 
 
-        except Exception as e:
-            console.print(f"[red]Fehler bei der Anfrage: {e}[/red]")
+                    # Alle Chunks zusammenfügen:
+                    response_text = "".join(chunks)
+                    break
+            
+            except anthropic.APIStatusError as e:
+                if "overloaded_error" in str(e):
+                    time.sleep(0.2)
+                    continue
+
+            except Exception as e:
+                console.print(f"[red]Unexpected error: {e}[/red]")
+                break
+
+        if retries == max_retries:
+            console.print("[red]No response received.[/red]")
+
 
         def split_response(response_text):
             def extract_sections(text, section_one, section_two):
