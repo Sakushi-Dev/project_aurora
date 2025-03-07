@@ -38,7 +38,7 @@ MEM_P_DIR       = manage_prompts.memory
 USER_SPEC_DIR   = manage_prompts.user_spec
 CHAR_SPEC_DIR   = manage_prompts.char_spec
 MIA_SPEC_DIR    = manage_char_spec.mia_desc
-YUJUN_SPEC_DIR  = manage_char_spec.yujun_desc
+YU_JUN_SPEC_DIR  = manage_char_spec.yujun_desc
 
 CACHE_L_DIR     = [
     PathManager(Path("./src"))["__pycache__"],
