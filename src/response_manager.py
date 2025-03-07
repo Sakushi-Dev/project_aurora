@@ -106,8 +106,6 @@ def stream_chat_response(
 
     temp_assistant_prompt = init_prompt.get_reminder_api()
 
-    print (f"System-Prompt: {system_prompt}")
-    print (f"Assistant-Prompt: {temp_assistant_prompt}")
 
     if assistant_imp:
         temp_assistant_prompt.append(assistant_imp)
