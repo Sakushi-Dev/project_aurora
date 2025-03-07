@@ -7,7 +7,7 @@ from data_handler import read_json, write_json, slot_path
 
 def first_message():
     char = load_set(char=True)
-    char = char.relpace("-", "_")
+    char = char.replace("-", "_")
     language = read_json(FOLDER["user_spec"] / "user_language.json")["language"]
     first_message_path = FOLDER[f"{char.lower()}_spec"] / "first_message.txt"
 
