@@ -13,7 +13,8 @@ from prompt_toolkit.styles import Style
 
 from tiktoken_function import count_tokens
 
-from data_handler import load_set
+from globals import FOLDER
+from data_handler import load_set, read_json
 
 
 # Rich-Console-Objekt:
@@ -133,9 +134,8 @@ def print_latest_messages(
     """
     Gibt die letzten N Nachrichten formatiert in der Konsole aus.
     """
-    from prompts_processing import (
-    user_name as user,
-)
+    # Lade Benutzer Namen
+    user = read_json(FOLDER["user_spec"]/ "user_name.json")["user_name"]
     # Lade Charakter Namen
     char = load_set(char=True)
 

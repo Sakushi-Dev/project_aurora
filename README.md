@@ -11,6 +11,7 @@
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Update](#update)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -46,6 +47,81 @@ Follow these steps to install Aurora locally:
     cd install_req.bat
     ```
     or start the file `install_req.bat` in main folder.
+
+## Update
+
+<details>
+<summary>Update (March 7, 2025)</summary>
+
+# Project Aurora Functionality Analysis
+
+## Core Code Functions
+
+1. **Character AI Simulation**: 
+   - The code creates an interactive AI character system with different personalities (Mia and Yu-jun)
+   - Each character has their own traits, memories, and reactions
+
+2. **Prompt Engineering Framework**:
+   - The `PromptBuilder` class generates structured prompts for the AI model
+   - Dynamic template system using Jinja for flexible prompts
+   - Parameters like `char_name`, `user_name`, `language`, and `gender` are inserted into templates
+
+3. **Emotion System**:
+   - Character has dynamic moods based on user interaction
+   - `<mood>` tags store and communicate the emotional state to the model
+
+4. **Time Perception**:
+   - Characters can have a sense of time (especially Mia)
+   - `time_sense` parameter is used to simulate temporal continuity
+
+5. **Memory System**:
+   - The AI retains memories of previous conversations
+   - `<memory>` tags enable context-aware responses
+
+6. **Response Processing**:
+   - Responses are split into two parts: `<inner_reflection>` and `<response>`
+   - `inner_reflection` contains the character's internal thought processes
+   - `response` contains the actual text seen by the user
+
+7. **API Communication**:
+   - Structured communication with Claude API through `final_client.messages.stream`
+   - Streaming response processing for real-time interaction
+   - Error handling for API failures
+
+8. **Interactive User Interface**:
+   - `dynamic_typing` and `animated_typing_panel` for animated text output
+   - Rich library for colored console display and formatted text
+
+9. **Command Mode**:
+   - Commands with `/` as prefix
+   - Enables meta-interactions like mood queries and setting changes
+
+10. **Cost Monitoring**:
+    - Calculation of tokens and costs for API requests
+    - Display of usage metrics after each interaction
+
+11. **Dynamic Response Length**:
+    - `random_response_length()` generates random minimum and maximum lengths for responses
+    - Adjusts based on settings like "short", "medium", "long"
+
+12. **YAML Configuration**:
+    - External YAML files for prompt templates and system rules
+    - Clear separation of code and content
+
+## Data Flow
+
+1. User enters a message → formatted to `format_user_input`
+2. Message is added to the history
+3. `stream_chat_response` prepares the request and sets global variables
+4. `print_ki_response` sends the request to the API and receives chunks
+5. Response is split through `split_response` into reflection and response text
+6. Response is displayed with animation and costs calculated
+7. The new response is added to the history for context retention
+
+The code skillfully combines AI technology with narrative elements to create an immersive chat experience with dynamic, context-aware responses.
+
+I have improved the prompt structure to make it more organized and easier to read.
+</details>
 
 ## Usage
 

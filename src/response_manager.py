@@ -13,10 +13,11 @@ from memory_processing import control_existing_memory
 # Task-Organizer-Import:
 from task_organizer import truncate_history_for_api, animated_typing_panel
 
-from prompts_processing import (
-    system_prompt,
-    assistant_prompt,
-)
+from globals import FILE
+from data_handler import load_set, read_json
+
+from prompt_processing import PromptBuilder
+
 
 debug = False
 lokal = False
@@ -74,42 +75,49 @@ def stream_chat_response(
     und streamt die Antwort chunkweise zurück.
     """
 
-    # Lege temporäre Kopie von assistant_prompt an
-    temp_assistant_prompt = assistant_prompt[:]
-
-    mood = mood_trigger()
+    def get_time_sense(trigger: bool) -> str:
+        if trigger:
+            return diff_time_trigger()
     
-    # Pre-fill entfernen und später wieder einfügen
-    prefill = temp_assistant_prompt.pop()
-    
-    # Mood und Sense of Time einfügen
-    temp_assistant_prompt.append(mood)
+    def get_memory():
+        if control_existing_memory():
+            from inject_memory import memory_prompt_forming
+            return memory_prompt_forming()
+        return None
+        
 
-    # Nur Sense of Time einfügen wenn es in data vorhanden ist
-    if time_sense:
-        sense_of_time = diff_time_trigger()
-        temp_assistant_prompt.append(sense_of_time)
+    char =      load_set(char=True)
+    language =  read_json(FILE["user_language"])["language"]
+    user_name = read_json(FILE["user_name"])["user_name"]
+    gender =    read_json(FILE["user_gender"])["user_gender"]
+
+    init_prompt = PromptBuilder(
+        char_name=char,
+        user_name=user_name,
+        language=language,
+        gender=gender
+    )
+
+    system_prompt = init_prompt.get_system_api()
+
+    init_prompt.mood = mood_trigger()
+    init_prompt.time_sense = get_time_sense(time_sense)
+    init_prompt.memory_prompt = get_memory()
+
+    temp_assistant_prompt = init_prompt.get_reminder_api()
+
+    print (f"System-Prompt: {system_prompt}")
+    print (f"Assistant-Prompt: {temp_assistant_prompt}")
+
     if assistant_imp:
         temp_assistant_prompt.append(assistant_imp)
-
-    memory_prompt = None
-
-    if control_existing_memory():
-        from inject_memory import memory_prompt_forming
-        memory_prompt = memory_prompt_forming()
-
-
-
-    # Pre-fill wieder einfügen
-    temp_assistant_prompt.append(prefill)
 
     # Tokenberechnung
     truncate_history = truncate_history_for_api(full_history, system_prompt, temp_assistant_prompt, max_tokens)
     current_tokens = count_tokens(system_prompt, truncate_history, temp_assistant_prompt)
 
-    # Andere werte die nicht "role" und "content" sind, werden nicht übergeben
-    api_dialogue_start = [{"role": "assistant", "content": "{dialogue}\n<dialogue>"}]
-    api_dialogue_end = [{"role": "assistant", "content": "</dialogue>"}]
+    api_dialogue_start = [{"role": "assistant", "content": "<history>"}]
+    api_dialogue_end = [{"role": "assistant", "content": "</history>"}]
 
     api_messages = [
         {"role": msg["role"], "content": msg["content"]}
@@ -117,13 +125,9 @@ def stream_chat_response(
     ]
 
     api_messages = api_dialogue_start + api_messages + api_dialogue_end
-    
-    if memory_prompt == None:
-        temp_messages = api_messages + temp_assistant_prompt
 
-    if memory_prompt:
-        temp_messages = api_messages + memory_prompt + temp_assistant_prompt 
-
+    temp_messages = api_messages + temp_assistant_prompt
+ 
     final_client = client
     final_model_name = model_name
     final_system_prompt = system_prompt[:]
@@ -173,49 +177,8 @@ def print_ki_response(char: str = None, highlighted: str = "purple"):
 
     api_request = True
     while_round = 0
-    thinkin = True
-    
 
-    while api_request:
-                
-        threading.Thread(target=think, daemon=True).start()
-
-        max_retries=2
-        retries=0
-
-        while retries < max_retries:
-            retries += 1
-            try:
-                with final_client.messages.stream(
-                    model=final_model_name,
-                    max_tokens=512,
-                    temperature=0.9,
-                    system=final_system_prompt,
-                    messages=final_messages
-                ) as stream:
-                    chunks = list(stream.text_stream)
-
-                    # Mood wieder entfernen
-                    temp_assistant_prompt.pop(-2) 
-
-                    # Alle Chunks zusammenfügen:
-                    response_text = "".join(chunks)
-                    break
-            
-            except anthropic.APIStatusError as e:
-                if "overloaded_error" in str(e):
-                    time.sleep(0.2)
-                    continue
-
-            except Exception as e:
-                console.print(f"[red]Unexpected error: {e}[/red]")
-                break
-
-        if retries == max_retries:
-            console.print("[red]No response received.[/red]")
-
-
-        def split_response(response_text):
+    def split_response(response_text):
             def extract_sections(text, section_one, section_two):
                 import re
                 pattern_one = fr"<{section_one}>(.*?)</{section_one}>"
@@ -229,23 +192,45 @@ def print_ki_response(char: str = None, highlighted: str = "purple"):
             character_analysis,
             response
             ) = extract_sections(
-                response_text, "character_analysis", "response"
+                response_text, "inner_reflection", "response"
                 )
             return character_analysis, response
-        
-        
+    
 
-        character_analysis, response = split_response(response_text)
+    while api_request:
+                
+        threading.Thread(target=think, daemon=True).start()
+
+        try:
+            with final_client.messages.stream(
+                model=final_model_name,
+                max_tokens=512,
+                temperature=0.9,
+                system=final_system_prompt,
+                messages=final_messages
+            ) as stream:
+                chunks = list(stream.text_stream)
+
+                # Alle Chunks zusammenfügen:
+                response_text = "".join(chunks)
+
+        except Exception as e:
+            console.print(f"[red]Unexpected error: {e}[/red]")
+            break
+
+
+        inner_reflection, response = split_response(response_text)
 
         if response == "":
             while_round += 1
             if while_round == 3:
                 console.print("[red]Keine Antwort erhalten.[/red]")
                 break
+            time.sleep(0.5*(while_round+1))
             continue
         else:
             thinkin = False
-            time.sleep(0.5)
+            
 
         animated_typing_panel(char, response, color=color)
         
@@ -253,7 +238,7 @@ def print_ki_response(char: str = None, highlighted: str = "purple"):
         print()  # Zusätzlicher Zeilenumbruch nach vollständiger Antwort
 
         response_token = output_tokens(response_text)
-        return response_token, response
+        return  response_token, inner_reflection, response
 
 
 if debug and lokal:

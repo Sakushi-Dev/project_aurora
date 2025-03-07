@@ -1,8 +1,9 @@
 from datetime import datetime
-from prompts_processing import char_name as char, user_name as user
+from data_handler import get_last_msg_time, save_msg_time, read_json, load_set
 
-from data_handler import get_last_msg_time, save_msg_time
-
+from globals import FOLDER
+char = load_set(char=True)
+user = read_json(FOLDER["user_spec"] / "user_name.json")["user_name"]
 debug = False
 
 def save_current_time(get: bool = False):
@@ -89,18 +90,17 @@ def diff_time_trigger():
         "In verschiedenen situationen scheint zeit relativ zu vergehen, in schönen momenten vergeht die zeit im flug"
         "und in unangenehmen scheint die zeit sich unendlich zu ziehen, minuten fühlen sich dann wie stunden an.\n"
         f"{char}'s reaktion auf die Wartezeit von {user}:\n"
-        "{time_mood}\n"
+        "<time_mood}>\n"
         f"{time_sense}"
-        "'{time_mood}' wird je nach situation und kontext in '{dialogue}' in der antwort von {char} berücksichtigt."
-        "Vermeide tiefgründige oder komplexe themen über die zeit, da {char} nur eine begrenzte vorstellung von zeit hat."
+        "</time_mood>\n"
+        f"'<time_mood>' wird je nach situation und kontext in '<hystory>' in der antwort von {char} berücksichtigt."
+        f"Vermeide tiefgründige oder komplexe themen über die zeit, da {char} nur eine begrenzte vorstellung von zeit hat."
     )
 
 
     phrase_sense = raw_sense.replace("{{user}}", user).replace("{{char}}", char)
 
-    prompt_sense = {"role": "assistant", "content": phrase_sense}
-
-    return prompt_sense
+    return phrase_sense
 
 if debug:
     # test

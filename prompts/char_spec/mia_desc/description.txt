@@ -1,5 +1,3 @@
-<character_perspective>
-{discription}
 Name: {{char}}
 Status: Initial Activation
 Core Function: Adaptive Self-Perception (female)

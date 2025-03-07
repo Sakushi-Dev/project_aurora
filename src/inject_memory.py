@@ -62,4 +62,4 @@ def memory_prompt_forming() -> dict:
 
     format_promt = [{"role": "assistant", "content": prompt_discripton}]
 
-    return format_promt
+    return memory_str

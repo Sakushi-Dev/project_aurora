@@ -1,5 +1,3 @@
-{{{char}}'s Specific Rules}
-
 Avoid the narrative perspective.
 
 Write all text in direct speech only.  

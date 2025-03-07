@@ -1,8 +1,11 @@
 # Import the functions from the anthropic_api.py file
 from anthropic_api import API_KEY, init_anthropic_client
-from prompts_processing import user_name as user, char_name as char
-from data_handler import load_history, read_json, emo_trigger_path, mood_sys_p
 
+from data_handler import load_history, read_json, emo_trigger_path, mood_sys_p, load_set
+
+from globals import FOLDER
+char = load_set(char=True)
+user = read_json(FOLDER["user_spec"] / "user_name.json")["user_name"]
 
 debug = False
 

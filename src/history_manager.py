@@ -1,20 +1,38 @@
 import os
-import sys
 import textwrap
+from globals import FOLDER
 from datetime import datetime, timezone
-from prompts_processing import first_message
 from data_handler import get_slot, load_slot, save_set, load_set, select_slot, load_history
 from data_handler import read_json, write_json, slot_path
+
+def first_message():
+    char = load_set(char=True)
+    language = read_json(FOLDER["user_spec"] / "user_language.json")["language"]
+    first_message_path = FOLDER[f"{char.lower()}_spec"] / "first_message.txt"
+
+    with open(first_message_path, "r", encoding="utf-8") as f:
+        fmsg = f.read()
+
+    
+
+    split_fm = fmsg.split("//")
+    if language == "english":
+        data = split_fm[0]
+    else:
+        data = split_fm[1]
+    
+    return [{"role": "assistant", "content": data}]
+
+    
 
 def organize_chat_and_char():
     """
     Funktion, um den Chatverlauf und den Charakter zu organisieren.
     """
-    global first_message
     
     slot = get_slot()
-
     data = load_slot(slot)
+    first_msg = first_message()
 
     if data:
         # Wenn ausgewälter Dialog nicht mit Char übereinstimmt, wird Char entsprechend gesetzt
@@ -24,7 +42,7 @@ def organize_chat_and_char():
         # Wenn kein Dialog vorhanden ist, wird ein neuer Dialog erstellt
         current_time = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
         char = load_set(char=True)
-        select_slot(char=char, time=current_time, f_msg=first_message, slot=slot)
+        select_slot(char=char, time=current_time, f_msg=first_msg, slot=slot)
         
     history, list_msg = load_history(slot)
     

@@ -1,7 +1,8 @@
-from prompts_processing import char_name as char, user_name as user
+from data_handler import load_current_emo_score, get_score_trigger, load_set, read_json
 
-from data_handler import load_current_emo_score, get_score_trigger
-
+from globals import FOLDER
+char = load_set(char=True)
+user = read_json(FOLDER["user_spec"] / "user_name.json")["user_name"]
 
 debug = False
 lokal = False
@@ -150,9 +151,6 @@ Trust_Level: {trust_level}
     # Debugging
     if debug:
         print(f"{mood}\n\n=====================================\n\n")
-
-    # Format to Assistant
-    mood = {"role": "assistant", "content": f"*{mood}*"}
     
     return mood
 

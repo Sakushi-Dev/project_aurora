@@ -3,9 +3,10 @@ import time
 
 from rich.console import Console
 
-from prompts_processing import char_name as char
 from data_handler import load_set, save_set
 from commands import handle_restart
+
+char = load_set(char=True)
 
 console = Console()
 

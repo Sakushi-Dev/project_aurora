@@ -16,6 +16,7 @@ from cmd_operations import (
     cmd_restart,
     cmd_reset,
     cmd_mood,
+    cmd_think
 )
 
 handle_exit     = cmd_exit.execute_exit
@@ -26,6 +27,7 @@ handle_delete   = cmd_delete.execute_delete
 handle_restart  = cmd_restart.execute_restart
 handle_reset    = cmd_reset.execute_reset
 handle_mood     = cmd_mood.execute_mood
+handle_think    = cmd_think.execute_think
 
 def get_commands():
     import sys
@@ -49,6 +51,7 @@ def get_commands():
         "slot": "   - Switch chat slot",
         "report": " - Report an issue on GitHub",
         "mood": f"   - View {char}'s mood",
+        "think":"   - Thoughts from the last message",
         "back": "   - Go back to chat",
     }
 
@@ -93,6 +96,7 @@ def command_dispatcher(user_input: str, highlighted:str, history_len:int):
     "/reset": handle_reset,
     "/report": handle_report,
     "/mood": handle_mood,
+    "/think": handle_think,
     "/back": handle_back,
     }
 
@@ -125,7 +129,7 @@ def command_dispatcher(user_input: str, highlighted:str, history_len:int):
         time.sleep(3)
         os._exit(0) # Beendet das Programm
 
-    elif command == "/config":
+    elif command == "/config" or command == "/think":
         os.system('cls' if os.name == 'nt' else 'clear')
         history, list_msg = organize_chat_and_char()
         print_latest_messages(list_msg, highlighted=highlighted)

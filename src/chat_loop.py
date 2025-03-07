@@ -62,6 +62,8 @@ console = Console(width=120)
 # history-Liste initialisieren
 history = []
 
+inner_reflection = ""
+
 
 # =================================================================================================
 #  Haupt-Chat-Loop
@@ -77,7 +79,7 @@ def main_chat_loop(
             highlighted: str = "purple"
 ):
     
-    global history
+    global history, inner_reflection
 
     """
     Haupt-Loop: Lädt History, startet Anthropic-Client, 
@@ -119,6 +121,8 @@ def main_chat_loop(
                     print(f"Result: {sub_user_input}\n\n{'='*30}\n\n")
 
         # ----------------------------------
+
+        inner_reflection = ""
         
         # User-Eingabe formatieren
         if sub_user_input:
@@ -172,7 +176,7 @@ def main_chat_loop(
         console.print(input_from_user)
 
         # KI-Antwort
-        response_tokens, ki_response = print_ki_response(char, highlighted)
+        response_tokens, inner_reflection, ki_response = print_ki_response(char, highlighted)
 
         # Kosten berechnen
         input_cost, output_cost = calculate_cost(
