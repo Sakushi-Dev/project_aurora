@@ -2,7 +2,7 @@
 
 **Aurora** is a project that simulates an autonomous AI personality. The goal is to convey hope, connection, and trust through realistic interactions – an innovative approach in AI simulation.
 
-|[![Image1](https://iili.io/3HVoU22.th.png)](https://freeimage.host/i/3HVoU22) | [![Image2](https://iili.io/3HVog7S.th.png)](https://freeimage.host/i/3HVog7S) | [![Image3](https://iili.io/3HVo8rl.th.png)](https://freeimage.host/i/3HVo8rl)|
+| [![Image1](https://github.com/Sakushi-Dev/project_aurora/blob/main/src/bin/example_img/Screenshot%202025-03-08%20234816.png)](https://github.com/Sakushi-Dev/project_aurora/blob/main/src/bin/example_img/Screenshot%202025-03-08%20234816.png) | [![Image2](https://github.com/Sakushi-Dev/project_aurora/blob/main/src/bin/example_img/Screenshot%202025-03-08%20234906.png)](https://github.com/Sakushi-Dev/project_aurora/blob/main/src/bin/example_img/Screenshot%202025-03-08%20234906.png) | [![Image3](https://github.com/Sakushi-Dev/project_aurora/blob/main/src/bin/example_img/Screenshot%202025-03-08%20235003.png)](https://github.com/Sakushi-Dev/project_aurora/blob/main/src/bin/example_img/Screenshot%202025-03-08%20235003.png) |
 |:---:|:---:|:---:|
 
 ## Table of Contents
