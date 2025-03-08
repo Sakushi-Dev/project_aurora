@@ -1,28 +1,39 @@
 import os
+
 import textwrap
-from globals import FOLDER
+from globals import FOLDER, jinja_env
 from datetime import datetime, timezone
 from data_handler import get_slot, load_slot, save_set, load_set, select_slot, load_history
-from data_handler import read_json, write_json, slot_path
+from data_handler import write_json, slot_path, read_file
 
 def first_message():
     char = load_set(char=True)
-    char = char.replace("-", "_")
-    language = read_json(FOLDER["user_spec"] / "user_language.json")["language"]
-    first_message_path = FOLDER[f"{char.lower()}_spec"] / "first_message.txt"
+    char_name = char
+    char = char.replace("-", "").lower()
+    user_name=read_file(FOLDER["user_spec"] / "user_name.json")["user_name"].title(),
+    language = read_file(FOLDER["user_spec"] / "user_language.json")["language"].lower()
+    yaml_data = read_file(FOLDER["char_spec"] / f"{char}.yaml")
 
-    with open(first_message_path, "r", encoding="utf-8") as f:
-        fmsg = f.read()
+    #NOTE: Consider adding several languages
+    #   - Does it make sense to standardize English and translate the text into any language?
+
+    language_mapping = {"english": "en", "german": "de"}
+
+    for key, value in yaml_data.items():
+        if key == "first_message" and isinstance(value, dict):
+            for k, v in value.items():
+                if k == language_mapping[language]:
+                    first_msg = v
+
 
     
-
-    split_fm = fmsg.split("//")
-    if language == "english":
-        data = split_fm[0]
-    else:
-        data = split_fm[1]
+    template = jinja_env.from_string(first_msg)
+    first_msg = template.render(
+        char_name=char_name,
+        user_name=user_name,
+    )
     
-    return [{"role": "assistant", "content": data}]
+    return [{"role": "assistant", "content": first_msg}]
 
     
 
@@ -76,7 +87,7 @@ def replay_last_interaction():
     path = slot_path + f"/slot_{slot-1}.json"
     key = f"slot_{slot-1}"
 
-    data = read_json(path)
+    data = read_file(path)
 
     if key in data and len(data[key]) > 1 and "chat_history" in data[key][1]:
 

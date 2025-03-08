@@ -1,8 +1,10 @@
 import random
 import yaml
 from pathlib import Path
-from typing import Dict, Tuple, Optional
+from typing import Dict, Tuple, Any, Optional
 from jinja2 import Environment
+
+from data_handler import read_file
 
 
 class PromptBuilder:
@@ -19,7 +21,7 @@ class PromptBuilder:
             ):
         from globals import FOLDER
 
-        self.char_name = char_name.lower()
+        self.char_name = char_name.replace("-", "").lower()
         self.user_name = user_name.lower()
         self.language = language.lower()
         self.gender = gender.lower()
@@ -33,7 +35,7 @@ class PromptBuilder:
         self.memory = memory
 
         self.utility = FOLDER["utility"]
-        self.char_spec = FOLDER[f"{self.char_name}_spec"]
+        self.char_spec = FOLDER["char_spec"]
 
         self.prompt_id_1 = "SYS-PROMPT-IMPERSONATION-001"
         self.prompt_id_2 = "SYS-PROMPT-RULES-001"
@@ -67,28 +69,43 @@ class PromptBuilder:
             return yaml.safe_load(f)
         
         
-    def template_prompt(self) -> Dict[str, str]:
-        yaml_paths = {file.stem: file for file in self.utility.glob("*.yaml")}
+    def template_prompt(self, data:Optional[Dict[str, Any]] = None) -> Dict[str, str]:
         
         template_dict = {}
-        for path in yaml_paths.values():
-            yaml_content = self.load_yaml(path)
-            if isinstance(yaml_content, dict):
-                for var_name, var_value in yaml_content.items():
-                    template_dict[f"{var_name}_template"] = var_value
+
+        if not data:
+            yaml_paths = {file.stem: file for file in self.utility.glob("*.yaml")}
+            for path in yaml_paths.values():
+                yaml_content = read_file(path)
+                if isinstance(yaml_content, dict):
+                    for var_name, var_value in yaml_content.items():
+                        template_dict[f"{var_name}_template"] = var_value
+
+        else:
+            for var_name, var_value in data.items():
+                if isinstance(var_value, dict) and var_name != "first_message":
+                    for key, value in var_value.items():
+                        template_dict[f"{key}"] = value
+                else:
+                    if var_name == "first_message":
+                        for key, value in var_value.items():
+                            template_dict[f"{key}_template"] = value
+                    else:
+                        template_dict[f"{var_name}_template"] = var_value
 
         output = {}
         for key, value in template_dict.items():
-            if key != "prefill_system_rules_template":
-                template = self.jinja_env.from_string(value)
-                output[key.replace('_template', '')] = template.render(
-                    char_name=self.char_name.title(),
-                    user_name=self.user_name.title(),
-                    language=self.language.title(),
-                    gender=self.gender.title()
-                )
-            else:
-                output[key] = value
+            if key.endswith("_template"):
+                if key != "prefill_system_rules_template":
+                    template = self.jinja_env.from_string(value)
+                    output[key.replace('_template', '')] = template.render(
+                        char_name=self.char_name.title(),
+                        user_name=self.user_name.title(),
+                        language=self.language.title(),
+                        gender=self.gender.title()
+                    )
+                else:
+                    output[key] = value
 
         return output
     
@@ -111,22 +128,8 @@ class PromptBuilder:
         return impersonation, system_rule
         
     def build_character_prompt(self) -> str:
-        file_map = {
-            "Description": self.char_spec/'description.txt',
-            "Personality": self.char_spec/'personality_summary.txt',
-            "Background": self.char_spec/'scenario.txt',
-            "Specific_rules": self.char_spec/'specific_rules.txt',
-            "Examples_dialog": self.char_spec/'examples_dialogue.txt'
-        }
-
-        char_content = {}
-        for key, path in file_map.items():
-            with open(path, "r", encoding="utf-8") as f:
-                char_content[key] = (
-                    f.read()
-                    .replace("{{char}}", self.char_name.title())
-                    .replace("{{user}}", self.user_name.title())
-                )
+        yaml_data = read_file(self.char_spec / f"{self.char_name}.yaml")
+        char_content = self.template_prompt(data=yaml_data)
         
         return f"""
 [{self.prompt_id_3}]
@@ -134,27 +137,27 @@ class PromptBuilder:
 
 Description: 
 <description>
-{char_content['Description']}
+{char_content['desc']}
 </description>
 
 Personality:
 <personality>
-{char_content['Personality']}
+{char_content['summary']}
 </personality>
 
 Background:
 <background>
-{char_content['Background']}
+{char_content['background']}
 </background>
 
 Specific rules:
 <specific_rules>
-{char_content['Specific_rules']}
+{char_content['specific_rules']}
 </specific_rules>
 
 Examples of dialogue:
 <examples_dialog>
-{char_content['Examples_dialog']}
+{char_content['examples_dialogue']}
 </examples_dialog>
 
 [/{self.prompt_id_3}]
@@ -227,22 +230,27 @@ My response as {self.char_name.title()}:
 
 
 # Example usage (Dynamic prompts are easily handled with this class)
-"""
-char = PromptBuilder(
-    char_name="mia",
-    user_name="james",
-    language="english",
-    gender="female"
-)
+if __name__ == "__main__":
 
-system_api = char.get_system_api()
+    debug = False
 
-# Dynamic prompts#
+    if debug:
+        char = PromptBuilder(
+            char_name="yujun",
+            user_name="james",
+            language="english",
+            gender="female"
+        )
 
-char.mood = "happy"
-char.time_sense = "past"
-char.memory = "I remember you"
-char.text_length = "medium"
+        system_api = char.get_system_api()
 
-reminder_api = char.get_reminder_api()
-"""
+        # Dynamic prompts#
+
+        char.mood = "happy"
+        char.time_sense = "past"
+        char.memory = "I remember you"
+        char.text_length = "medium"
+
+        reminder_api = char.get_reminder_api()
+
+        print(system_api ,f"\n{'-'*50}\n", reminder_api)

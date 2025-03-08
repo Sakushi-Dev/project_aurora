@@ -3,6 +3,15 @@ console = Console(width=120)
 
 #==================================================================================================
 
+from jinja2 import Environment
+
+jinja_env = Environment(
+            variable_start_string='{',
+            variable_end_string='}'
+        )
+
+#==================================================================================================
+
 from pathlib import Path
 
 class PathManager:

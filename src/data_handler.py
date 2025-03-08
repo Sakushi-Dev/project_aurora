@@ -1,5 +1,7 @@
 import json
+import yaml
 from pathlib import Path
+from globals import FOLDER, FILE
 
 
 # Einstellungen
@@ -38,6 +40,54 @@ mia_desc_path           = "./prompts/char_spec/mia_desc"
 yujun_desc_path         = "./prompts/char_spec/yujun_desc"
 utility_path            = "./prompts/utility"
 memory_path             = "./prompts/memory"
+
+
+#Lesen aller relevanten Dateien
+def read_file(path:Path, debug:bool=True) -> any:
+
+    if not path.is_file():
+        if debug:
+            print(f"Error: Datei {path} nicht gefunden.")
+        return None
+    
+    suffix = path.suffix
+
+    if suffix == ".json":
+        
+        with open(path, "r", encoding="utf-8") as file:
+            data=json.load(file)
+            if not data:
+                return False
+            return data
+        
+    elif suffix == ".jsonl":
+        
+        data = []
+        with open(path, "r", encoding="utf-8") as file:
+            if not line in file:
+                return False
+        
+            for line in file:
+                data.append(json.loads(line.strip()))
+            return data
+        
+
+    elif suffix == ".txt":
+        
+        with open(path, "r", encoding="utf-8") as file:
+            data = file.read()
+            if not data:
+                return False
+            return data
+    elif suffix == ".yaml":
+        
+        with open(path, "r", encoding="utf-8") as file:
+            data = yaml.safe_load(file)
+            if not data:
+                return False
+            return data
+
+    return None
 
 
 # Lesen von JSON-Dateien

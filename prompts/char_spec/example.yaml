@@ -1,0 +1,30 @@
+char_name:
+
+# A detailed description of the character
+desc: |
+
+# A brief description of the character
+summary: |
+
+# Background information about the character
+background: |
+
+# Examples of dialogue with the character
+examples_dialogue: |
+
+# Specific rules for the character (e.g., dialogue style, behavior)
+specific_rules: |
+
+# First message for the character in different languages
+first_message:
+  de: |
+
+  en: |
+
+# Metadata for this snippet
+metadata:
+  creator: 
+  status: 
+  version: 1.0.0
+  notes: 
+  tags: []

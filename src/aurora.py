@@ -30,7 +30,7 @@ def main():
         "time_sense",
         "color"
     ]
-    #NOTE: The Order of the Keys is important 
+    #NOTE: The order of the Keys is important 
     (
         max_tokens,
         frequency,
