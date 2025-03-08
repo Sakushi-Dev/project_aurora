@@ -21,7 +21,7 @@ if %errorlevel% neq 0 (
 )
 
 :: Check if the script exists
-if not exist update.ps1 (
+if not exist update-script.ps1 (
     echo Cannot find update.ps1 script. Please make sure it exists in the current directory.
     pause
     exit /b 1
