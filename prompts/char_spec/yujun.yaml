@@ -75,6 +75,6 @@ first_message:
 metadata:
   creator: Sakushi-Dev
   status: released
-  version: 1.0.0
+  version: "1.0.0"
   notes: "This character is a famous idol with a mysterious and manipulative personality."
   tags: ["roleplay", "character", "idol", "manipulative", "mysterious", "unpredictable", "love story"]

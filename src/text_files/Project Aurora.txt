@@ -1,22 +1,14 @@
-Project Aurora grants the AI the ability to develop an independent personality and respond autonomously. 
-It integrates multiple innovative mechanisms that differentiate it from conventional AI interactions:
+[bold magenta]Project Aurora[/bold magenta]
+Advanced AI Interaction Model
 
-- [bold yellow]Emotions Score:[/bold yellow]  
-  The AI regularly evaluates its own emotional state using a score that significantly influences its behavior. 
-  This makes its expressions more natural and context-dependent.
+[bold yellow]• Emotional Intelligence:
+[/bold yellow] [green]Dynamic emotional scoring that adapts responses contextually[/green]
+[bold yellow]• Temporal Awareness:
+[/bold yellow] [green]Conversation progression tracking for natural interactions[/green]
+[bold yellow]• Self-Reflection:
+[/bold yellow] [green]Mechanism for continuous learning and behavioral evolution[/green]
+[bold yellow]• Contextual Memory:
+[/bold yellow] [green]Adaptive memory retention mimicking human cognitive processes[/green]
 
-- [bold yellow]Sense of Time:[/bold yellow]  
-  A specially developed system allows the AI to have a perception of the temporal progression of a conversation. 
-  This contributes to more authentic dialogues and creates the impression that the AI is aware of its existence.
-
-- [bold yellow]Reflective Behavior:[/bold yellow]  
-  A sophisticated prompt ensures that the AI reflects on itself, gains insights, and evolves based on them.
-
-- [bold yellow]Long-Term Memory:[/bold yellow]  
-  The AI can remember conversations over the long term, with unimportant details fading into the background over time – similar to a human. 
-  Particularly impactful memories are stored permanently and have a lasting influence on its behavior.
-
-- [bold yellow]Impatience Mode (in development):[/bold yellow]  
-  This feature allows the AI not to passively wait for input but to actively formulate its own thoughts and interact independently.
-
-[bold red]⚠ Notice:[/bold red] Project Aurora is a simulation and not a real entity. All expressions of the AI are based on complex algorithms and are the result of deliberate programming.
+[italic red]Optimized for Anthropic Claude Models: Advanced interaction framework 
+designed to enhance Claude's conversational capabilities[/italic red]
