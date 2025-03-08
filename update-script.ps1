@@ -1,11 +1,11 @@
 # Aurora Project Update Script (Git Version)
 # This script updates the Aurora project via git pull while preserving user-specific data
-# Version: 0.1.2
+# Version: 0.1.3
 # Author: Sakushi-Dev
 
 # Configuration
 $backupDir = ".\update_backup"
-$updateVersion = "0.1.2" # Updated version number
+$updateVersion = "0.1.3" # Updated version number
 
 # Files and directories to preserve
 $preservePaths = @(
