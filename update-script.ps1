@@ -1,11 +1,11 @@
 # Aurora Project Update Script (Git Version)
 # This script updates the Aurora project via git pull while preserving user-specific data
-# Version: 0.1.1
+# Version: 0.1.0
 # Author: Sakushi-Dev
 
 # Configuration
 $backupDir = ".\update_backup"
-$updateVersion = "0.1.1" # Change this to match your update version
+$updateVersion = "0.1.0" # Change this to match your update version
 
 # Files and directories to preserve
 $preservePaths = @(
@@ -56,9 +56,92 @@ function IsGitRepository {
     }
 }
 
+# Remove old update scripts
+function RemoveOldUpdateScripts {
+    Write-Host "Checking for old update scripts..." -ForegroundColor Yellow
+    
+    # Exclude the currently running script
+    $currentScriptPath = $MyInvocation.MyCommand.Path
+    $currentScriptName = Split-Path $currentScriptPath -Leaf
+    
+    $oldUpdateScripts = Get-ChildItem -Path "." -Filter "update*.ps1" | Where-Object { $_.Name -ne $currentScriptName }
+    $oldUpdateBatchFiles = Get-ChildItem -Path "." -Filter "update*.bat" | Where-Object { $_.Name -ne "update.bat" }
+    
+    if ($oldUpdateScripts.Count -gt 0 -or $oldUpdateBatchFiles.Count -gt 0) {
+        Write-Host "Found old update scripts to remove:" -ForegroundColor Yellow
+        
+        foreach ($script in $oldUpdateScripts) {
+            Write-Host "  - $($script.Name)" -ForegroundColor Yellow
+            Remove-Item -Path $script.FullName -Force
+        }
+        
+        foreach ($batch in $oldUpdateBatchFiles) {
+            Write-Host "  - $($batch.Name)" -ForegroundColor Yellow
+            Remove-Item -Path $batch.FullName -Force
+        }
+        
+        Write-Host "Old update scripts removed." -ForegroundColor Green
+    } else {
+        Write-Host "No old update scripts found." -ForegroundColor Green
+    }
+}
+
+# Display update changes
+function ShowUpdateChanges {
+    Write-Host "`nChecking for available updates..." -ForegroundColor Yellow
+    
+    # Fetch latest changes without merging
+    git fetch
+    
+    # Get the list of changed files
+    $changedFiles = git diff --name-status origin/main..HEAD
+    
+    if ($changedFiles) {
+        $addedFiles = git diff --name-status origin/main..HEAD | Where-Object { $_ -match '^A\s+(.+)$' } | ForEach-Object { $matches[1] }
+        $modifiedFiles = git diff --name-status origin/main..HEAD | Where-Object { $_ -match '^M\s+(.+)$' } | ForEach-Object { $matches[1] }
+        $deletedFiles = git diff --name-status origin/main..HEAD | Where-Object { $_ -match '^D\s+(.+)$' } | ForEach-Object { $matches[1] }
+        
+        Write-Host "`nUpdate will make the following changes:" -ForegroundColor Cyan
+        
+        if ($addedFiles) {
+            Write-Host "`nFiles to be added:" -ForegroundColor Green
+            foreach ($file in $addedFiles) {
+                Write-Host "  + $file" -ForegroundColor Green
+            }
+        }
+        
+        if ($modifiedFiles) {
+            Write-Host "`nFiles to be modified:" -ForegroundColor Yellow
+            foreach ($file in $modifiedFiles) {
+                Write-Host "  ~ $file" -ForegroundColor Yellow
+            }
+        }
+        
+        if ($deletedFiles) {
+            Write-Host "`nFiles to be deleted:" -ForegroundColor Red
+            foreach ($file in $deletedFiles) {
+                Write-Host "  - $file" -ForegroundColor Red
+            }
+        }
+        
+        # Get commit messages since last pull
+        $commitMessages = git log HEAD..origin/main --pretty=format:"%h - %s (%cr) <%an>"
+        
+        if ($commitMessages) {
+            Write-Host "`nCommit history:" -ForegroundColor Cyan
+            Write-Host $commitMessages -ForegroundColor White
+        }
+        
+        return $true
+    } else {
+        Write-Host "Your system is already up to date. No changes needed." -ForegroundColor Green
+        return $false
+    }
+}
+
 # Backup important user data
 function BackupUserData {
-    Write-Host "Backing up user data..." -ForegroundColor Yellow
+    Write-Host "`nBacking up user data..." -ForegroundColor Yellow
     
     EnsureDirExists $backupDir
     
@@ -98,7 +181,7 @@ function GitPull {
         Write-Host "Local changes stashed." -ForegroundColor Green
         
         # Pull the latest changes
-        $pullResult = git pull
+        $pullResult = git pull origin main
         
         if ($pullResult -match "Already up to date") {
             Write-Host "Repository is already up to date. No update needed." -ForegroundColor Green
@@ -145,15 +228,28 @@ function RestoreUserData {
 function CleanUp {
     Write-Host "`nCleaning up temporary files..." -ForegroundColor Yellow
     
-    # Ask user if they want to keep the backup
-    $keepBackup = Read-Host "Do you want to keep the backup? (Y/N)"
+    # Remove backup directory
+    Remove-Item -Path $backupDir -Recurse -Force -ErrorAction SilentlyContinue
+    Write-Host "Backup directory removed." -ForegroundColor Green
+}
+
+# Clean up and abort update
+function AbortUpdate {
+    Write-Host "`nAborting update..." -ForegroundColor Yellow
     
-    if ($keepBackup -ne "Y" -and $keepBackup -ne "y") {
+    # Clean up
+    if (Test-Path -Path $backupDir) {
         Remove-Item -Path $backupDir -Recurse -Force -ErrorAction SilentlyContinue
         Write-Host "Backup directory removed." -ForegroundColor Green
-    } else {
-        Write-Host "Backup directory preserved at: $backupDir" -ForegroundColor Green
     }
+    
+    Write-Host "Update aborted. No changes were made to your system." -ForegroundColor Red
+    
+    # Wait for user to press any key
+    Write-Host "`nPress any key to exit..."
+    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    
+    exit
 }
 
 # Run the update process
@@ -169,10 +265,22 @@ function RunUpdate {
         return
     }
     
+    # Remove old update scripts
+    RemoveOldUpdateScripts
+    
+    # Show available updates
+    $updatesAvailable = ShowUpdateChanges
+    
+    if (-not $updatesAvailable) {
+        Write-Host "`nNo updates available. Press any key to exit..."
+        $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        return
+    }
+    
     # Ask for confirmation
-    $confirmation = Read-Host "Do you want to proceed with the update? (Y/N)"
+    $confirmation = Read-Host "`nDo you want to proceed with the update? (Y/N)"
     if ($confirmation -ne "Y" -and $confirmation -ne "y") {
-        Write-Host "Update cancelled." -ForegroundColor Yellow
+        AbortUpdate
         return
     }
     
@@ -187,6 +295,7 @@ function RunUpdate {
             Start-Sleep -Seconds 2  # Give it time to fully shut down
         } else {
             Write-Host "Please close Aurora manually and run this script again." -ForegroundColor Yellow
+            AbortUpdate
             return
         }
     }
@@ -211,7 +320,12 @@ function RunUpdate {
         }
     } else {
         Write-Host "`nNo updates were applied." -ForegroundColor Yellow
+        CleanUp
     }
+    
+    # Wait for user to press any key
+    Write-Host "`nPress any key to exit..."
+    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 }
 
 # Run the update

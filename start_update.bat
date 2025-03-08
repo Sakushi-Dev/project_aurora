@@ -20,7 +20,14 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+:: Check if the script exists
+if not exist update.ps1 (
+    echo Cannot find update.ps1 script. Please make sure it exists in the current directory.
+    pause
+    exit /b 1
+)
+
 echo Launching Git-based updater...
 powershell -ExecutionPolicy Bypass -File .\update-script.ps1
 
-pause
+:: No need for pause at the end as the PowerShell script already waits for input
