@@ -99,6 +99,7 @@ def load_characters_from_yaml() -> Dict[int, Dict[str, Any]]:
             
             # Create character entry
             characters[char_idx] = {
+                "file_name": file_path.stem,
                 "name": name,
                 "type": metadata.get('type', ""),
                 "note": metadata.get('notes', ""),
