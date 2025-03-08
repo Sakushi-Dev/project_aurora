@@ -1,5 +1,7 @@
 import os
 import time
+import shutil
+import errno
 
 from globals import console, get_path, get_file
 
@@ -50,16 +52,27 @@ def execute_reset():
             # Deleting files
             for key, value in route_map.items():
                 try:
-
                     if os.path.isdir(value):
-                        for root, dirs, files in os.walk(value, topdown=False):
-                            for name in files:
-                                os.remove(os.path.join(root, name))
-                            for name in dirs:
-                                os.rmdir(os.path.join(root, name))
-                        os.rmdir(value)
+                        # Use shutil.rmtree with error handler for Windows permission issues
+                        def handle_remove_readonly(func, path, exc):
+                            # Handle permission issues
+                            if func in (os.rmdir, os.remove, os.unlink) and exc[1].errno == errno.EACCES:
+                                # Change file to be readable, writable, and executable for all
+                                os.chmod(path, 0o777)
+                                # Retry
+                                func(path)
+                            else:
+                                raise exc
+                        
+                        # Try to remove the directory tree
+                        shutil.rmtree(value, onerror=handle_remove_readonly)
                     elif os.path.isfile(value):
-                        os.remove(value)
+                        try:
+                            os.remove(value)
+                        except PermissionError:
+                            # If permission error, change permissions and try again
+                            os.chmod(value, 0o777)
+                            os.remove(value)
 
                     console.print(f"\n[orange1]Deleting {key} in progress[/orange1]", end="")
                     for i in range(0, 3):
@@ -68,19 +81,28 @@ def execute_reset():
                     console.print(f"\n[green]{key} deleted.[/green]")
                 except FileNotFoundError:
                     console.print(f"\n[red]{key} not found.[/red]")
+                except Exception as e:
+                    console.print(f"\n[red]Error deleting {key}: {str(e)}[/red]")
 
             # Deleting '__pycache__' with platform-specific commands
             try:
                 for path in cache:
                     if os.name == 'nt':  # Windows
-                        os.system(f'rmdir /s /q "{path}"')
+                        try:
+                            # First try with Python's built-in methods for better error handling
+                            if os.path.exists(path):
+                                shutil.rmtree(path, onerror=handle_remove_readonly)
+                        except Exception:
+                            # Fallback to system command
+                            os.system(f'rmdir /s /q "{path}"')
                     else:  # Unix/Linux/MacOS
                         os.system(f'rm -r "{path}"')
                 
                 console.print("\n[green]Cache deleted.[/green]")
             except FileNotFoundError:
                 console.print("\n[red]Cache not found.[/red]")
-                pass
+            except Exception as e:
+                console.print(f"\n[red]Error deleting cache: {str(e)}[/red]")
 
             console.print("[orange]Deletion process completed.[/orange]")
             
@@ -91,11 +113,12 @@ def execute_reset():
             api_key = console.input("[red]Do you want to delete the API key? (Y/N): [/red]")
             if api_key.lower() == "y":
                 # Delete API key file
-                os.remove("./API/api_key.env")
-                os.rmdir("./API")
-
-                console.print("[orange]API key deleted.[/orange]")
-
+                try:
+                    os.remove("./API/api_key.env")
+                    os.rmdir("./API")
+                    console.print("[orange]API key deleted.[/orange]")
+                except Exception as e:
+                    console.print(f"[red]Error deleting API key: {str(e)}[/red]")
             else:
                 console.print("[green]API key preserved.[/green]")
                 
