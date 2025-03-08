@@ -1,11 +1,11 @@
 # Aurora Project Update Script (Git Version)
 # This script updates the Aurora project via git pull while preserving user-specific data
-# Version: 0.1.1
+# Version: 0.1.2
 # Author: Sakushi-Dev
 
 # Configuration
 $backupDir = ".\update_backup"
-$updateVersion = "0.1.1" # Change this to match your update version
+$updateVersion = "0.1.2" # Updated version number
 
 # Files and directories to preserve
 $preservePaths = @(
@@ -56,13 +56,15 @@ function IsGitRepository {
     }
 }
 
-# Remove old update scripts
+# Remove old update scripts - Only called after update confirmation
 function RemoveOldUpdateScripts {
     Write-Host "Checking for old update scripts..." -ForegroundColor Yellow
     
-    # Exclude the currently running script
-    $currentScriptPath = $MyInvocation.MyCommand.Path
-    $currentScriptName = Split-Path $currentScriptPath -Leaf
+    # Get current script name safely
+    $currentScriptName = "update-script.ps1"
+    if ($PSCommandPath) {
+        $currentScriptName = Split-Path $PSCommandPath -Leaf
+    }
     
     $oldUpdateScripts = Get-ChildItem -Path "." -Filter "update-script*.ps1" | Where-Object { $_.Name -ne $currentScriptName }
     $oldUpdateBatchFiles = Get-ChildItem -Path "." -Filter "start_update*.bat" | Where-Object { $_.Name -ne "start_update.bat" }
@@ -146,8 +148,6 @@ function BackupUserData {
     EnsureDirExists $backupDir
     
     foreach ($path in $preservePaths) {
-        $fullPath = (Resolve-Path -Path ".\$path" -ErrorAction SilentlyContinue).Path
-        
         if (Test-Path -Path ".\$path") {
             $destPath = Join-Path -Path $backupDir -ChildPath $path
             $destDir = Split-Path -Path $destPath -Parent
@@ -265,9 +265,6 @@ function RunUpdate {
         return
     }
     
-    # Remove old update scripts
-    RemoveOldUpdateScripts
-    
     # Show available updates
     $updatesAvailable = ShowUpdateChanges
     
@@ -283,6 +280,9 @@ function RunUpdate {
         AbortUpdate
         return
     }
+    
+    # Only remove old update scripts after confirmation
+    RemoveOldUpdateScripts
     
     # Check if the Aurora is running
     $auroraProcess = Get-Process -Name "python" -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -like "*aurora.py*" }
