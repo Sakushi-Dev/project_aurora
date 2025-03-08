@@ -81,10 +81,14 @@ def replay_last_interaction():
     und ermöglicht so ein /again (erneutes Abschicken).
     """
     global slot_path
+    from pathlib import Path
+
+    
 
     slot = get_slot()
 
-    path = slot_path + f"/slot_{slot-1}.json"
+    path = Path(slot_path + f"/slot_{slot-1}.json")
+
     key = f"slot_{slot-1}"
 
     data = read_file(path)

@@ -44,7 +44,8 @@ THEME_COLORS = {
     4: {"name": "Blue", "code": "color(20)"},
     5: {"name": "Turquoise", "code": "color(37)"},
     6: {"name": "Green", "code": "color(118)"},
-    7: {"name": "White", "code": "color(255)"}
+    7: {"name": "White", "code": "color(255)"},
+    8: {"name": "Gray", "code": "color(240)"}
 }
 
 
@@ -169,7 +170,7 @@ def display_aurora_intro() -> None:
     
 
     
-    message = "Welcome to Project Aurora!"
+    message = "Welcome to Project Aurora!\nAdvanced AI Interaction Simulation"
     dynamic_typing(message, mode="print", centered=True, delay=0.05, color="magenta")
     time.sleep(0.5)
     console.print("\n" + aurora_banner)
@@ -420,7 +421,7 @@ def save_user_config(user_name: str, gender: str, language: str, char_file_name:
         tags = metadata.get('tags', [])
         
         # Enable time sense if character has the appropriate tags
-        if "evolution" in tags or char_display_name.lower() == "mia":
+        if "sense of time" in tags:
             save_set(time_sense=True, data=True)
 
 

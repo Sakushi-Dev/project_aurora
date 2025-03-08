@@ -1,13 +1,13 @@
-[bold magenta]Project Aurora[/bold magenta]
-Advanced AI Interaction Model
-
-• Emotional Intelligence:
+[bold]Emotional Intelligence:[/bold]
 Dynamic emotional scoring that adapts responses contextually
-• Temporal Awareness:
+
+[bold]Temporal Awareness:[/bold]
 Conversation progression tracking for natural interactions
-• Self-Reflection:
+
+[bold]Self-Reflection:[/bold]
 Mechanism for continuous learning and behavioral evolution
-• Contextual Memory:
+
+[bold]Contextual Memory:[/bold]
 Adaptive memory retention mimicking human cognitive processes
 
 [italic green]Optimized for Anthropic Claude Models: Advanced interaction framework 
