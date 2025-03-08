@@ -64,8 +64,8 @@ function RemoveOldUpdateScripts {
     $currentScriptPath = $MyInvocation.MyCommand.Path
     $currentScriptName = Split-Path $currentScriptPath -Leaf
     
-    $oldUpdateScripts = Get-ChildItem -Path "." -Filter "update*.ps1" | Where-Object { $_.Name -ne $currentScriptName }
-    $oldUpdateBatchFiles = Get-ChildItem -Path "." -Filter "update*.bat" | Where-Object { $_.Name -ne "update.bat" }
+    $oldUpdateScripts = Get-ChildItem -Path "." -Filter "update-script*.ps1" | Where-Object { $_.Name -ne $currentScriptName }
+    $oldUpdateBatchFiles = Get-ChildItem -Path "." -Filter "start_update*.bat" | Where-Object { $_.Name -ne "start_update.bat" }
     
     if ($oldUpdateScripts.Count -gt 0 -or $oldUpdateBatchFiles.Count -gt 0) {
         Write-Host "Found old update scripts to remove:" -ForegroundColor Yellow
