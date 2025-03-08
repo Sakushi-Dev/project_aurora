@@ -51,41 +51,44 @@ def read_file(path:Path, debug:bool=True) -> any:
         return None
     
     suffix = path.suffix
+    try:
+        if suffix == ".json":
+            
+            with open(path, "r", encoding="utf-8") as file:
+                data=json.load(file)
+                if not data:
+                    return False
+                return data
+            
+        elif suffix == ".jsonl":
+            
+            data = []
+            with open(path, "r", encoding="utf-8") as file:
+                if not line in file:
+                    return False
+            
+                for line in file:
+                    data.append(json.loads(line.strip()))
+                return data
+            
 
-    if suffix == ".json":
-        
-        with open(path, "r", encoding="utf-8") as file:
-            data=json.load(file)
-            if not data:
-                return False
-            return data
-        
-    elif suffix == ".jsonl":
-        
-        data = []
-        with open(path, "r", encoding="utf-8") as file:
-            if not line in file:
-                return False
-        
-            for line in file:
-                data.append(json.loads(line.strip()))
-            return data
-        
-
-    elif suffix == ".txt":
-        
-        with open(path, "r", encoding="utf-8") as file:
-            data = file.read()
-            if not data:
-                return False
-            return data
-    elif suffix == ".yaml":
-        
-        with open(path, "r", encoding="utf-8") as file:
-            data = yaml.safe_load(file)
-            if not data:
-                return False
-            return data
+        elif suffix == ".txt":
+            
+            with open(path, "r", encoding="utf-8") as file:
+                data = file.read()
+                if not data:
+                    return False
+                return data
+        elif suffix == ".yaml":
+            
+            with open(path, "r", encoding="utf-8") as file:
+                data = yaml.safe_load(file)
+                if not data:
+                    return False
+                return data
+    except json.JSONDecodeError:
+        if debug:
+            print(f"Error: Datei {path} ist leer.")
 
     return None
 

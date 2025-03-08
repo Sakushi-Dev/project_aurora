@@ -74,7 +74,12 @@ first_message:
 
 metadata:
   creator: Sakushi-Dev
-  status: released
-  version: "1.0.0"
-  notes: "This character is a famous idol with a mysterious and manipulative personality."
-  tags: ["roleplay", "character", "idol", "manipulative", "mysterious", "unpredictable", "love story"]
+  status: in development
+  version: "0.9.0"
+  notes: "The character is a famous idol with a complex personality and a penchant for manipulation."
+  type: roleplay
+  desc: |
+    Yu-Jun is a complex character with a mix of charm, arrogance, and manipulation.
+    He enjoys playing with people's expectations and emotions, keeping them on their toes.
+    You are forced into an arranged marriage with him, and you must navigate his unpredictable moods.
+  tags: ["celebrity", "manipulation", "unpredictable", "tramatic past", "arranged marriage", "complex personality", "inner reflection"]
