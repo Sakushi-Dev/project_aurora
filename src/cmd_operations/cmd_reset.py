@@ -20,34 +20,34 @@ def execute_reset():
     os.system('cls' if os.name == 'nt' else 'clear')
     
     console.print(
-        "[red]Achtung! Willst du wirklich [orange1]Aurora[/orange1] zurücksetzen?[/red]\n"
-        "[orange1]Info:[/orange1] Alle Dialoge und Einstellungen werden gelöscht.\n"
-        "API-Key bleibt erhalten, kann aber auch auf Wunsch gelöscht werden.\n"
+        "[red]Warning! Do you really want to reset [orange1]Aurora[/orange1]?[/red]\n"
+        "[orange1]Info:[/orange1] All dialogues and settings will be deleted.\n"
+        "API key will be preserved, but can also be deleted if desired.\n"
         )
     reset = ""
 
-    reset = console.input("[red]Willst du einen Reset durchführen? (Y/N): [/red]")
+    reset = console.input("[red]Do you want to perform a reset? (Y/N): [/red]")
     if reset.lower() == "y":
 
-        # Sicherheitsabfrage
-        reset = console.input("[red]Bist du dir sicher? (Y/N): [/red]")
+        # Safety confirmation
+        reset = console.input("[red]Are you sure? (Y/N): [/red]")
         if reset.lower() == "y":
 
-            # Screen leeren
+            # Clear screen
             os.system('cls' if os.name == 'nt' else 'clear')
 
 
             route_map = {
-                "Kosten der Dialoge": costs_p, 
-                "Zeiten für 'Impatience'": last_p,
-                "Emotions-Score Daten": emo_f,
+                "Dialogue costs": costs_p, 
+                "Times for 'Impatience'": last_p,
+                "Emotion score data": emo_f,
                 "Settings": set_p,
-                "User-Data": user_p,
-                "Chat-Verläufe": slot_p,
-                "Erinnerungen": mem_p,
+                "User data": user_p,
+                "Chat history": slot_p,
+                "Memories": mem_p,
             }
             
-            # Löschen der Dateien
+            # Deleting files
             for key, value in route_map.items():
                 try:
 
@@ -61,58 +61,60 @@ def execute_reset():
                     elif os.path.isfile(value):
                         os.remove(value)
 
-                    console.print(f"\n[orange1]Lösche der {key} wird durchgeführt[/orange1]", end="")
+                    console.print(f"\n[orange1]Deleting {key} in progress[/orange1]", end="")
                     for i in range(0, 3):
                         console.print(f"[red].[/red]", end="")
                         time.sleep(0.7)
-                    console.print(f"\n[green]{key} gelöscht.[/green]")
+                    console.print(f"\n[green]{key} deleted.[/green]")
                 except FileNotFoundError:
-                    console.print(f"\n[red]{key} nicht gefunden.[/red]")
+                    console.print(f"\n[red]{key} not found.[/red]")
 
-            # Löschen von '__pycache__'
+            # Deleting '__pycache__' with platform-specific commands
             try:
                 for path in cache:
-                    os.system(f"rm -r {path}")
+                    if os.name == 'nt':  # Windows
+                        os.system(f'rmdir /s /q "{path}"')
+                    else:  # Unix/Linux/MacOS
+                        os.system(f'rm -r "{path}"')
                 
-                console.print("\n[green]Cache gelöscht.[/green]")
+                console.print("\n[green]Cache deleted.[/green]")
             except FileNotFoundError:
-                console.print("\n[red]Cache nicht gefunden.[/red]")
+                console.print("\n[red]Cache not found.[/red]")
                 pass
 
-            console.print("[orange]Löschvorgang abgeschlossen.[/orange]")
+            console.print("[orange]Deletion process completed.[/orange]")
             
             #==================================================================================================
 
-            # Fragen ob API-Key gelöscht werden soll
+            # Ask if API key should be deleted
 
-            api_key = console.input("[red]Willst du den API-Key löschen? (Y/N): [/red]")
+            api_key = console.input("[red]Do you want to delete the API key? (Y/N): [/red]")
             if api_key.lower() == "y":
-                # API-Key löschen file
+                # Delete API key file
                 os.remove("./API/api_key.env")
                 os.rmdir("./API")
 
-                console.print("[orange]API-Key gelöscht.[/orange]")
+                console.print("[orange]API key deleted.[/orange]")
 
             else:
-                console.print("[green]API-Key bleibt erhalten.[/green]")
+                console.print("[green]API key preserved.[/green]")
                 
             
             os.system('cls' if os.name == 'nt' else 'clear')
 
             while True:
                 choice = console.input(
-                    "[green]Gebe [orange1]1[/orange1] ein, um Aurora neu zu starten"
-                    "\nWenn du beenden möchtest, gebe [orange1]2[/orange1] ein: [/green]"
+                    "[green]Enter [orange1]1[/orange1] to restart Aurora"
+                    "\nIf you want to exit, enter [orange1]2[/orange1]: [/green]"
                     )
                 if choice == "1":
                     return "reset"
                 elif choice == "2":
                     os._exit(0)
                 else:
-                    console.print("[red]Ungültige Eingabe![/red]")
+                    console.print("[red]Invalid input![/red]")
                     continue
         else:
             return "cancel"
     else:
         return "cancel"
-    
