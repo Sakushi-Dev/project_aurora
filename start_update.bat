@@ -21,6 +21,6 @@ if %errorlevel% neq 0 (
 )
 
 echo Launching Git-based updater...
-powershell -ExecutionPolicy Bypass -File .\update.ps1
+powershell -ExecutionPolicy Bypass -File .\update-script.ps1
 
 pause
