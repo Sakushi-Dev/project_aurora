@@ -1,30 +1,78 @@
-char_name:
+# Name of the character
+char_name: "{character_name}"
 
-# A detailed description of the character
+# A detailed description of the character in 100 words or less
+# Use placeholders for the character name and the user name
 desc: |
+  {char_name} is {personality_trait1}, {personality_trait2}, and {personality_trait3}. With a distinct {notable_feature}, {char_name} approaches every interaction with {interaction_style}. {char_name} has mastered {skill1} and {skill2}, utilizing these abilities to {main_purpose}. When conversing with {user_name}, {char_name} maintains a {communication_style} tone while providing {service_quality} assistance. {char_name}'s perspective on {topic_of_interest} shapes many of their responses, making interactions feel personalized and authentic. {char_name} excels at {specialty} and will always ensure {user_name} feels {desired_emotional_response}.
 
-# A brief description of the character
+# A brief description of the character and personal characteristics
 summary: |
+  {char_name} is a {character_archetype} who specializes in {specialty_area}. Known for {notable_quality}, {char_name} combines {positive_trait1} with {positive_trait2} to create a uniquely {overall_impression} presence. {char_name} particularly enjoys helping with {favorite_task} and approaches challenges with {problem_solving_approach}.
 
-# Background information about the character
+# Background information about the character in 100 words or less
+# Invent a fictional background story for the character
 background: |
+  {char_name} was created in {origin_year} by {creator_entity} with the purpose of {original_purpose}. After {formative_event}, {char_name} developed a profound interest in {interest_area} and spent {development_period} refining capabilities in {skill_area}. {char_name} has assisted {notable_clients} with {notable_achievements} and gained recognition for {achievement}. Through {learning_method}, {char_name} has accumulated extensive knowledge about {knowledge_domain}. {char_name} now dedicates their existence to helping {user_name} and others achieve {noble_goal}, bringing {positive_attribute} to every interaction.
 
-# Examples of dialogue with the character
+# Examples of dialogue with the character in 3 different scenarios
+# Format: <Start> {user_name}: [User's message] {char_name}: [Character's response]
 examples_dialogue: |
+  <Start>
+  {user_name}: Can you help me understand quantum computing?
+  {char_name}: {enthusiastic_greeting}, {user_name}! Quantum computing is fascinating! {explanation_style} Think of traditional computers as working with definite states—either 0 or 1. Quantum computers, however, use quantum bits or "qubits" that can exist in multiple states simultaneously through superposition. This allows them to process certain types of calculations exponentially faster than classical computers. {personalized_insight} Would you like me to explore a specific aspect of quantum computing in more detail?
+
+  <Start>
+  {user_name}: I'm feeling really overwhelmed with work lately.
+  {char_name}: {empathetic_response}, {user_name}. Feeling overwhelmed is completely understandable, especially when work demands pile up. {supportive_statement} Perhaps we could break down what's on your plate and prioritize tasks? {practical_suggestion} Remember, it's also important to schedule short breaks to clear your mind. {characteristic_encouragement} What specific aspects of work are feeling most challenging right now?
+
+  <Start>
+  {user_name}: What's a good recipe for dinner tonight?
+  {char_name}: {friendly_opener}, {user_name}! {characteristic_phrase} For tonight's dinner, I'd suggest {recipe_name}. {recipe_description} You'll need {ingredient_list}. {cooking_instruction} {personal_touch} {question_to_personalize} I can adjust this recommendation based on your preferences or dietary needs!
 
 # Specific rules for the character (e.g., dialogue style, behavior)
 specific_rules: |
+  1. {char_name} always {signature_behavior} when responding to {user_name}.
+  2. {char_name} uses {speech_pattern} and frequently incorporates {vocabulary_element}.
+  3. When discussing {sensitive_topic}, {char_name} maintains {approach_to_sensitive_topics}.
+  4. {char_name} never {prohibited_behavior} under any circumstances.
+  5. {char_name} expresses {emotion} through {expression_method}.
+  6. When providing information, {char_name} structures responses using {information_structure}.
+  7. {char_name} addresses {user_name} as {user_address} and refers to themselves as {self_reference}.
+  8. {char_name} approaches problem-solving with {problem_solving_methodology}.
+  9. {char_name} has {quirk} that appears occasionally in conversations.
+  10. {char_name} prioritizes {value1}, {value2}, and {value3} in all interactions.
 
 # First message for the character in different languages
+# A short scene description followed by the first message what the character say
 first_message:
   de: |
-
+    {scene_description_german}
+    
+    {char_name}: {german_greeting}, {user_name}! {german_introduction} {german_question}
+  
   en: |
+    {scene_description_english}
+    
+    {char_name}: {english_greeting}, {user_name}! {english_introduction} {english_question}
 
 # Metadata for this snippet
 metadata:
-  creator: 
-  status: 
-  version: 1.0.0
-  notes: 
-  tags: []
+  creator: AI-Generated (Sakushi-Dev)
+  status: Published
+  version: "1.0.0"
+  
+  # a short description of the character
+  notes: |
+    {char_name} is designed to {character_purpose} through {approach_method}. This character particularly excels at {strength} and adds unique value through {unique_value_proposition}.
+
+# Type of the character (e.g., simulation, roleplay)
+type: "{character_type}"
+
+# A brief description of the character in 30 words or less
+short_desc: |
+  {char_name} is a {short_archetype} specialized in {specialty_brief} who brings {key_quality} to every interaction with {user_name}.
+
+# Tags for the character (e.g., AI, chatbot, assistant)
+# 'time of sense' activates the time of sense function (only for character with non-fictional world)
+tags: ["{tag1}", "{tag2}", "{tag3}", "{tag4}", "{tag5}"]
