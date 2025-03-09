@@ -233,31 +233,80 @@ def display_character_info(characters: Dict[int, Dict[str, Any]]) -> None:
     clear_screen()
     console.print(f"Choose a character you want to interact with.\n\n")
     
-    for _, char_info in characters.items():
-        # Character name and type
-        console.print(f"[{COLORS['secondary']}]Name: {char_info['name']}\nScenario: {char_info['type']}[/{COLORS['secondary']}]")
-        
-        # Development status indicator if needed
-        if char_info['development'] != "Complete":
-            console.print(f"[{COLORS['warning']}]⚠️ {char_info['development']}[/{COLORS['warning']}]")
-        
-        console.print(f"{'-'*120}\n")
-        
-        # Character description
-        console.print(f"Description:\n\n{char_info['description']}\n")
+    #=================  Display in panel =================
 
-        console.print(f"{'-'*120}\n")
-        
-        # Metadata information
-        console.print(f"{char_info['creator']}\n")
-        console.print(f"Version: {char_info['version']}\n")
-        
-        console.print(f"Note: {char_info['note']}")
-        features_str = " | ".join(char_info['features'].split(", "))
-        console.print(f"Tags: {features_str}\n")
-        
-        # Separator between characters
+    for i in range(1,len(characters),3):
+        char_info = characters[i]
+        char_idx = i
+
+        # Character name and type
+        panel1 = Panel(
+            f"[{COLORS['secondary']}]\n\n"
+            f"Char Card Nr: {char_idx}\n\n"
+            f"Note: {char_info['note']}\n\n"
+            f"Sense of Time: {char_info['sense_of_time']}\n\n"
+            f"{char_info['creator']}"
+            f"[/{COLORS['secondary']}]",
+            title=f"[bold {COLORS['secondary']}]{char_info['name']}[/bold {COLORS['secondary']}]",
+            width=38,
+            height=15,
+            expand=True,
+            border_style="white",
+        )
+
+        if char_idx+1 <= len(characters):
+            char_info = characters[char_idx+1]
+            panel2 = Panel(
+                f"[{COLORS['secondary']}]\n\n"
+                f"Char Card Nr: {char_idx}\n\n"
+                f"Note: {char_info['note']}\n\n"
+                f"Sense of Time: {char_info['sense_of_time']}\n\n"
+                f"{char_info['creator']}"
+                f"[/{COLORS['secondary']}]",
+                title=f"[bold {COLORS['secondary']}]{char_info['name']}[/bold {COLORS['secondary']}]",
+                width=38,
+                height=15,
+                expand=True,
+                border_style="white",
+            )
+        else:
+            panel2 = Panel(
+                f"[bold {COLORS['secondary']}]{'\n'*5}{' '*15}Soon[/bold {COLORS['secondary']}]",
+                title=f"[bold {COLORS['secondary']}]In Development[/bold {COLORS['secondary']}]",
+                width=38,
+                height=15,
+                expand=True,
+                border_style="white",
+            )
+        if char_idx+2 <= len(characters):
+            char_info = characters[char_idx+2]
+            panel3 = Panel(
+                f"[{COLORS['secondary']}]\n\n"
+                f"Char Card Nr: {char_idx}\n\n"
+                f"Note: {char_info['note']}\n\n"
+                f"Sense of Time: {char_info['sense_of_time']}\n\n"
+                f"{char_info['creator']}"
+                f"[/{COLORS['secondary']}]",
+                title=f"[bold {COLORS['secondary']}]{char_info['name']}[/bold {COLORS['secondary']}]",
+                width=38,
+                height=15,
+                expand=True,
+                border_style="white",
+            )
+        else:
+            panel3 = Panel(
+                f"[bold {COLORS['secondary']}]{'\n'*5}{' '*15}Soon[/bold {COLORS['secondary']}]",
+                title=f"[bold {COLORS['secondary']}]In Development[/bold {COLORS['secondary']}]",
+                width=38,
+                height=15,
+                expand=True,
+                border_style="white",
+            )
+
+        console.print(Columns([f"{' '}", panel1, panel2, panel3, f"{' '}"]))
         console.print(f"[black]{'─' * 120}[/black]\n")
+
+        
 
 
 def select_character(characters: Dict[int, Dict[str, Any]]) -> Tuple[str, str]:
