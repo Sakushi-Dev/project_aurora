@@ -427,7 +427,7 @@ def load_format_history(value:int=None) -> str:
     data = load_slot(slot)
 
     user = read_json(user_name_path)["user_name"]
-    char = read_json(mia_name_path)["char_name"]
+    char = load_set(char=True)
     history = data[2]
     list_msg = []
 
