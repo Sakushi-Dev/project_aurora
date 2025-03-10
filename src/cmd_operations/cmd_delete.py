@@ -130,7 +130,7 @@ def execute_delete():
             
                     while True:
                         # wählbaren Charakter anzeigen
-                        console.print("Wähle einen Charakter aus (1:Mia/2:Yu-jun)\n")
+                        console.print("Wähle einen Charakter aus (1:Mia/2:Yu-Jun)\n")
                         while True:
                             choice = int(prompt("Wähle mit 1 oder 2: ", style=custom_style))
                             print()
@@ -140,7 +140,7 @@ def execute_delete():
                                 print("Ungültige Eingabe!\n")
                                 continue
 
-                        chars = {1: "Mia", 2: "Yu-jun"}
+                        chars = {1: "Mia", 2: "Yu-Jun"}
                         
                         if choice == 1:
                             char = chars[1]
