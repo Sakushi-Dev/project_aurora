@@ -128,10 +128,9 @@ def think():
     ]
 
     padding = (120 - 10) // 2
-    i = 0
     while load:
         for i in animation:
-            console.print(f"\r[bold color(45)]{' ' * padding}{animation[i % len(animation)]}[/bold color(45)]", end="\r", flush=True)
+            console.print(f"\r[bold color(45)]{' ' * padding}{i}[/bold color(45)]", end="\r", flush=True)
             time.sleep(0.1)
             i += 1
             if load == False:
