@@ -1,12 +1,12 @@
 from data_handler import (
     read_json,
     imp_prompt_path,
-    load_user_char_name,
-    load_set
+    load_set,
+    get_user_name
 )
 
 char = load_set(char=True)
-user = load_user_char_name(user=True)
+user = get_user_name()
 
 # Lese die Datei 'impatience_prompt.json' aus dem Ordner 'data' ein
 data = read_json(imp_prompt_path)
