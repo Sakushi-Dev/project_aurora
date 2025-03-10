@@ -131,8 +131,7 @@ def think():
     while load:
         for i in animation:
             console.print(f"\r[bold color(45)]{' ' * padding}{i}[/bold color(45)]", end="\r")
-            time.sleep(0.1)
-            i += 1
+            time.sleep(0.2)
             if load == False:
                 break
 
@@ -209,7 +208,7 @@ def print_ki_response(char: str = None, highlighted: str = "purple"):
             continue
         else:
             load = False
-            time.sleep(0.1)
+            time.sleep(0.25)
             load = True
             
 
