@@ -9,6 +9,10 @@ from prompt_toolkit.styles import Style
 from data_handler import slot_content, save_set, load_slot
 
 
+# NOTE: Refactor the code!
+# read the .yaml file and display the content in a panel
+# Names are determined by .yaml file and are not previously set as a string in the code
+
 
 custom_style = Style.from_dict({
     '': 'fg:#87FF87',
@@ -62,7 +66,7 @@ def execute_slot():
     if not slot_choice in proven_slots:
         save_set(slot=True, data=slot_choice)
 
-        chars = {1: "Mia", 2: "Yu-jun"}
+        chars = {1: "Mia", 2: "Yu-Jun"}
 
         console.print(
             f"\nName: {chars[1]}\n"
@@ -89,7 +93,7 @@ def execute_slot():
 
         while True:
             # wählbaren Charakter anzeigen
-            console.print("Wähle einen Charakter aus (1:Mia/2:Yu-jun)\n")
+            console.print("Wähle einen Charakter aus (1:Mia/2:Yu-Jun)\n")
             choice = int(prompt("Wähle mit 1 oder 2: ", style=custom_style))
             print()
             if choice in range(1, 3):
