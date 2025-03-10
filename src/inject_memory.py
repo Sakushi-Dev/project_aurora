@@ -46,8 +46,4 @@ The (<reminder>) is composed as follows in each line: title | description | dial
 """
     )
 
-<<<<<<< HEAD
-    return [{"role": "assistant", "content": prompt_discripton}]
-=======
     return prompt_description
->>>>>>> 033abfa (Refactor memory handling in inject_memory.py to improve file path management and enhance prompt description formatting)
