@@ -14,36 +14,9 @@ from memory_processing import control_existing_memory
 from task_organizer import truncate_history_for_api, animated_typing_panel
 
 from globals import FILE
-from data_handler import load_set, read_json
+from data_handler import load_set, read_json, get_user_name
 
 from prompt_processing import PromptBuilder
-
-
-debug = False
-lokal = False
-
-
-#==================================================================================================
-# Debugging Initialisierung
-if debug and lokal:
-    print(f"DebugMode: response_manager.py\n\n=========================================\n")
-
-    from anthropic_api import init_anthropic_client, API_KEY
-    client = init_anthropic_client(API_KEY)
-
-    model = "claude-3-5-haiku-20241022"
-
-    from history_manager import organize_chat_and_char
-
-    history, list_msg = organize_chat_and_char()
-    api_messages = [
-            {"role": msg["role"], "content": msg["content"]}
-            for msg in history if "role" in msg and "content" in msg
-        ]
-    
-    user_input = "Hallo"
-    api_messages.append({"role": "user", "content": user_input})
-#==================================================================================================
 
 
 # Rich-Console-Objekt:
@@ -59,7 +32,40 @@ final_system_prompt = []
 fina_messages = []
 
 
+def get_time_sense(trigger: bool) -> str:
+        if trigger:
+            return diff_time_trigger()
+        
+def get_memory():
+        if control_existing_memory():
+            from inject_memory import memory_prompt_forming
+            return memory_prompt_forming()
+        return None
 
+def build_api_prompt(time_sense:bool=False) -> list:
+
+    char = load_set(char=True)
+    user = get_user_name()
+
+    language = read_json(FILE["user_language"])["language"]
+    gender = read_json(FILE["user_gender"])["user_gender"]
+
+    init_prompt = PromptBuilder(
+        char_name=char,
+        user_name=user,
+        language=language,
+        gender=gender
+    )
+
+    system_prompt = init_prompt.get_system_api()
+
+    init_prompt.mood = mood_trigger()
+    init_prompt.time_sense = get_time_sense(time_sense)
+    init_prompt.memory_prompt = get_memory()
+
+    return system_prompt, init_prompt.get_reminder_api()
+
+#NOTE: misleading function name
 def stream_chat_response(
     client: anthropic.Anthropic,
     model_name: str,
@@ -75,36 +81,8 @@ def stream_chat_response(
     und streamt die Antwort chunkweise zurück.
     """
 
-    def get_time_sense(trigger: bool) -> str:
-        if trigger:
-            return diff_time_trigger()
-    
-    def get_memory():
-        if control_existing_memory():
-            from inject_memory import memory_prompt_forming
-            return memory_prompt_forming()
-        return None
-        
-
-    char =      load_set(char=True)
-    language =  read_json(FILE["user_language"])["language"]
-    user_name = read_json(FILE["user_name"])["user_name"]
-    gender =    read_json(FILE["user_gender"])["user_gender"]
-
-    init_prompt = PromptBuilder(
-        char_name=char,
-        user_name=user_name,
-        language=language,
-        gender=gender
-    )
-
-    system_prompt = init_prompt.get_system_api()
-
-    init_prompt.mood = mood_trigger()
-    init_prompt.time_sense = get_time_sense(time_sense)
-    init_prompt.memory_prompt = get_memory()
-
-    temp_assistant_prompt = init_prompt.get_reminder_api()
+    # API-Prompt-Generierung
+    system_prompt, temp_assistant_prompt = build_api_prompt(time_sense)
 
 
     if assistant_imp:
@@ -131,20 +109,8 @@ def stream_chat_response(
     final_system_prompt = system_prompt[:]
     final_messages = temp_messages[:]
 
-    if debug:
-        print(f"Model: {model_name}\n")
-        print(
-            "=========================================\n"
-            f"System-Prompt:\n\n{final_system_prompt}\n\n"
-            "=========================================\n"
-            f"Messages:\n\n{final_messages}\n\n"
-            "=========================================\n"
-            )
-
     
     return current_tokens
-
-
 
 thinkin = True
 
@@ -155,9 +121,11 @@ def think():
     char = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
     while True:
         for i in char:
-            console.print(f"\r[color(45)]{i}[/color(45)]", end="\r")
+            console.print(f"\r{' '*59}[color(45)]{i}[/color(45)]", end="\r")
             time.sleep(0.1)
             if thinkin == False:
+                #überschreiben des letzten Zeichens
+                console.print(f"\r{' '*120}", end="\r")
                 break
         if thinkin == False:
             break
@@ -181,6 +149,11 @@ def print_ki_response(char: str = None, highlighted: str = "purple"):
                 import re
                 pattern_one = fr"<{section_one}>(.*?)</{section_one}>"
                 pattern_two = fr"<{section_two}>(.*?)</{section_two}>"
+                
+                # if </{section_two}> is not found, the text attempt to match  without the closing tag
+                if not re.search(pattern_two, text, re.DOTALL):
+                    pattern_two = fr"<{section_two}>(.*)"
+
                 match_one = re.search(pattern_one, text, re.DOTALL)
                 match_two = re.search(pattern_two, text, re.DOTALL)
                 text_one = match_one.group(1).strip() if match_one else ""
@@ -224,7 +197,7 @@ def print_ki_response(char: str = None, highlighted: str = "purple"):
             if while_round == 3:
                 console.print("[red]Keine Antwort erhalten.[/red]")
                 break
-            time.sleep(0.5*(while_round+1))
+            time.sleep(1*(while_round+1))
             continue
         else:
             thinkin = False
@@ -237,7 +210,3 @@ def print_ki_response(char: str = None, highlighted: str = "purple"):
 
         response_token = output_tokens(response_text)
         return  response_token, inner_reflection, response
-
-
-if debug and lokal:
-    stream_chat_response(client, model, api_messages)
