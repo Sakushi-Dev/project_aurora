@@ -125,7 +125,7 @@ def think():
 
     while load:
         for i in animation:
-            console.print(f"\r[bold color(45)]{i}[/bold color(45)]", end="\r")
+            console.print(f"\r[bold color(45)]{animation[i]}[/bold color(45)]", end="\r")
             time.sleep(0.1)
             if load == False:
                 break
