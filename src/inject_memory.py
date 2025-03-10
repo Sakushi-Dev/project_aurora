@@ -60,6 +60,6 @@ def memory_prompt_forming() -> dict:
         "The memory is coposed as follows in each line: title | description | dialogue\n"
     )
 
-    format_promt = [{"role": "assistant", "content": prompt_discripton}]
+    format_prompt = [{"role": "assistant", "content": prompt_discripton}]
 
     return memory_str
