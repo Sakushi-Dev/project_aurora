@@ -28,7 +28,7 @@ def memory_prompt_forming() -> str:
     Merge the memory data into a string.
     '''
 
-# NOTE: This function is called in 'response_processing.py' and permanently stores the data in the instance of 'PromptBuilder',
+# NOTE: This function is called in 'response_manager.py' and permanently stores the data in the instance of 'PromptBuilder',
 # where it is structured into an api_prompt. Subsequently, the class method 'get_reminder_api()' is called to generate the final prompt
 
     slot = get_slot()
