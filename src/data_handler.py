@@ -43,57 +43,58 @@ memory_path             = "./prompts/memory"
 
 
 #Lesen aller relevanten Dateien
-def read_file(path:Path, debug:bool=True) -> any:
-
-    if not path.is_file():
+def read_file(path, debug=True):
+    """
+    Reads various file formats (json, jsonl, txt, yaml) and returns their contents.
+    
+    Args:
+        path: Path to the file (string or Path object)
+        debug: Whether to print error messages (default: True)
+    
+    Returns:
+        The content of the file, or None/False on error
+    """
+    # Convert string paths to Path objects if necessary
+    path = Path(path) if isinstance(path, str) else path
+    
+    if not path.exists():
         if debug:
-            print(f"Error: Datei {path} nicht gefunden.")
+            print(f"Error: File {path} not found.")
         return None
     
-    suffix = path.suffix
     try:
-        if suffix == ".json":
-            
-            with open(path, "r", encoding="utf-8") as file:
-                data=json.load(file)
-                if not data:
-                    return False
-                return data
-            
-        elif suffix == ".jsonl":
-            
-            data = []
-            with open(path, "r", encoding="utf-8") as file:
-                if not line in file:
-                    return False
-            
-                for line in file:
-                    data.append(json.loads(line.strip()))
-                return data
-            
-
-        elif suffix == ".txt":
-            
-            with open(path, "r", encoding="utf-8") as file:
+        suffix = path.suffix.lower()
+        with open(path, "r", encoding="utf-8") as file:
+            if suffix == ".json":
+                data = json.load(file)
+            elif suffix == ".jsonl":
+                data = [json.loads(line.strip()) for line in file if line.strip()]
+            elif suffix == ".txt":
                 data = file.read()
-                if not data:
-                    return False
-                return data
-        elif suffix == ".yaml":
-            
-            with open(path, "r", encoding="utf-8") as file:
+            elif suffix == ".yaml" or suffix == ".yml":
                 data = yaml.safe_load(file)
-                if not data:
-                    return False
-                return data
+            else:
+                if debug:
+                    print(f"Error: Unsupported file format {suffix}")
+                return None
+                
+        return False if data is None or data == {} or data == [] or data == "" else data
+                
     except json.JSONDecodeError:
         if debug:
-            print(f"Error: Datei {path} ist leer.")
-
+            print(f"Error: File {path} is not valid JSON/JSONL.")
+    except yaml.YAMLError:
+        if debug:
+            print(f"Error: File {path} is not valid YAML.")
+    except Exception as e:
+        if debug:
+            print(f"Error reading file {path}: {e}")
+            
     return None
 
+#=================================  Refactoring  ============================================
 
-# Lesen von JSON-Dateien
+#NOTE Refactoring: read_json -> read_file (dont use the function read_json)
 def read_json(path:str, debug:bool=True) -> any:
     try:
         if not Path(path).is_file():
@@ -119,6 +120,7 @@ def read_json(path:str, debug:bool=True) -> any:
 
     return None
 
+#NOTE Refactoring: read_jsonl -> read_file (dont use the function read_jsonl)
 def read_jsonl(file_path):
     '''
     Reads a jsonl file and returns the data as a list
@@ -130,6 +132,26 @@ def read_jsonl(file_path):
             data.append(json.loads(line.strip()))
     return data
             
+
+#NOTE Refactoring: read_txt -> read_file (dont use the function read_txt)
+def read_txt(path:str):
+    try:
+        if not Path(path).is_file():
+            print(f"Error: Datei {path} nicht gefunden.")
+            return None
+        
+        with open(path, "r", encoding="utf-8") as file:
+            return file.read()
+        
+    except FileNotFoundError:
+        print(f"Error: Datei {path} existiert nicht.")
+    except Exception as e:
+        print(f"Error beim Lesen der Datei {path}: {e}")
+
+    return None
+
+#============================================================================================
+
 # Schreiben von JSON-Dateien
 def write_json(path:str, data=None) -> bool:
     try:
@@ -156,23 +178,6 @@ def write_json(path:str, data=None) -> bool:
         print(f"Error writing JSON to {path}: {e}")
 
     return False
-
-# Lesen von TXT-Dateien
-def read_txt(path:str):
-    try:
-        if not Path(path).is_file():
-            print(f"Error: Datei {path} nicht gefunden.")
-            return None
-        
-        with open(path, "r", encoding="utf-8") as file:
-            return file.read()
-        
-    except FileNotFoundError:
-        print(f"Error: Datei {path} existiert nicht.")
-    except Exception as e:
-        print(f"Error beim Lesen der Datei {path}: {e}")
-
-    return None
 
 
 def load_set(
@@ -231,6 +236,13 @@ def save_set(
             write_json(path, {key: data})
             return
     return None
+
+def get_user_name() -> str:
+    '''
+    read user_name.json
+    return: key["user_name"]
+    '''
+    return read_file(FILE['user_name'])["user_name"]
     
 def load_user_char_name(user:bool=False, char:str=None) -> str:
     '''
