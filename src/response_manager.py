@@ -1,7 +1,5 @@
 import anthropic
 
-from rich.console import Console
-
 from score_trigger import mood_trigger
 
 from tiktoken_function import count_tokens, output_tokens
@@ -13,17 +11,17 @@ from memory_processing import control_existing_memory
 # Task-Organizer-Import:
 from task_organizer import truncate_history_for_api, animated_typing_panel
 
-from globals import FILE
+from globals import FILE, console
 from data_handler import load_set, read_json, get_user_name
 
 from prompt_processing import PromptBuilder
 
 
-# Rich-Console-Objekt:
-console = Console(width=120)
-
 # Globale Variablen für um assistent_prompt dynamisch zu verändern
 temp_assistant_prompt = []
+
+# Globale Variable für den Denkprozess
+load = True
 
 # Globale Variablen für die Anfrage
 final_client = None
@@ -112,27 +110,31 @@ def stream_chat_response(
     
     return current_tokens
 
-thinkin = True
-
 def think():
     import time
-    global thinkin
+    global load
 
-    char = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
-    while True:
-        for i in char:
-            console.print(f"\r{' '*58}[color(45)]{i}[/color(45)]", end="\r")
+    animation = {
+            1:f"{' '*58}....",
+            2:f"{' '*57}......",
+            3:f"{' '*56}...  ...",
+            4:f"{' '*55}...    ...",
+            5:f"{' '*55}..      ..",
+            6:f"{' '*54}.   ..   .",
+    }
+
+    while load:
+        for i in animation:
+            console.print(f"\r[bold color(45)]{i}[/bold color(45)]", end="\r")
             time.sleep(0.1)
-            if thinkin == False:
+            if load == False:
                 break
-        if thinkin == False:
-            break
 
 def print_ki_response(char: str = None, highlighted: str = "purple"):
     import threading
     import time
     
-    global final_client, final_model_name, final_system_prompt, final_messages, thinkin
+    global final_client, final_model_name, final_system_prompt, final_messages, load
 
     # Highlighted-Text
     color = highlighted
@@ -141,6 +143,8 @@ def print_ki_response(char: str = None, highlighted: str = "purple"):
 
     api_request = True
     while_round = 0
+
+    
 
     def split_response(response_text):
             def extract_sections(text, section_one, section_two):
@@ -198,8 +202,9 @@ def print_ki_response(char: str = None, highlighted: str = "purple"):
             time.sleep(1*(while_round+1))
             continue
         else:
-            thinkin = False
+            load = False
             time.sleep(0.1)
+            load = True
             
 
         animated_typing_panel(char, response, color=color)
@@ -208,4 +213,6 @@ def print_ki_response(char: str = None, highlighted: str = "purple"):
         print()  # Zusätzlicher Zeilenumbruch nach vollständiger Antwort
 
         response_token = output_tokens(response_text)
+
+
         return  response_token, inner_reflection, response
