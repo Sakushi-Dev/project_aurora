@@ -121,11 +121,9 @@ def think():
     char = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
     while True:
         for i in char:
-            console.print(f"\r{' '*59}[color(45)]{i}[/color(45)]", end="\r")
+            console.print(f"\r{' '*58}[color(45)]{i}[/color(45)]", end="\r")
             time.sleep(0.1)
             if thinkin == False:
-                #überschreiben des letzten Zeichens
-                console.print(f"\r{' '*120}", end="\r")
                 break
         if thinkin == False:
             break
@@ -201,6 +199,7 @@ def print_ki_response(char: str = None, highlighted: str = "purple"):
             continue
         else:
             thinkin = False
+            time.sleep(0.1)
             
 
         animated_typing_panel(char, response, color=color)
