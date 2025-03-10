@@ -31,7 +31,7 @@ def memory_prompt_forming() -> str:
 # where it is structured into an api_prompt. Subsequently, the class method 'get_reminder_api()' is called to generate the final prompt
 
     slot = get_slot()
-    path = MEM_DIR/"memory_analysis_slot_" + slot + SUFFIX
+    path = MEM_DIR/"memory_analysis_slot_" + str(slot) + SUFFIX
     memory_str = filtering_jsonl(read_file(path))
     
     prompt_description = (
