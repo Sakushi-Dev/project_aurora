@@ -1,7 +1,6 @@
 from globals import MEM_DIR
 from data_handler import read_file, get_slot
 
-PATH = MEM_DIR/"memory_analysis_slot_"
 SUFFIX = ".jsonl"
 
 def filtering_jsonl(data) -> str:
@@ -32,7 +31,7 @@ def memory_prompt_forming() -> str:
 # where it is structured into an api_prompt. Subsequently, the class method 'get_reminder_api()' is called to generate the final prompt
 
     slot = get_slot()
-    path = PATH / str(slot-1) + SUFFIX
+    path = MEM_DIR/"memory_analysis_slot_" + slot + SUFFIX
     memory_str = filtering_jsonl(read_file(path))
     
     prompt_description = (
