@@ -114,19 +114,26 @@ def think():
     import time
     global load
 
-    animation = {
-            1:f"{' '*58}....",
-            2:f"{' '*57}......",
-            3:f"{' '*56}...  ...",
-            4:f"{' '*55}...    ...",
-            5:f"{' '*55}..      ..",
-            6:f"{' '*54}.   ..   .",
-    }
+    animation = [
+        "▰▱▱▱▱▱▱▱▱▱",
+        "▰▰▱▱▱▱▱▱▱▱",
+        "▰▰▰▱▱▱▱▱▱▱",
+        "▰▰▰▰▱▱▱▱▱▱",
+        "▰▰▰▰▰▱▱▱▱▱",
+        "▰▰▰▰▰▰▱▱▱▱",
+        "▰▰▰▰▰▰▰▱▱▱",
+        "▰▰▰▰▰▰▰▰▱▱",
+        "▰▰▰▰▰▰▰▰▰▱",
+        "▰▰▰▰▰▰▰▰▰▰",
+    ]
 
+    padding = (120 - 10) // 2
+    i = 0
     while load:
         for i in animation:
-            console.print(f"\r[bold color(45)]{animation[i]}[/bold color(45)]", end="\r")
+            console.print(f"\r[bold color(45)]{' ' * padding}{animation[i % len(animation)]}[/bold color(45)]", end="\r", flush=True)
             time.sleep(0.1)
+            i += 1
             if load == False:
                 break
 
