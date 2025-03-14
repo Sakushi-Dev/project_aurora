@@ -17,7 +17,8 @@ class PromptBuilder:
             text_length: str = "short",
             mood: Optional[str] = None,
             time_sense: Optional[str] = None,
-            memory: Optional[str] = None
+            memory: Optional[str] = None,
+            histrory: Optional[Dict] = None
             ):
         from globals import FOLDER
 
@@ -34,12 +35,16 @@ class PromptBuilder:
         self.time_sense = time_sense
         self.memory = memory
 
+        # Optional parameters for history
+        self.history = histrory
+
         self.utility = FOLDER["utility"]
         self.char_spec = FOLDER["char_spec"]
 
         self.prompt_id_1 = "SYS-PROMPT-IMPERSONATION-001"
         self.prompt_id_2 = "SYS-PROMPT-RULES-001"
         self.prompt_id_3 = "SYS-PROMPT-CHARACTER-001"
+        self.prompt_id_4 = "SYS-PROMPT-SUB-SYSTEM-REMINDER-001"
         
         self.jinja_env = Environment(
             variable_start_string='{',
@@ -96,16 +101,16 @@ class PromptBuilder:
         output = {}
         for key, value in template_dict.items():
             if key.endswith("_template"):
-                if key != "prefill_system_rules_template":
+                if key == "prefill_system_rules_template" or key == "sub_system_reminder_template":
+                    output[key] = value
+                else:
                     template = self.jinja_env.from_string(value)
                     output[key.replace('_template', '')] = template.render(
                         char_name=self.char_name.title(),
                         user_name=self.user_name.title(),
                         language=self.language.title(),
                         gender=self.gender.title()
-                    )
-                else:
-                    output[key] = value
+                    )  
 
         return output
     
@@ -167,19 +172,37 @@ Examples of dialogue:
         impersonation, system_rule = self.build_system_prompt()
         return impersonation, system_rule, self.build_character_prompt()
     
+    def build_sub_system_reminder_prompt(self):
+        template = self.template_prompt()
+        sub_system_reminder = self.jinja_env.from_string(
+            template['sub_system_reminder_template']).render(
+            char_name=self.char_name.title(),
+            user_name=self.user_name.title(),
+            time_sense=self.time_sense,
+            memory=self.memory,
+            mood=self.mood,
+        )
+
+        return f"""
+[{self.prompt_id_4}]
+{sub_system_reminder}
+[/{self.prompt_id_4}]
+
+"""
+        
+    
     def build_reminder_prompt(self) -> str:
         templates = self.template_prompt()
         min_random, max_random = self.random_response_length()
 
-        prefill_system_rules = self.jinja_env.from_string(templates['prefill_system_rules_template']).render(
+        prefill_system_rules = self.jinja_env.from_string(
+            templates['prefill_system_rules_template']).render(
             char_name=self.char_name.title(),
             user_name=self.user_name.title(),
             prompt_id_1=self.prompt_id_1,
             prompt_id_2=self.prompt_id_2,
             prompt_id_3=self.prompt_id_3,
-            memory=self.memory,
-            mood=self.mood,
-            time_sense=self.time_sense,
+            prompt_id_4=self.prompt_id_4,
             min_random=min_random,
             max_random=max_random
         )
@@ -217,6 +240,27 @@ My response as {self.char_name.title()}:
 
         return system_api
     
+    def get_sub_system_api(self) -> Tuple[dict]:
+        sub_system_reminder = self.build_sub_system_reminder_prompt()
+
+        sub_system_api = [
+            self.build_api_prompt(sub_system_reminder)
+        ]
+
+        return sub_system_api
+    
+    def get_history_api(self) -> Tuple[dict]:
+        start_history = self.build_api_prompt("[START DIALOGUE]", role="assistant")
+        end_history = self.build_api_prompt("[END DIALOGUE]", role="assistant")
+        api_history = [
+            self.build_api_prompt(msg['content'], role=f"{msg['role']}")
+            for msg in self.history if "role" in msg and "content" in msg
+        ]
+
+        api_history.insert(0, start_history)
+        api_history.append(end_history)
+
+        return api_history
 
     def get_reminder_api(self) -> Tuple[dict]:
         reminder_prompt = self.build_reminder_prompt()
@@ -232,7 +276,7 @@ My response as {self.char_name.title()}:
 # Example usage (Dynamic prompts are easily handled with this class)
 if __name__ == "__main__":
 
-    debug = False
+    debug = True
 
     if debug:
         char = PromptBuilder(

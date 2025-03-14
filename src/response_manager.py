@@ -1,24 +1,16 @@
 import anthropic
-
-from score_trigger import mood_trigger
-
-from tiktoken_function import count_tokens, output_tokens
-
-from sense_of_time import diff_time_trigger
-
-from memory_processing import control_existing_memory
-
-# Task-Organizer-Import:
-from task_organizer import truncate_history_for_api, animated_typing_panel
+import re
 
 from globals import FILE, console
-from data_handler import load_set, read_json, get_user_name
 
+from score_trigger import mood_trigger
+from tiktoken_function import count_tokens, output_tokens
+from sense_of_time import diff_time_trigger
+from memory_processing import control_existing_memory
+from task_organizer import truncate_history_for_api, animated_typing_panel
+from data_handler import load_set, read_json, get_user_name
 from prompt_processing import PromptBuilder
 
-
-# Globale Variablen für um assistent_prompt dynamisch zu verändern
-temp_assistant_prompt = []
 
 # Globale Variable für den Denkprozess
 load = True
@@ -40,8 +32,14 @@ def get_memory():
             return memory_prompt_forming()
         return None
 
-def build_api_prompt(time_sense:bool=False) -> list:
-
+def init_prompt_builder(
+        time_sense:bool=False,
+        get_system:bool=False,
+        get_sub_system:bool=False,
+        get_prefill:bool=False,
+        get_history:dict=None
+    ):
+        
     char = load_set(char=True)
     user = get_user_name()
 
@@ -49,66 +47,115 @@ def build_api_prompt(time_sense:bool=False) -> list:
     gender = read_json(FILE["user_gender"])["user_gender"]
 
     init_prompt = PromptBuilder(
-        char_name=char,
-        user_name=user,
-        language=language,
-        gender=gender
+    char_name=char,
+    user_name=user,
+    language=language,
+    gender=gender
     )
+        
+    def build_api_prompt(
+            init_prompt:PromptBuilder,
+            time_sense:bool,
+            get_system:bool,
+            get_sub_system:bool,
+            get_prefill:bool,
+            get_history:dict
+        ) -> list:
 
-    system_prompt = init_prompt.get_system_api()
+        if get_system:
+            return init_prompt.get_system_api()
+        
+        elif get_sub_system:
+            init_prompt.mood = mood_trigger()
+            init_prompt.time_sense = get_time_sense(time_sense)
+            init_prompt.memory_prompt = get_memory()
+            return init_prompt.get_sub_system_api()
+        
+        elif get_prefill:
+            return init_prompt.get_reminder_api()
+        
+        elif get_history:
+            init_prompt.history = get_history
+            return init_prompt.get_history_api()
+        
 
-    init_prompt.mood = mood_trigger()
-    init_prompt.time_sense = get_time_sense(time_sense)
-    init_prompt.memory_prompt = get_memory()
+    return build_api_prompt(
+        init_prompt,
+        time_sense,
+        get_system,
+        get_sub_system,
+        get_prefill,
+        get_history
+        )
 
-    return system_prompt, init_prompt.get_reminder_api()
-
-#NOTE: misleading function name
-def stream_chat_response(
-    client: anthropic.Anthropic,
+def prepare_api_request(
+    CLIENT: anthropic.Anthropic,
     model_name: str,
     full_history: list,
     assistant_imp: list = None,
     max_tokens: int = 4096,
     time_sense: bool = False,
-) -> str:
-    global temp_assistant_prompt, final_client, final_model_name, final_system_prompt, final_messages
+    ) -> str:
+
+    global final_client, final_model_name, final_system_prompt, final_messages
 
     """
     Sendet die Anfrage an das ausgewählte Anthropic-Modell
     und streamt die Antwort chunkweise zurück.
     """
 
-    # API-Prompt-Generierung
-    system_prompt, temp_assistant_prompt = build_api_prompt(time_sense)
+    # init-assistant-prompt
+    assistant_prompt = []
 
+    # API-Prompt-Generierung (System, Prefill)
+    system_prompt = init_prompt_builder(time_sense, get_system=True)
+    sub_system_prompt = init_prompt_builder(time_sense, get_sub_system=True)
+    prefill_prompt = init_prompt_builder(time_sense, get_prefill=True)
 
+    # Add sub_system_prompt
+    system_prompt.extend(sub_system_prompt)
+
+    # Add prefill_prompt
+    assistant_prompt.extend(prefill_prompt)
+
+    # Add Impatiece
     if assistant_imp:
-        temp_assistant_prompt.append(assistant_imp)
+        assistant_prompt.extend(assistant_imp)
 
-    # Tokenberechnung
-    truncate_history = truncate_history_for_api(full_history, system_prompt, temp_assistant_prompt, max_tokens)
-    current_tokens = count_tokens(system_prompt, truncate_history, temp_assistant_prompt)
+    # Truncate 'full_history' to fit the API's max token limit
+    truncate_history = truncate_history_for_api(
+        full_history, system_prompt, assistant_prompt, max_tokens
+        )
 
-    api_dialogue_start = [{"role": "assistant", "content": "<history>"}]
-    api_dialogue_end = [{"role": "assistant", "content": "</history>"}]
+    # API-Prompt-Generierung (History)
+    history_prompt = init_prompt_builder(
+        time_sense, get_history=truncate_history
+        )
 
-    api_messages = [
-        {"role": msg["role"], "content": msg["content"]}
-        for msg in truncate_history if "role" in msg and "content" in msg
-    ]
-
-    api_messages = api_dialogue_start + api_messages + api_dialogue_end
-
-    temp_messages = api_messages + temp_assistant_prompt
+    # Add history_prompt at the beginning
+    for i, msg in enumerate(history_prompt):
+        assistant_prompt.insert(i, msg)
  
-    final_client = client
+    final_client = CLIENT
     final_model_name = model_name
     final_system_prompt = system_prompt[:]
-    final_messages = temp_messages[:]
+    final_messages = assistant_prompt[:]
 
+    #NOTE: This is for debugging purposes ========================
+    debug = False
     
-    return current_tokens
+    if debug:
+        import json
+        my_json = {
+            "system_prompt": final_system_prompt,
+            "assistant_prompt": final_messages
+        }
+        json_str = json.dumps(my_json, ensure_ascii=False, indent=4)
+        print(json_str.encode().decode('unicode_escape'))
+
+    #NOTE: End of debugging ======================================
+    
+    return count_tokens(system_prompt=system_prompt, assistant_prompt=assistant_prompt)
 
 def think():
     import time
@@ -152,27 +199,38 @@ def print_ki_response(char: str = None, highlighted: str = "purple"):
     
 
     def split_response(response_text):
-            def extract_sections(text, section_one, section_two):
-                import re
-                pattern_one = fr"<{section_one}>(.*?)</{section_one}>"
-                pattern_two = fr"<{section_two}>(.*?)</{section_two}>"
-                
-                # if </{section_two}> is not found, the text attempt to match  without the closing tag
-                if not re.search(pattern_two, text, re.DOTALL):
-                    pattern_two = fr"<{section_two}>(.*)"
+        """
+        Extracts content from inner_reflection and response tags in a text.
+        
+        Args:
+            response_text (str): The text containing the tagged sections
+            
+        Returns:
+            tuple: (character_analysis, response) as extracted from the tags
+        """
+        def extract_sections(text, section_one, section_two):
+            
+            pattern_one = fr"<{section_one}>(.*?)</{section_one}>"
+            pattern_two = fr"<{section_two}>(.*?)</{section_two}>"
+            
+            # Check if closing tag for section_two exists
+            if f"</{section_two}>" not in text:
+                pattern_two = fr"<{section_two}>(.*)"
 
-                match_one = re.search(pattern_one, text, re.DOTALL)
-                match_two = re.search(pattern_two, text, re.DOTALL)
-                text_one = match_one.group(1).strip() if match_one else ""
-                text_two = match_two.group(1).strip() if match_two else ""
-                return text_one, text_two
-            (
-            character_analysis,
-            response
-            ) = extract_sections(
-                response_text, "inner_reflection", "response"
-                )
-            return character_analysis, response
+            match_one = re.search(pattern_one, text, re.DOTALL)
+            match_two = re.search(pattern_two, text, re.DOTALL)
+
+            text_one = match_one.group(1).strip() if match_one else ""
+            text_two = match_two.group(1).strip() if match_two else ""
+
+            return text_one, text_two
+        (
+        inner_reflection,
+        response
+        ) = extract_sections(
+            response_text, "inner_reflection", "response"
+            )
+        return inner_reflection, response
     
 
     while api_request:
