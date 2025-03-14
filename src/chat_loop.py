@@ -37,7 +37,7 @@ from cost_manager import (
 from commands import command_dispatcher
 
 # Chat-Response-Import:
-from response_manager import stream_chat_response, print_ki_response
+from response_manager import prepare_api_request, print_ki_response
 import threading
 
 from memory_processing import execute_memory_request
@@ -138,7 +138,7 @@ def main_chat_loop(
             print(f"Full-History:\n\n{history}\n\n{'='*30}\n\n")
         
         # Anfrage an Claude (stream)
-        current_tokens = stream_chat_response(
+        current_tokens = prepare_api_request(
             client,
             model,
             history,

@@ -140,8 +140,8 @@ Trust_Level: {trust_level}
     
     mood = (
         "[The following '<tags>' and '<behave>' describe {{char}}'s nature and are given high priority in every response.]\n"
-        + f"<tags>\n{angry_trigger}, {sad_trigger}, {affection_trigger}, {arousal_trigger}, {trust_trigger}\n Info: Erwähnen von 'tags' in antwort ist verboten.\n</tags>\n"
-        + "<behave>\n"  + behave + "\n</behave>"
+        + f"[START HIGH PRIO]<tags>\n{angry_trigger}, {sad_trigger}, {affection_trigger}, {arousal_trigger}, {trust_trigger}\n Info: Erwähnen von 'tags' in antwort ist verboten.\n</tags>\n"
+        + "<behave>\n"  + behave + "\n</behave>[END HIGH PRIO]"
     )
 
     # Replace {{char}} and {{user}}

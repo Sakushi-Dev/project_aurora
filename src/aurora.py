@@ -20,7 +20,7 @@ def main():
         3: "claude-3-5-haiku-20241022",     # Haiku 3.5     Cost: Input $0.80/MTok  Output $4/MTok
         4: "claude-3-haiku-20240307"        # Haiku 3       Cost: Input $0.25/MTok  Output $1.25/MTok
     }
-    model = modell_list[1]
+    model = modell_list[2]
     
     # 3) Load all necessary Sets
     keys = [
